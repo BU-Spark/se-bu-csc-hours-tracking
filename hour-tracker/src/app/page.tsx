@@ -1,19 +1,10 @@
 "use client";
 
-import { signIn, signOut, useSession, getProviders, ClientSafeProvider } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import styles from './page.module.css';
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const res = await getProviders();
-      setProviders(res);
-    }) ();
-  }, []);
 
   console.log('Session:', session);
   console.log('Status:', status);
@@ -28,16 +19,10 @@ export default function Home() {
       {!session ? (
         <>
           <p>You are not signed in</p>
-          {providers &&
-            Object.values(providers).map((provider) => (
-              <div key={provider.name}>
-                <button className={styles.signInButton} onClick={() => signIn(provider.id)}>
-                  <img src="/google-logo.png" alt="Google Logo" width={20} height={20}/>
-                  Sign in with {provider.name}
-                </button>
-            </div>
-          ))}
-          </>
+          <button className={styles.signInButton} onClick={() => signIn()}>
+            Sign in
+          </button>
+        </>
       ) : (
         <>
           <p>Signed in as {session.user?.email}</p>

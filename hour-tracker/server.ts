@@ -29,8 +29,10 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  const port = process.env.PORT || 3000;
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
-  });
+  if (dev) {
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => {
+      console.log(`> Ready on http://localhost:${port}`);
+    });
+  }
 });
