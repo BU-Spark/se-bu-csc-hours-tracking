@@ -11,6 +11,7 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
+  console.log('API_URL:', API_URL)
 
   server.use(session({
     secret: process.env.SESSION_SECRET || 'default-secret',
@@ -19,7 +20,7 @@ app.prepare().then(() => {
   }));
 
   server.use('/api/auth', createProxyMiddleware({
-    target: `${API_URL}`,
+    target: 'https://bu-csc-dev.netlify.app',
     changeOrigin: true,
     pathRewrite: {
       '^/api/auth': '/api/auth'
