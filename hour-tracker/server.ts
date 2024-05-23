@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import next from 'next';
 import session from 'express-session';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { API_URL } from '@/constants';
+
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -17,7 +19,7 @@ app.prepare().then(() => {
   }));
 
   server.use('/api/auth', createProxyMiddleware({
-    target: `http://localhost:${process.env.PORT || 3000}`,
+    target: `${API_URL}`,
     changeOrigin: true,
     pathRewrite: {
       '^/api/auth': '/api/auth'
