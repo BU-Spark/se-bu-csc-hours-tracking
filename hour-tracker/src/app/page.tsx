@@ -2,7 +2,7 @@
 
 
 import Dashboard from '@/pages/Dashboard';
-import Login from '@/pages/login';
+import Login from '@/pages/Login';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
