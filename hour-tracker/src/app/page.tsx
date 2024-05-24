@@ -11,8 +11,8 @@ export default function Home() {
 
   const { data: session, status } = useSession();
 
-  console.log('Session:', session);
-  console.log('Status:', status);
+  // console.log('Session:', session);
+  // console.log('Status:', status);
 
   useEffect( () =>{
     if(status != "authenticated"){
@@ -29,6 +29,6 @@ export default function Home() {
   }
 
   return (
-    isLoggedIn ? <Login /> : (<Dashboard/> )   
+    isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   
   );
 }
