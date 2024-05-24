@@ -7,6 +7,7 @@ An application that connects BU students with nonprofit organizations looking fo
 # To Run Locally
 `cd hour-tracker` <br/>
 `npm install` <br/>
+`docker compose up` (if this is your first time) <br/>
 `npm run dev` <br>
 
 # Contributors
