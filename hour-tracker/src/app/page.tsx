@@ -1,34 +1,34 @@
 "use client";
 
-import { signIn, signOut, useSession } from 'next-auth/react';
-import styles from './page.module.css';
+
+import Dashboard from '@/pages/Dashboard';
+import Login from '@/pages/login';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const { data: session, status } = useSession();
 
   console.log('Session:', session);
   console.log('Status:', status);
+
+  useEffect( () =>{
+    if(status != "authenticated"){
+      setIsLoggedIn(true)
+    }
+    else{
+      setIsLoggedIn(false)
+    }
+  }, [status])
+
 
   if (status === 'loading') {
     return <p>Loading...</p>;
   }
 
   return (
-    <div>
-      <h1>Boston University Community Service Time Log</h1>
-      {!session ? (
-        <>
-          <p>You are not signed in</p>
-          <button className={styles.signInButton} onClick={() => signIn()}>
-            Sign in
-          </button>
-        </>
-      ) : (
-        <>
-          <p>Signed in as {session.user?.email}</p>
-          <button onClick={() => signOut()}>Sign out</button>
-        </>
-      )}
-    </div>
+    isLoggedIn ? <Login /> : (<Dashboard/> )   
   );
 }
