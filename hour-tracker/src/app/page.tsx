@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <div>
-       <CustomHeader/>
+       <CustomHeader session={session}/>
       {isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   }
     </div>
    
