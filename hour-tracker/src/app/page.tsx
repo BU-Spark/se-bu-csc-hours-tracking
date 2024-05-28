@@ -3,6 +3,7 @@
 
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
+import CustomHeader from '@/components/CustomHeader';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
@@ -29,6 +30,12 @@ export default function Home() {
   }
 
   return (
-    isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   
+    <div>
+       <CustomHeader/>
+      {isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   }
+    </div>
+   
+      
+    
   );
 }
