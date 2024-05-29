@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
+import "./page.css";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)

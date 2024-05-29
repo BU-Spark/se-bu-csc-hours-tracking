@@ -1,5 +1,3 @@
-import e from "express";
-import { PageProps } from "../common/interfaces";
 import { buRed } from "../common/styles";
 
 const Pfp: React.FC<any> = ({ session, height: dimension }) => {
@@ -9,6 +7,7 @@ const Pfp: React.FC<any> = ({ session, height: dimension }) => {
     pfp = session.user.image;
   }
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={pfp}
       alt="pfp"

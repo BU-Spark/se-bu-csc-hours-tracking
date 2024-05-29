@@ -1,4 +1,8 @@
 
+:root {
+  --buRed: #CC0000;
+}
+
   .sider-content {
     padding: 0.5em 0.5em;
     margin: 5em 0.5em;
@@ -26,3 +30,17 @@
     margin-bottom: -0.8em;
   }
   
+  .custom-menu .ant-menu-item {
+    /* display: flex;           uncomment to center menu items
+    justify-content: center; */
+    padding: 1em 0em; 
+    font-family: 'Inter', sans-serif !important;
+  }
+  .ant-menu-item:hover{
+    background-color: var(--buRed)!important;
+  }
+
+  .ant-menu-light .ant-menu-item-selected{
+    background-color: var(--buRed) !important;
+    color: white;
+  }

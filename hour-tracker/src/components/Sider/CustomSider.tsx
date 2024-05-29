@@ -1,11 +1,48 @@
 import React from "react";
 import { PageProps } from "@/common/interfaces";
-import { Layout, Typography } from "antd";
+import { Layout, Menu, MenuProps, Typography } from "antd";
 import "./CustomSider.css"; // Import the CSS file
 const { Sider } = Layout;
 import Pfp from "../Pfp";
 
 const CustomSider: React.FC<PageProps> = ({ session }) => {
+  type MenuItem = Required<MenuProps>["items"][number];
+
+  const items: MenuItem[] = [
+    {
+      key: "dashboard",
+      label: "Dashboard",
+    },
+    {
+      key: "my_hours",
+      label: "My Hours",
+      disabled: true,
+    },
+    {
+      key: "my_events",
+      label: "My Events",
+      disabled: true,
+    },
+    {
+      key: "service_history",
+      label: "Service History",
+      disabled: true,
+    },
+    {
+      key: "documents",
+      label: "Documents",
+    },
+    {
+      key: "forms",
+      label: "Forms",
+    },
+    {
+      key: "settings",
+      label: "Settings",
+      disabled: true,
+    },
+  ];
+
   return (
     //didn't use class because antd was getting buggy
     <Sider
@@ -31,6 +68,13 @@ const CustomSider: React.FC<PageProps> = ({ session }) => {
             <br />
             <Typography.Text>{session?.user.email}</Typography.Text>
           </div>
+          <Menu
+            style={{ marginTop: "3em", fontSize: "large" }}
+            items={items}
+            defaultSelectedKeys={["dashboard"]}
+            className="custom-menu"
+            mode="inline"
+          ></Menu>
         </div>
       </div>
     </Sider>
