@@ -1,39 +1,49 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-
-import Dashboard from '@/pages/Dashboard';
-import Login from '@/pages/Login';
+import Dashboard from "@/pages/Dashboard";
+import Login from "@/pages/Login";
 import CustomHeader from "@/components/Header/CustomHeader";
 import CustomSider from "@/components/Sider/CustomSider";
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { Layout } from 'antd';
-import { Content } from 'antd/es/layout/layout';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Layout } from "antd";
+import { Content } from "antd/es/layout/layout";
 import "./page.css";
+import icon from "./icon.png";
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const { data: session, status } = useSession();
 
   // console.log('Session:', session);
   // console.log('Status:', status);
 
-  useEffect( () =>{
-    if(status != "authenticated"){
-      setIsLoggedIn(true)
+  useEffect(() => {
+    if (status != "authenticated") {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
-    else{
-      setIsLoggedIn(false)
-    }
-  }, [status])
+  }, [status]);
 
+  // if (status === "loading") {
+  //   return <p>Loading...</p>;
+  // }
 
-  if (status === 'loading') {
-    return <p>Loading...</p>;
-  }
-
-  return isLoggedIn ? (
+  return status === "loading" ? (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center ",
+        height: "100vh",
+      }}
+    >
+      <img src="./full_logo.png" alt="icon" />
+    </div>
+  ) : isLoggedIn ? (
     <Login />
   ) : (
     <>
