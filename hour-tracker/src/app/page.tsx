@@ -3,8 +3,13 @@
 
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
+import CustomHeader from "@/components/Header/CustomHeader";
+import CustomSider from "@/components/Sider/CustomSider";
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { Layout } from 'antd';
+import { Content } from 'antd/es/layout/layout';
+import "./page.css";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -29,6 +34,23 @@ export default function Home() {
   }
 
   return (
-    isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   
+    <>
+      <Layout>
+        <CustomHeader session={session}/>
+      </Layout>
+      <Layout hasSider >
+        <CustomSider session={session}/>
+      </Layout>
+      <Content style={{marginLeft: 200}}>
+        {isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   }
+      </Content>
+    </>
+    
+      
+      
+    
+   
+      
+    
   );
 }

@@ -1,0 +1,14 @@
+.header-logo {
+    height: 3rem;
+    width: auto;
+    padding-top: 0.5rem;
+  }
+  
+  .header-right {
+    margin-right: -1rem;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
