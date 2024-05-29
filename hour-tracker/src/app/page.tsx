@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 import "./page.css";
-import icon from "./icon.png";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,10 +26,6 @@ export default function Home() {
       setIsLoggedIn(false);
     }
   }, [status]);
-
-  // if (status === "loading") {
-  //   return <p>Loading...</p>;
-  // }
 
   return status === "loading" ? (
     <div
