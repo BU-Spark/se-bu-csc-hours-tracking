@@ -12,9 +12,10 @@ const { Header } = Layout;
 const CustomHeader: React.FC<PageProps> = ({ session }) => {
   return (
     <Header
+    className="fixedHeader"
       style={{
         height: "4em",
-        zIndex: 4,
+        zIndex: 1001,
         background: accentBackground,
         borderBottom: `0.3rem solid ${buRed}`,
         paddingLeft: "0.2rem",
