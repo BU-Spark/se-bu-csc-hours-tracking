@@ -3,8 +3,8 @@
 
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
-import CustomHeader from '@/components/CustomHeader';
-import CustomSider from '@/components/CustomSider'
+import CustomHeader from "@/components/Header/CustomHeader";
+import CustomSider from "@/components/Sider/CustomSider";
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { Layout } from 'antd';
