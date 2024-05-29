@@ -5,7 +5,7 @@
 
   .sider-content {
     padding: 0.5em 0.5em;
-    margin: 5em 0.5em;
+    margin: 3em 0.5em;
     display: flex;
     justify-content: center;
     height: 90%;
@@ -43,4 +43,8 @@
   .ant-menu-light .ant-menu-item-selected{
     background-color: var(--buRed) !important;
     color: white;
+  }
+
+  .ant-menu-light.ant-menu-root.ant-menu-inline {
+    border-inline-end: none !important;
   }

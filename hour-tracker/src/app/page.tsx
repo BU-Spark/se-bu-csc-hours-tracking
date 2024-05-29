@@ -33,24 +33,19 @@ export default function Home() {
     return <p>Loading...</p>;
   }
 
-  return (
+  return isLoggedIn ? (
+    <Login />
+  ) : (
     <>
       <Layout>
-        <CustomHeader session={session}/>
+        <CustomHeader session={session} />
       </Layout>
-      <Layout hasSider >
-        <CustomSider session={session}/>
+      <Layout hasSider>
+        <CustomSider session={session} />
       </Layout>
-      <Content style={{marginLeft: 200}}>
-        {isLoggedIn ? <Login /> : (<Dashboard session={session}/> )   }
+      <Content style={{ marginLeft: 200 }}>
+        <Dashboard session={session} />
       </Content>
     </>
-    
-      
-      
-    
-   
-      
-    
   );
 }
