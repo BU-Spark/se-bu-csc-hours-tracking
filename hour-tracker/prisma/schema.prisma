@@ -13,15 +13,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student{
-  id        Int      @id @default(autoincrement())
-  name      String    
-  email     String 
-  class     Int
-  college   String
-  pfp       String?
-  pending_apps  Int[]
-  pending_approvs Int[]
-  events_attended Int[]
+model Person {
+  id              Int               @id @default(autoincrement())
+  name            String
+  email           String            @unique
+  phone_number    String            @unique
+  role            Role              @default(USER)
+  affiliation     Organization      @relation(fields: [affiliationId], references: [id])
+  affiliationId   Int
+  class           Int?
+  Event           Event[]
+  Form            Form[]
+  Comment         Comment[]
+  Application     Application[]
+  Hour_Submission Hour_Submission[]
 }
 
+model Event {
+  id                     Int               @id @default(autoincrement())
+  title                  String
+  organization           Organization      @relation(fields: [organizationId], references: [id])
+  organizationId         Int
+  coordinator            Person            @relation(fields: [coordinatorId], references: [id])
+  coordinatorId          Int
+  timezone               Timezone          @default(EST)
+  event_start            DateTime
+  event_end              DateTime
+  reg_start              DateTime
+  reg_end                DateTime
+  estimated_participants Int
+  location               String
+  transit                String
+  description            String
+  form                   Form?             @relation(fields: [formId], references: [id])
+  formId                 Int?
+  category               Category          @relation(fields: [categoryId], references: [id])
+  categoryId             Int
+  Comment                Comment[]
+  Application            Application[]
+  Hour_Submission        Hour_Submission[]
+}
+
+model Organization {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  abbreviation String
+  Person       Person[]
+  Event        Event[]
+}
+
+model Form {
+  id        Int     @id @default(autoincrement())
+  student   Person? @relation(fields: [studentId], references: [id])
+  studentId Int?
+  type      String
+  file      String
+  Event     Event[]
+}
+
+model Comment {
+  id           Int      @id @default(autoincrement())
+  event        Event    @relation(fields: [eventId], references: [id])
+  eventId      Int
+  author       Person   @relation(fields: [authorId], references: [id])
+  authorId     Int
+  feedback     String
+  date_written DateTime @default(now())
+}
+
+model Application {
+  id           Int      @id @default(autoincrement())
+  applicant    Person   @relation(fields: [applicantId], references: [id])
+  applicantId  Int
+  event        Event    @relation(fields: [eventId], references: [id])
+  eventId      Int
+  date_applied DateTime
+  summary      String
+  approved     Boolean
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  name  String
+  Event Event[]
+}
+
+// At this point a student can only make one hour submission per event. If it gets rejected it is sent back to them to fix
+model Hour_Submission {
+  id             Int      @id @default(autoincrement())
+  volunteer      Person   @relation(fields: [volunteerId], references: [id])
+  volunteerId    Int
+  event          Event    @relation(fields: [eventId], references: [id])
+  eventId        Int
+  hours          Float
+  note           String
+  date_submitted DateTime
+  reviewed       Boolean //if false then pending
+  approved       Boolean //if true then count towards total hours, if false then add to "Rejected" section
+}
+
+enum Role {
+  USER
+  ORGANIZER
+}
+
+enum Timezone {
+  EST
+  CST
+  MST
+  PST
+}
