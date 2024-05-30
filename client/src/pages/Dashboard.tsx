@@ -1,6 +1,6 @@
 import { signOut } from 'next-auth/react';
 import React from 'react'
-import { PageProps } from '@/common/interfaces';
+import { PageProps } from '../common/interfaces';
 
   const Dashboard: React.FC<PageProps> = ({ session }) => {
 

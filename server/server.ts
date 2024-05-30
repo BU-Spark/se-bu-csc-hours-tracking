@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import next from 'next';
 import session from 'express-session';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import { API_URL } from '@/constants';
+import { API_URL } from '../client/src/constants';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
