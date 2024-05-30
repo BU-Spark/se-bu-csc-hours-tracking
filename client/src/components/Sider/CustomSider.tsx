@@ -1,5 +1,5 @@
 import React from "react";
-import { PageProps } from "@/common/interfaces";
+import { PageProps } from "../../common/interfaces";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import "./CustomSider.css"; // Import the CSS file
 const { Sider } = Layout;
