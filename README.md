@@ -8,6 +8,7 @@ An application that connects BU students with nonprofit organizations looking fo
 `cd hour-tracker` <br/>
 `npm install` <br/>
 `docker compose up` (if this is your first time) <br/>
+`npx prisma migrate deploy` (run `npx prisma studio` if you want to see the contents)
 `npm run dev` <br>
 
 # Contributors
