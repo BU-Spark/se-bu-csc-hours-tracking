@@ -37,13 +37,10 @@ function Login() {
     <Container>
       <div>
         <Title>Boston University Community Service Time Log</Title>
-        <p>You are not signed in</p>
-        <SignInButton onClick={() => signIn()}>
-          Sign in
-        </SignInButton>
+        <SignInButton onClick={() => signIn()}>Sign in</SignInButton>
       </div>
     </Container>
-  )
+  );
 }
 
 export default Login;
