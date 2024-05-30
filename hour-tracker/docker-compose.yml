@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - 5433:5433  # enables connecting locally via psql
+    environment:
+      POSTGRES_DB: hour-tracker
+      POSTGRES_HOST_AUTH_METHOD: trust
