@@ -1,14 +1,19 @@
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import React from 'react'
 import { PageProps } from '../common/interfaces';
 
   const Dashboard: React.FC<PageProps> = ({ session }) => {
 
+    const { data: sesh, status } = useSession();
+
     let pfp = "https://static.vecteezy.com/system/resources/thumbnails/002/534/006/small/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg";
-    if(session?.user?.image){
-         pfp = session.user.image
-    }
     
+    if (status === "authenticated" && sesh?.user?.image) {
+        pfp = sesh.user.image;
+        console.log("Session object: ", sesh);
+    } else {
+        console.log("Session object is missing or does not have an image: ", sesh);
+    }
   return (
     <div><h1>Welcome to your dashboard</h1>
     <div>

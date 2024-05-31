@@ -2,16 +2,19 @@ import React from "react";
 import { PageProps } from "../../common/interfaces";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import "./CustomSider.css"; // Import the CSS file
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 const { Sider } = Layout;
 import Pfp from "../Pfp";
 
-const CustomSider: React.FC<PageProps> = ({ session }) => {
+const CustomSider: React.FC<PageProps> = ({session}) => {
+  const router = useRouter();
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] = [
     {
       key: "dashboard",
       label: "Dashboard",
+      onClick: () => router.push('/')
     },
     {
       key: "my_hours",
@@ -31,10 +34,12 @@ const CustomSider: React.FC<PageProps> = ({ session }) => {
     {
       key: "documents",
       label: "Documents",
+      onClick: () => router.push('/documents')
     },
     {
       key: "forms",
       label: "Forms",
+      onClick: () => router.push('/forms')
     },
     {
       key: "settings",
@@ -60,7 +65,7 @@ const CustomSider: React.FC<PageProps> = ({ session }) => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp session={session} dimension={"6em"} />
+          <Pfp dimension={"6em"} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
               {session?.user.name}
