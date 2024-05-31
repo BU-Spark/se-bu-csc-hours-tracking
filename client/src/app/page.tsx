@@ -45,9 +45,6 @@ export default function Home() {
     <Login />
   ) : (
     <>
-      <Layout>
-        <CustomHeader />
-      </Layout>
       <Layout hasSider>
         <CustomSider session={session} />
       </Layout>
