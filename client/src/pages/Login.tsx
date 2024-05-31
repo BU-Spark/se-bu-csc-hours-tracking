@@ -35,7 +35,7 @@ const SignInButton = styled.button`
 function Login() {
   return (
     <Container>
-      <div>
+      <div style={{marginLeft: "-15em"}}>
         <Title>Boston University Community Service Time Log</Title>
         <SignInButton onClick={() => signIn()}>Sign in</SignInButton>
       </div>

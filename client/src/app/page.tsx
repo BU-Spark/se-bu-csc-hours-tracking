@@ -45,10 +45,7 @@ export default function Home() {
     <Login />
   ) : (
     <>
-      
-      <Content style={{ marginLeft: "15rem" }}>
         <Dashboard/>
-      </Content>
     </>
   );
 }

@@ -2,10 +2,11 @@ import { ReactNode } from 'react';
 import { Providers } from './providers';
 import CustomHeader from '@/components/Header/CustomHeader';
 import CustomSider from '@/components/Sider/CustomSider';
-import { useSession } from 'next-auth/react';
+import { Content } from 'antd/es/layout/layout';
+import './page.css'
+import BodyHeader from '@/components/BodyHeader';
 
 const LayoutWithSider = ({ children }: { children: ReactNode }) => {
-
   return (
     <>
       <CustomSider/>
@@ -22,7 +23,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           
             <CustomHeader />
             <LayoutWithSider>
+              <Content style={{marginLeft: '15rem', marginTop: '2rem'}}>
+              <BodyHeader/>
               {children}
+              </Content>
             </LayoutWithSider>
           
         </Providers>

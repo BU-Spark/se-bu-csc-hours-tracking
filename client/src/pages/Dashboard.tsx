@@ -5,7 +5,7 @@ import React from 'react'
 
     
   return (
-    <div><h1>Welcome to your dashboard</h1>
+    <div>
     <button onClick={() => signOut()}>Sign out</button></div>
   )
 }

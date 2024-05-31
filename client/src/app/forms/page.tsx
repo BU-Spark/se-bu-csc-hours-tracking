@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Documents() {
+function Forms() {
   return (
     <div></div>
   )
 }
 
-export default Documents
+export default Forms
