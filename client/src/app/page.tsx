@@ -45,9 +45,7 @@ export default function Home() {
     <Login />
   ) : (
     <>
-      <Layout hasSider>
-        <CustomSider session={session} />
-      </Layout>
+      
       <Content style={{ marginLeft: "15rem" }}>
         <Dashboard session={session} />
       </Content>

@@ -1,13 +1,15 @@
+"use client";
 import React from "react";
-import { PageProps } from "../../common/interfaces";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import "./CustomSider.css"; // Import the CSS file
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 const { Sider } = Layout;
 import Pfp from "../Pfp";
+import { useSession } from "next-auth/react";
 
-const CustomSider: React.FC<PageProps> = ({session}) => {
+const CustomSider: React.FC = () => {
   const router = useRouter();
+  const {data: session, status} = useSession()
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] = [
@@ -49,7 +51,7 @@ const CustomSider: React.FC<PageProps> = ({session}) => {
   ];
 
   return (
-    //didn't use class because antd was getting buggy
+    session?.user?.image ? (
     <Sider
       style={{
         background: "white",
@@ -79,10 +81,10 @@ const CustomSider: React.FC<PageProps> = ({session}) => {
             defaultSelectedKeys={["dashboard"]}
             className="custom-menu"
             mode="inline"
-          ></Menu>
+          />
         </div>
       </div>
-    </Sider>
+    </Sider>) : <></>
   );
 };
 
