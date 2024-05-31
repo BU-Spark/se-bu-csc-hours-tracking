@@ -9,7 +9,7 @@ import Pfp from "../Pfp";
 
 const { Header } = Layout;
 
-const CustomHeader: React.FC<PageProps> = ({ session }) => {
+const CustomHeader: React.FC<PageProps> = () => {
   return (
     <Header
     className="fixedHeader"
@@ -26,7 +26,7 @@ const CustomHeader: React.FC<PageProps> = ({ session }) => {
     >
       <Image src={icon} alt="logo" className="header-logo" />
       <div className="header-right">
-        <Pfp session={session} height={"2.5rem"} />
+        <Pfp height={"2.5rem"} />
       </div>
     </Header>
   );
