@@ -47,7 +47,7 @@ export default function Home() {
     <>
       
       <Content style={{ marginLeft: "15rem" }}>
-        <Dashboard session={session} />
+        <Dashboard/>
       </Content>
     </>
   );
