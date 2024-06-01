@@ -58,7 +58,7 @@ model Event {
 model Organization {
   id           Int      @id @default(autoincrement())
   name         String
-  unit         String
+  unit         String?
   abbreviation String
   members      Person[]
   events       Event[]
