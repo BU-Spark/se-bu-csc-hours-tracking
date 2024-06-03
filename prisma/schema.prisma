@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,25 +13,21 @@ model Person {
   email               String           @unique
   phone_number        String           @unique
   role                Role             @default(USER)
-  affiliation         Organization     @relation(fields: [affiliation_id], references: [id])
-  affiliation_id      Int
   class               Int?
+  affiliation_id      Int
+  applications        Application[]
+  comments            Comment[]
   events              Event[]
   forms               Form[]
-  comments            Comment[]
-  applications        Application[]
+  deleted_submissions HourSubmission[] @relation("deleter")
+  updated_submissions HourSubmission[] @relation("updater")
   hour_submissions    HourSubmission[]
-  updated_submissions HourSubmission[] @relation(name: "updater")
-  deleted_submissions HourSubmission[] @relation(name: "deleter")
+  affiliation         Organization     @relation(fields: [affiliation_id], references: [id])
 }
 
 model Event {
   id                     Int              @id @default(autoincrement())
   title                  String
-  organization           Organization     @relation(fields: [organization_id], references: [id])
-  organization_id        Int
-  coordinator            Person           @relation(fields: [coordinator_id], references: [id])
-  coordinator_id         Int
   event_start            DateTime
   event_end              DateTime
   reg_start              DateTime
@@ -46,52 +36,56 @@ model Event {
   location               String
   transit                String
   description            String
-  form                   Form?            @relation(fields: [form_id], references: [id])
-  form_id                Int?
-  category               Category         @relation(fields: [category_id], references: [id])
   category_id            Int
-  comments               Comment[]
+  coordinator_id         Int
+  form_id                Int?
+  organization_id        Int
   applications           Application[]
+  comments               Comment[]
+  category               Category         @relation(fields: [category_id], references: [id])
+  coordinator            Person           @relation(fields: [coordinator_id], references: [id])
+  form                   Form?            @relation(fields: [form_id], references: [id])
+  organization           Organization     @relation(fields: [organization_id], references: [id])
   hour_submissions       HourSubmission[]
 }
 
 model Organization {
   id           Int      @id @default(autoincrement())
   name         String
-  unit         String?
   abbreviation String
-  members      Person[]
+  unit         String?
   events       Event[]
+  members      Person[]
 }
 
 model Form {
   id         Int     @id @default(autoincrement())
-  student    Person? @relation(fields: [student_id], references: [id])
-  student_id Int?
   type       String
   file       String
+  student_id Int?
   events     Event[]
+  student    Person? @relation(fields: [student_id], references: [id])
 }
 
 model Comment {
   id           Int      @id @default(autoincrement())
-  event        Event    @relation(fields: [event_id], references: [id])
-  event_id     Int
-  author       Person   @relation(fields: [author_id], references: [id])
-  author_id    Int
   feedback     String
   date_written DateTime @default(now())
+  author_id    Int
+  event_id     Int
+  author       Person   @relation(fields: [author_id], references: [id])
+  event        Event    @relation(fields: [event_id], references: [id])
 }
 
 model Application {
   id           Int      @id @default(autoincrement())
-  applicant    Person   @relation(fields: [applicant_id], references: [id])
-  applicant_id Int
-  event        Event    @relation(fields: [event_id], references: [id])
-  event_id     Int
   date_applied DateTime
   summary      String
   approved     Boolean
+  applicant_id Int
+  event_id     Int
+  applicant    Person   @relation(fields: [applicant_id], references: [id])
+  event        Event    @relation(fields: [event_id], references: [id])
 }
 
 model Category {
@@ -102,20 +96,20 @@ model Category {
 
 model HourSubmission {
   id              Int       @id @default(autoincrement())
-  volunteer       Person    @relation(fields: [volunteer_id], references: [id])
   volunteer_id    Int
-  event           Event     @relation(fields: [event_id], references: [id])
   event_id        Int
   hours           Float
   note            String
   date_submitted  DateTime  @default(now())
-  approval_status Int // translate with HourSubmissionCode
+  approval_status Int
   updated_at      DateTime?
-  updated_by      Person    @relation(name: "updater", fields: [updated_by_id], references: [id])
   updated_by_id   Int
   deleted_at      DateTime?
-  deleted_by      Person?   @relation(name: "deleter", fields: [deleted_by_id], references: [id])
   deleted_by_id   Int?
+  deleted_by      Person?   @relation("deleter", fields: [deleted_by_id], references: [id])
+  event           Event     @relation(fields: [event_id], references: [id])
+  updated_by      Person    @relation("updater", fields: [updated_by_id], references: [id])
+  volunteer       Person    @relation(fields: [volunteer_id], references: [id])
 }
 
 model HourSubmissionCode {

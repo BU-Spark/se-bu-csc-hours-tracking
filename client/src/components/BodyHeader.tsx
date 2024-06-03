@@ -1,26 +1,24 @@
 "use client"
 import { Typography } from "antd"
-import { usePathname } from "next/navigation"
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const BodyHeader: React.FC = () => {
-    const useFormatPath = () => {
-      const path = usePathname();
-      if (path != null || undefined) {
-        if (path?.length != null && path.length > 1) {
-          const formatted = path[1].toUpperCase() + path.substring(2);
-          return formatted;
-        } else {
-          return "Dashboard";
-        }
+  const { data: session, status } = useSession();
+  const useFormatPath = () => {
+    const path = usePathname();
+    if (path != null || undefined) {
+      if (path?.length != null && path.length > 1) {
+        const formatted = path[1].toUpperCase() + path.substring(2);
+        return formatted;
+      } else {
+        return "Dashboard";
       }
-    };
+    }
+  };
+  const path = useFormatPath();
 
-    return (
-      //known issue: the text is a huge h1 for some reason
-      <>
-        <h3>{useFormatPath()}</h3>
-      </>
-    );
-}
+  return <>{session?.user ? <h3>{path}</h3> : <></>}</>;
+};
 
 export default BodyHeader
