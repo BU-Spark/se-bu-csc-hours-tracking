@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.7",
     "@netlify/plugin-nextjs": "^5.3.0",
     "@prisma/client": "^5.14.0",
-    "antd": "^5.17.4",
+    "antd": "^5.18.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "http-proxy-middleware": "^2.0.1",
