@@ -16,7 +16,7 @@ const CustomSider: React.FC = () => {
     {
       key: "dashboard",
       label: "Dashboard",
-      onClick: () => router.push('/')
+      onClick: () => router.push("/"),
     },
     {
       key: "my_hours",
@@ -29,19 +29,9 @@ const CustomSider: React.FC = () => {
       disabled: true,
     },
     {
-      key: "service_history",
-      label: "Service History",
-      disabled: true,
-    },
-    {
-      key: "documents",
-      label: "Documents",
-      onClick: () => router.push('/documents')
-    },
-    {
       key: "forms",
       label: "Forms",
-      onClick: () => router.push('/forms')
+      onClick: () => router.push("/forms"),
     },
     {
       key: "settings",
@@ -50,8 +40,7 @@ const CustomSider: React.FC = () => {
     },
   ];
 
-  return (
-    session?.user?.image ? (
+  return session?.user?.image ? (
     <Sider
       style={{
         background: "white",
@@ -76,7 +65,11 @@ const CustomSider: React.FC = () => {
             <Typography.Text>{session?.user.email}</Typography.Text>
           </div>
           <Menu
-            style={{ marginTop: "3em", fontSize: "large" }}
+            style={{
+              marginTop: "3em",
+              fontSize: "large",
+              width: "100%",
+            }}
             items={items}
             defaultSelectedKeys={["dashboard"]}
             className="custom-menu"
@@ -84,7 +77,9 @@ const CustomSider: React.FC = () => {
           />
         </div>
       </div>
-    </Sider>) : <></>
+    </Sider>
+  ) : (
+    <></>
   );
 };
 
