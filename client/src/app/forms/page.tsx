@@ -9,6 +9,7 @@ function Forms() {
   interface FormRowParams {
     form: Form;
     codes: any;
+    isFirst: boolean;
   }
   interface Form {
     id: number;
@@ -18,7 +19,7 @@ function Forms() {
   }
 
   //returns a single form row
-  const FormRow = ({ form, codes }: FormRowParams) => {
+  const FormRow = ({ form, codes, isFirst }: FormRowParams) => {
     const getForm = () => {
       return codes.find((code: { id: any }) => code.id === form.type);
     };
@@ -31,7 +32,9 @@ function Forms() {
         style={{
           backgroundColor: "#EBEBEB",
           height: "5em",
-          margin: "2px 0em",
+          margin: "2px",
+          borderTopLeftRadius: isFirst ? "10px" : "0px",
+          borderTopRightRadius: isFirst ? "10px" : "0px",
         }}
       >
         <div
@@ -114,10 +117,15 @@ function Forms() {
   const codes = getAllCodes();
 
   return (
-    <Row>
+    <Row style={{ marginRight: "3em" }}>
       {" "}
       {forms.map((typeCode, index) => (
-        <FormRow key={index} form={typeCode} codes={codes} />
+        <FormRow
+          key={index}
+          form={typeCode}
+          codes={codes}
+          isFirst={index === 0}
+        />
       ))}
     </Row>
   );
