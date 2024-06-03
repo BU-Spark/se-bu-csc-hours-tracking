@@ -63,7 +63,7 @@ model Form {
   type       Int  @default(autoincrement())
   file       String
   student_id Int?
-  events     Event?
+  events     Event[]
   student    Person? @relation(fields: [student_id], references: [id])
 }
 
