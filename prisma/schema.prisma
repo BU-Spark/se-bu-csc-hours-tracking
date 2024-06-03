@@ -60,7 +60,7 @@ model Organization {
 
 model Form {
   id         Int     @id @default(autoincrement())
-  type       Int  @default(autoincrement())
+  type       Int     @default(autoincrement())
   file       String
   student_id Int?
   events     Event[]
