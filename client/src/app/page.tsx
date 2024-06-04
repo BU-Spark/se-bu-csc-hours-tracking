@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Dashboard from "../pages/Dashboard";
-import Login from "../pages/Login";
+import Dashboard from "./dashboard/page";
+import Login from "./login/page";
 import CustomHeader from "../components/Header/CustomHeader";
 import CustomSider from "../components/Sider/CustomSider";
 import { useSession } from "next-auth/react";
