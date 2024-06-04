@@ -3,12 +3,8 @@
 
 import Dashboard from "./dashboard/page";
 import Login from "./login/page";
-import CustomHeader from "../components/Header/CustomHeader";
-import CustomSider from "../components/Sider/CustomSider";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Layout } from "antd";
-import { Content } from "antd/es/layout/layout";
 import "./page.css";
 import icon from '../../../public/full_logo.png'
 import Image from 'next/image';
