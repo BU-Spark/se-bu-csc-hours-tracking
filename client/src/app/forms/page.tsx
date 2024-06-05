@@ -4,6 +4,7 @@ import { Button, Col, Row, Typography } from "antd";
 const { Title, Paragraph } = Typography;
 import { buRed } from "@/common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
+import { send } from "./action";
 
 function Forms() {
   interface FormRowParams {
@@ -117,17 +118,22 @@ function Forms() {
   const codes = getAllCodes();
 
   return (
-    <Row style={{ marginRight: "3em" }}>
-      {" "}
-      {forms.map((typeCode, index) => (
-        <FormRow
-          key={index}
-          form={typeCode}
-          codes={codes}
-          isFirst={index === 0}
-        />
-      ))}
-    </Row>
+    <>
+      <Row style={{ marginRight: "3em" }}>
+        {" "}
+        {forms.map((typeCode, index) => (
+          <FormRow
+            key={index}
+            form={typeCode}
+            codes={codes}
+            isFirst={index === 0}
+          />
+        ))}
+      </Row>
+      <form action={send}>
+        <button>Send It</button>
+      </form>
+    </>
   );
 }
 
