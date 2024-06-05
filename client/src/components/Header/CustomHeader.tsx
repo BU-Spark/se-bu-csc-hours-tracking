@@ -2,7 +2,7 @@
 import React from "react";
 import { Layout } from "antd";
 import Image from "next/image";
-import icon from '../../../../public/full_logo.png'
+import icon from "../../../public/photos/full_logo.png";
 import "./CustomHeader.css";
 import { accentBackground, buRed } from "../../common/styles";
 import Pfp from "../Pfp";

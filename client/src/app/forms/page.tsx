@@ -4,10 +4,14 @@ import { Button, Col, Row, Typography } from "antd";
 import { buRed } from "@/common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
 import { getCodes, getForms } from "./action";
+import { API_URL } from "@/constants";
+import useDownloader from "react-use-downloader";
 
 function Forms() {
   const [forms, setForms] = useState<Form[]>([]);
   const [codes, setCodes] = useState<Code[]>([]);
+  const { size, elapsed, percentage, download, cancel, error, isInProgress } =
+    useDownloader();
 
   interface FormRowParams {
     form: Form;
@@ -84,9 +88,12 @@ function Forms() {
               }
               onClick={() => {
                 console.log(`Downloading ${completeForm.title}`);
+                download(
+                  `/forms/${completeForm.file}`,
+                  completeForm.title.toString()
+                );
               }}
             ></Button>
-
             <button
               style={{
                 background: buRed,

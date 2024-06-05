@@ -6,7 +6,7 @@ import Login from "./login/page";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import "./page.css";
-import icon from '../../../public/full_logo.png'
+import icon from "../../public/photos/full_logo.png";
 import Image from 'next/image';
 
 
