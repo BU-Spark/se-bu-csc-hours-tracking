@@ -60,9 +60,9 @@ model Organization {
 
 model Form {
   id         Int     @id @default(autoincrement())
-  type       Int     @default(autoincrement())
   file       String
   student_id Int?
+  type       Int     @default(autoincrement())
   events     Event[]
   student    Person? @relation(fields: [student_id], references: [id])
 }
