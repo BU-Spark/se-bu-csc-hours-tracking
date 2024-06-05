@@ -1,12 +1,14 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Typography } from "antd";
-const { Title, Paragraph } = Typography;
 import { buRed } from "@/common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
-import { send } from "./action";
+import { getCodes, getForms } from "./action";
 
 function Forms() {
+  const [forms, setForms] = useState<Form[]>([]);
+  const [codes, setCodes] = useState<Code[]>([]);
+
   interface FormRowParams {
     form: Form;
     codes: any;
@@ -16,16 +18,29 @@ function Forms() {
     id: number;
     type: number;
     file: String;
-    student_id: number;
+    student_id: number | null;
+  }
+  interface Code {
+    id: number;
+    title: String;
+    description: String;
   }
 
   //returns a single form row
   const FormRow = ({ form, codes, isFirst }: FormRowParams) => {
-    const getForm = () => {
-      return codes.find((code: { id: any }) => code.id === form.type);
+    const getFormCode = (form: Form, codes: Code[]) => {
+      const code = codes.find((code: Code) => code.id === form.type);
+      return code ? [code.title, code.description] : "";
     };
 
-    const theForm = getForm();
+    const decodedForm = getFormCode(form, codes);
+    const completeForm = {
+      id: form.id,
+      title: decodedForm[0],
+      description: decodedForm[1],
+      file: form.file,
+      student_id: form.student_id,
+    };
 
     return (
       <Col
@@ -48,9 +63,9 @@ function Forms() {
         >
           <div className="form-name" style={{ display: "block" }}>
             <h3 style={{ marginBottom: "-5px", marginTop: "0.5em" }}>
-              {theForm.title}
+              {completeForm.title}
             </h3>
-            <p>{theForm.description}</p>
+            <p>{completeForm.description}</p>
           </div>
           <div
             className="buttons"
@@ -68,7 +83,7 @@ function Forms() {
                 />
               }
               onClick={() => {
-                console.log(`Downloading ${theForm.title}`);
+                console.log(`Downloading ${completeForm.title}`);
               }}
             ></Button>
 
@@ -90,51 +105,69 @@ function Forms() {
     );
   };
 
-  // Dummy data
-  const getAllForms = () => {
-    const forms = [
-      { id: 1, type: 1, file: "file1.pdf", student_id: 1 },
-      { id: 2, type: 2, file: "file2.pdf", student_id: 2 },
-    ];
-    return forms;
-  };
+  useEffect(() => {
+    const fetchForms = async () => {
+      const forms = await getForms();
+      setForms(forms);
+    };
+    fetchForms();
 
-  //dummy data
-  const getAllCodes = () => {
-    const codes = [
-      {
-        id: 1,
-        title: "Registration",
-        description: "Student registration form",
-      },
-      { id: 2, title: "Consent", description: "Parental consent form" },
-    ];
-
-    return codes;
-  };
-
-  // replace with DB calls
-  const forms = getAllForms();
-  const codes = getAllCodes();
+    const fetchCodes = async () => {
+      const codes = await getCodes();
+      setCodes(codes);
+    };
+    fetchCodes();
+  }, []);
 
   return (
     <>
       <Row style={{ marginRight: "3em" }}>
         {" "}
-        {forms.map((typeCode, index) => (
-          <FormRow
-            key={index}
-            form={typeCode}
-            codes={codes}
-            isFirst={index === 0}
-          />
-        ))}
+        {forms ? (
+          forms.map((typeCode, index) => (
+            <FormRow
+              key={index}
+              form={typeCode}
+              codes={codes}
+              isFirst={index === 0}
+            />
+          ))
+        ) : (
+          <div>
+            <p>Loading forms...</p>
+          </div>
+        )}
       </Row>
-      <form action={send}>
-        <button>Send It</button>
-      </form>
     </>
   );
 }
 
 export default Forms;
+
+
+// Dummy data
+// const getAllForms = () => {
+//   const forms = [
+//     { id: 1, type: 1, file: "file1.pdf", student_id: 1 },
+//     { id: 2, type: 2, file: "file2.pdf", student_id: 2 },
+//   ];
+//   return forms;
+// };
+
+//dummy data
+// const getAllCodes = () => {
+//   const codes = [
+//     {
+//       id: 1,
+//       title: "Registration",
+//       description: "Student registration form",
+//     },
+//     { id: 2, title: "Consent", description: "Parental consent form" },
+//   ];
+
+//   return codes;
+// };
+
+// replace with DB calls
+// const forms = getAllForms();
+// const codes = getAllCodes();
