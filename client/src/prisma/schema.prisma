@@ -122,6 +122,7 @@ model FormCode {
   title        String
   description  String
   downloadable Boolean @default(false)
+  upload_link  String?
 }
 
 enum Role {

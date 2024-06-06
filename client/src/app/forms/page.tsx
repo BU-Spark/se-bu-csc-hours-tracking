@@ -6,6 +6,13 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { getCodes, getForms } from "./action";
 import useDownloader from "react-use-downloader";
 import Link from "next/link";
+import {
+  Form,
+  Code,
+  FormRowParams,
+  CompleteForm,
+  CompleteFormParams,
+} from "@/interfaces/interfaces";
 
 function Forms() {
   const [forms, setForms] = useState<Form[]>([]);
@@ -13,50 +20,23 @@ function Forms() {
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
 
-  interface FormRowParams {
-    form: Form;
-    codes: any;
-    isFirst: boolean;
-  }
-  interface Form {
-    id: number;
-    type: number;
-    file: String;
-    student_id: number | null;
-  }
-  interface Code {
-    id: number;
-    title: String;
-    description: String;
-    downloadable: boolean;
-  }
-
-  interface CompleteFormParams {
-    title: String;
-    description: String;
-    downloadable: boolean;
-  }
-
-  interface CompleteForm {
-    id: number;
-    title: String;
-    description: String;
-    file: String;
-    student_id: number | null;
-    downloadable: boolean;
-  }
-
   //returns a single form row
   const FormRow = ({ form, codes, isFirst }: FormRowParams) => {
-    const getFormCode = (form: Form, codes: Code[]) => {
+    const getFormCode = (form: Form, codes: Code[]): CompleteFormParams => {
       const code = codes.find((code: Code) => code.id === form.type);
       if (!code) {
-        return { title: "", description: "", downloadable: false };
+        return {
+          title: "",
+          description: "",
+          downloadable: false,
+          upload_link: "",
+        };
       }
       const codeObject: CompleteFormParams = {
         title: code.title,
         description: code.description,
         downloadable: code.downloadable,
+        upload_link: code.upload_link,
       };
       return codeObject;
     };
@@ -69,6 +49,7 @@ function Forms() {
       file: form.file,
       student_id: form.student_id,
       downloadable: decodedForm.downloadable,
+      upload_link: decodedForm.upload_link?.toString() || null,
     };
     //if an html form render this button
     const SingleButton = () => {
@@ -138,7 +119,11 @@ function Forms() {
               border: "0px",
               cursor: "pointer",
             }}
-            onClick={() => alert("Uploading...")}
+            onClick={() =>
+              completeForm?.upload_link
+                ? window.open(completeForm.upload_link.toString(), "_blank")
+                : console.log(completeForm)
+            }
           >
             Upload
           </button>
@@ -198,7 +183,7 @@ function Forms() {
 
     const fetchCodes = async () => {
       const codes = await getCodes();
-      console.log(codes);
+      console.log("codes:", codes);
       setCodes(codes);
     };
     fetchCodes();

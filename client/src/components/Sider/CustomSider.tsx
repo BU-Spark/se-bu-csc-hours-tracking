@@ -26,7 +26,7 @@ const CustomSider: React.FC = () => {
     {
       key: "my_events",
       label: "My Events",
-      disabled: true,
+      onClick: () => router.push("/events"),
     },
     {
       key: "forms",
