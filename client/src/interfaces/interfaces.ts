@@ -33,3 +33,20 @@ export interface CompleteForm {
   downloadable: boolean;
   upload_link: String | null;
 }
+
+export interface Event {
+  id: number;
+  title: String;
+  event_start: Date;
+  event_end: Date;
+  reg_start: Date;
+  reg_end: Date;
+  estimated_participants: number;
+  location: String;
+  transit: String;
+  description: String;
+  category_id: number;
+  coordinator_id: number;
+  form_id: number | null;
+  organization_id: number;
+}

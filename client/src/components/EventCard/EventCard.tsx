@@ -1,15 +1,47 @@
 import React from 'react';
 import { Card } from 'antd';
-
-const { Meta } = Card;
+import { buRed } from "@/common/styles";
 
 const EventCard: React.FC = () => (
   <Card
+    style={{
+      backgroundImage: `url(/photos/full_logo.png)`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      height: "15rem",
+      width: "15rem",
+      position: "relative",
+      overflow: "hidden",
+    }}
     hoverable
-    style={{ width: 240 }}
-    cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
   >
-    <Meta title="Europe Street beat" description="www.instagram.com" />
+    <div
+      style={{
+        backgroundColor: buRed,
+        opacity: "60%",
+        height: "7.5em",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "absolute",
+        bottom: "0",
+        left: "0",
+        width: "15rem",
+        zIndex: 2,
+      }}
+    >
+      <div
+        className="card-text"
+        style={{
+          position: "relative",
+          top: "0",
+        }}
+      >
+        <h3 style={{ color: "white", zIndex: 3, marginTop: "0" }}>
+          title here
+        </h3>{" "}
+      </div>
+    </div>
   </Card>
 );
 
