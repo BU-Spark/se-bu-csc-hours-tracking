@@ -50,3 +50,10 @@ export interface Event {
   form_id: number | null;
   organization_id: number;
 }
+
+export interface EventCardProps {
+  id: number;
+  title: String;
+  coordinator_id: number;
+  location: String;
+}

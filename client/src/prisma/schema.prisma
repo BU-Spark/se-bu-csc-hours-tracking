@@ -40,6 +40,7 @@ model Event {
   coordinator_id         Int
   form_id                Int?
   organization_id        Int
+  image                  String
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])

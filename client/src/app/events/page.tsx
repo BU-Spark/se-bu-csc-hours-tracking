@@ -16,7 +16,21 @@ function Events() {
     console.log(events);
   }, []);
 
-  return <div>{events ? <EventCard /> : <p>loading...</p>}</div>;
+  return (
+    <div>
+      {events ? (
+        <button
+          onClick={() => {
+            console.log(events);
+          }}
+        >
+          click
+        </button>
+      ) : (
+        <p>loading...</p>
+      )}
+    </div>
+  );
 }
 
 export default Events;
