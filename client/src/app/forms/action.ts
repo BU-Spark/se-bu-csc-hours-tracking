@@ -12,6 +12,7 @@ interface Code {
   id: number;
   title: String;
   description: String;
+  downloadable: boolean;
 }
 
 export async function getForms(): Promise<Form[]> {
