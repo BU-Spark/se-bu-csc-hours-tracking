@@ -7,7 +7,8 @@ const BodyHeader: React.FC = () => {
   const { data: session, status } = useSession();
   const useFormatPath = () => {
     const path = usePathname();
-    if (path != null || undefined) {
+    console.log(path)
+    if (path != null && !undefined && !path.substring(1).includes('/')) {
       if (path?.length != null && path.length > 1) {
         const formatted = path[1].toUpperCase() + path.substring(2);
         return formatted;
