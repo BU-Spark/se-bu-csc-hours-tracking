@@ -49,11 +49,31 @@ export interface Event {
   coordinator_id: number;
   form_id: number | null;
   organization_id: number;
+  image: String;
 }
 
 export interface EventCardProps {
-  id: number;
+  event_id: number;
   title: String;
   coordinator_id: number;
   location: String;
+  image: String;
+  event_start: Date;
+}
+
+export interface EventInput {
+  title: string;
+  event_start: Date;
+  event_end: Date;
+  reg_start: Date;
+  reg_end: Date;
+  estimated_participants: number;
+  location: string;
+  transit: string;
+  description: string;
+  category_id: number;
+  coordinator_id: number;
+  form_id: number | null;
+  organization_id: number;
+  image: string;
 }
