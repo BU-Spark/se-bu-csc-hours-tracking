@@ -1,19 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-
-interface User {
-  id: string;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
-}
-
-interface SessionUser {
-  id: string;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
-}
+import { CustomPrismaAdapter } from '../../../../lib/CustomPrismaAdapter';
 
 const options: NextAuthOptions = {
   providers: [
@@ -22,22 +9,31 @@ const options: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  adapter: CustomPrismaAdapter,
   session: {
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }: { token: any; user: User }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }) {
       if (token && session.user) {
-        (session.user as SessionUser).id = token.id as string;
+        session.user.id = token.id as string;
       }
       return session;
+    },
+    async signIn({ user, account, profile }) {
+      const isAllowedToSignIn = true;
+      if (isAllowedToSignIn) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

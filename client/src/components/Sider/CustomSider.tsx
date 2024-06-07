@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import "./CustomSider.css"; // Import the CSS file
+import "./CustomSider.css"; 
 import { useRouter } from 'next/navigation';
 const { Sider } = Layout;
 import Pfp from "../Pfp";
@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 
 const CustomSider: React.FC = () => {
   const router = useRouter();
-  const {data: session, status} = useSession()
+  const {data: session, status} = useSession();
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] = [
@@ -21,7 +21,7 @@ const CustomSider: React.FC = () => {
     {
       key: "my_hours",
       label: "My Hours",
-      disabled: true,
+      onClick: () => router.push("/hours"), 
     },
     {
       key: "my_events",
