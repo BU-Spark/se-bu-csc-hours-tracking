@@ -1,18 +1,6 @@
 "use server";
 import prisma from "../utils/prisma";
-
-
-interface Form {
-  id: number;
-  type: number;
-  file: String;
-  student_id: number | null;
-}
-interface Code {
-  id: number;
-  title: String;
-  description: String;
-}
+import { Form, Code } from "@/interfaces/interfaces";
 
 export async function getForms(): Promise<Form[]> {
   try {

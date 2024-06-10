@@ -1,6 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { CustomPrismaAdapter } from '../../../../lib/CustomPrismaAdapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import prisma from '../../../../lib/prisma';
 
 const options: NextAuthOptions = {
   providers: [
@@ -9,7 +11,7 @@ const options: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
-  adapter: CustomPrismaAdapter,
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: 'jwt',
   },
@@ -27,16 +29,10 @@ const options: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ user, account, profile }) {
-      const isAllowedToSignIn = true;
-      if (isAllowedToSignIn) {
-        return true;
-      } else {
-        return false;
-      }
-    },
   },
 };
 
-const handler = NextAuth(options);
-export { handler as GET, handler as POST };
+export const GET = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
+export const POST = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
+
+export { options as authOptions };
