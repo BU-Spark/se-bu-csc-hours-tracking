@@ -7,21 +7,21 @@ export interface Form {
   id: number;
   type: number;
   file: String;
-  student_id: number | null;
+  student_id?: number | null;
 }
 export interface Code {
   id: number;
   title: String;
   description: String;
   downloadable: boolean;
-  upload_link: String | null;
+  upload_link?: String | null;
 }
 
 export interface CompleteFormParams {
   title: String;
   description: String;
   downloadable: boolean;
-  upload_link: String | null;
+  upload_link?: String | null;
 }
 
 export interface CompleteForm {
@@ -29,7 +29,7 @@ export interface CompleteForm {
   title: String;
   description: String;
   file: String;
-  student_id: number | null;
+  student_id?: number | null;
   downloadable: boolean;
-  upload_link: String | null;
+  upload_link?: String | null;
 }
