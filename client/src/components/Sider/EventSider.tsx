@@ -2,6 +2,7 @@
 import React from "react";
 import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
+import "./CustomSider.css";
 
 function EventSider() {
   const path = usePathname();
@@ -9,7 +10,7 @@ function EventSider() {
   console.log(path, isDisplayed);
   return isDisplayed ? (
     <Sider
-      width={200}
+      width="18%"
       style={{
         background: "white",
         marginTop: "0em",
@@ -22,7 +23,12 @@ function EventSider() {
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
       }}
     >
-      <div style={{ marginTop: "3rem" }}>Sider</div>
+      <div
+        className="sider-content"
+        style={{ marginTop: "6rem", fontWeight: "900" }}
+      >
+        Upcoming Events
+      </div>
     </Sider>
   ) : (
     ""

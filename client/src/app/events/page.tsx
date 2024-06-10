@@ -42,15 +42,16 @@ function Events() {
   };
 
   return (
-    <Layout>
-      <Content
-        style={{
-          backgroundColor: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+    <Layout
+      style={{
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "60vw",
+      }}
+    >
+      <Content>
         {events ? <CardGrid events={events} /> : <p>loading</p>}
         <button
           onClick={() => {
