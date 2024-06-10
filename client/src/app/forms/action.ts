@@ -16,7 +16,7 @@ export async function getForms(): Promise<Form[]> {
 
 export async function getCodes(): Promise<Code[]> {
   try {
-    const codes = await prisma.formCode.findMany();
+    const codes: Code[] = await prisma.formCode.findMany();
     return codes;
   } catch (error) {
     console.error("Error fetching forms:", error);
