@@ -1,17 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getEvent } from "./action";
+import { Event } from "@/interfaces/interfaces";
 
 export default function Page() {
-  //get path and format into title
-  const pathParameter: string = useParams().title.toString();
-  const title = pathParameter
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  const [event, setEvent] = useState<Event>();
+  const event_id: string = useParams().event_id.toString();
 
-  return (
-    <div>
-      <h3>{title}</h3>
-    </div>
-  );
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const response = await getEvent(Number(event_id));
+      if (response) {
+        setEvent(response);
+      }
+    };
+    fetchEvent();
+  }, [event_id]);
+  return event ? <>{event.description}</> : <p>Loading...</p>;
 }

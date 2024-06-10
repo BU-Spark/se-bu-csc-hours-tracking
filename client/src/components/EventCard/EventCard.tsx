@@ -12,11 +12,9 @@ const EventCard: React.FC<EventCardProps> = ({
   image,
   event_start,
 }) => {
-  const eventPath = decodeURIComponent(title.toString())
-    .toLowerCase()
-    .replace(/\s+/g, "-");
+  const eventPath = decodeURIComponent(event_id.toString());
   return (
-    <Link href={`forms/${eventPath}`}>
+    <Link href={`events/${eventPath}`}>
       <Card
         style={{
           backgroundImage: `url(${image})`,
