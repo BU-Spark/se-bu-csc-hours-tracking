@@ -19,7 +19,6 @@ export async function createEvent(eventData: EventInput): Promise<Event> {
     const createdEvent = await prisma.event.create({
       data: eventData,
     });
-    console.log(createEvent);
     return createdEvent;
   } catch (error) {
     throw new Error(`Failed to create event: ${error}`);

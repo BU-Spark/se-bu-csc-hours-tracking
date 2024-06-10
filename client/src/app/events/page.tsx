@@ -22,7 +22,6 @@ function Events() {
       setEvents(eventResult);
     };
     fetchEvents();
-    console.log(events);
   }, []);
 
   const dummyEvent: EventInput = {
