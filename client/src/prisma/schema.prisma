@@ -15,6 +15,7 @@ model Person {
   class               Int?
   affiliation_id      Int?
   image               String?
+  Account             Account[]
   applications        Application[]
   comments            Comment[]
   events              Event[]
@@ -42,6 +43,7 @@ model Event {
   coordinator_id         Int
   form_id                Int?
   organization_id        Int
+  image                  Bytes            @db.ByteA
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])
