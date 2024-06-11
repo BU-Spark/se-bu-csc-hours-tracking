@@ -6,11 +6,12 @@ import { getEvent } from "./action";
 import { Event } from "@/interfaces/interfaces";
 import { Typography } from "antd";
 import e from "express";
+import { CalendarOutlined } from "@ant-design/icons";
+import { buRed } from "@/common/styles";
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
   const event_id: string = useParams().event_id.toString();
-  let regEnd;
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -22,8 +23,8 @@ export default function Page() {
     fetchEvent();
   }, [event_id]);
 
-  if (event) {
-    const options: Intl.DateTimeFormatOptions = {
+  const formatDate = (date: Date, hasTime: boolean) => {
+    const timeOptions: Intl.DateTimeFormatOptions = {
       month: "long",
       day: "numeric",
       year: "numeric",
@@ -31,10 +32,14 @@ export default function Page() {
       minute: "2-digit",
     };
 
-    const formattedDate = event.reg_end.toLocaleDateString("en-US", options);
-    console.log(formattedDate);
-    regEnd = formattedDate;
-  }
+    const nonTimeOptions: Intl.DateTimeFormatOptions = {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    };
+    const option = hasTime ? timeOptions : nonTimeOptions;
+    return date.toLocaleDateString("en-US", option);
+  };
 
   return event ? (
     <div
@@ -44,6 +49,8 @@ export default function Page() {
         position: "relative",
         border: "1px black solid",
         marginRight: "4rem",
+        borderTopRightRadius: "1rem",
+        borderTopLeftRadius: "1rem",
       }}
     >
       <div
@@ -83,14 +90,47 @@ export default function Page() {
       </div>
       <div style={{ padding: "2rem 4rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography.Title style={{ fontSize: "1.5rem" }}>
+          <Typography.Title style={{ fontSize: "1.5rem", marginLeft: "1rem" }}>
             At a Glance
           </Typography.Title>
           <Typography.Text style={{ fontSize: "1.2rem" }}>
-            Apply by {regEnd}{" "}
+            Apply by {formatDate(event.reg_end, true)}{" "}
           </Typography.Text>
         </div>
-        <div style={{ display: "flex", alignContent: "space-between" }}></div>
+        <div
+          style={{
+            display: "flex",
+            alignContent: "space-between",
+            padding: "2rem 0rem",
+          }}
+        >
+          <div
+            className="start-time"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CalendarOutlined
+              style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
+            />{" "}
+            {formatDate(event.event_start, false)}
+          </div>
+          <div
+            className="time-window"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CalendarOutlined
+              style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
+            />{" "}
+            {formatDate(event.event_start, false)}
+          </div>
+        </div>
       </div>
     </div>
   ) : (
