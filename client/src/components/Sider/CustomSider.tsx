@@ -21,7 +21,7 @@ const CustomSider: React.FC = () => {
     {
       key: "my_hours",
       label: "My Hours",
-      onClick: () => router.push("/hours"), 
+      onClick: () => router.push("/my-hours"),
     },
     {
       key: "my_events",
