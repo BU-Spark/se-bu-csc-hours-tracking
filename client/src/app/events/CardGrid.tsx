@@ -5,10 +5,10 @@ import { Event } from "@/interfaces/interfaces";
 
 function CardGrid({ events }: Event[]) {
   return (
-    <Row justify="start" style={{ marginRight: "3rem" }}>
+    <Row justify="space-between" style={{ marginRight: "3rem" }}>
       {events ? (
         events.map((e, index) => (
-          <Col span={4} key={index} style={{ margin: "1rem 3.5rem" }}>
+          <Col span={5} key={index} style={{ margin: "1rem 2.5rem" }}>
             <EventCard
               key={index}
               event_id={e.id}

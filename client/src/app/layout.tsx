@@ -23,7 +23,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <CustomHeader />
           <LayoutWithSider>
-            <Content style={{ marginLeft: "15rem", marginTop: "2rem" }}>
+            <Content
+              style={{
+                marginLeft: "15rem",
+                marginTop: "2rem",
+                marginRight: "0.5rem",
+              }}
+            >
               <BodyHeader />
               {children}
               <EventSider />
