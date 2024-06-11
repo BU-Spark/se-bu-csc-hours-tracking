@@ -11,7 +11,7 @@ model Person {
   id                  Int              @id @default(autoincrement())
   name                String
   email               String           @unique
-  phone_number        String           @unique
+  phone_number        String?           @unique
   role                Role             @default(USER)
   class               Int?
   affiliation_id      Int?
