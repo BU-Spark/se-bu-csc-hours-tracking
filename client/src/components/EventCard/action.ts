@@ -15,3 +15,19 @@ export const getCoordinatorById = async (coordinatorId: number) => {
     console.error(error);
   }
 };
+
+
+export const getCategoryById = async (categoryId: number) => {
+  try {
+    const result = await prisma?.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (result) {
+      return result;
+    }
+    console.error("no category found");
+  } catch (error) {
+    console.error(error);
+  }
+};

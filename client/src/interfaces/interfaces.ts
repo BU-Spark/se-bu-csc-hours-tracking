@@ -56,6 +56,7 @@ export interface EventCardProps {
   event_id: number;
   title: String;
   coordinator_id: number;
+  category_id: number;
   location: String;
   image: string;
   event_start: Date;

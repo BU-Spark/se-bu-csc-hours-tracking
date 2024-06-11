@@ -3,11 +3,16 @@ import React from "react";
 import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
+import { formatDate } from "@/app/events/[event_id]/page";
 
 function EventSider() {
   const path = usePathname();
   const isDisplayed = path === "/events";
-  console.log(path, isDisplayed);
+
+  const DateGroup = () => {
+    const dummyDate = new Date(); //replace with db call to get all dates of events a user is attending
+    const formattedDate = formatDate(dummyDate, false);
+  };
   return isDisplayed ? (
     <Sider
       width="18%"

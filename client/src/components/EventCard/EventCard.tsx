@@ -3,18 +3,21 @@ import { Card } from "antd";
 import { buRed } from "@/common/styles";
 import { EventCardProps, Person } from "@/interfaces/interfaces";
 import Link from "next/link";
-import { getCoordinatorById } from "./action";
+import { getCategoryById, getCoordinatorById } from "./action";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
+import { Category } from "@prisma/client";
 
 const EventCard: React.FC<EventCardProps> = ({
   event_id,
   title,
+  category_id,
   coordinator_id,
   location,
   image,
   event_start,
 }) => {
   const [coordinator, setCoordinator] = useState<Person>();
+  const [category, setCategory] = useState<Category>();
   const eventPath = decodeURIComponent(event_id.toString());
 
   useEffect(() => {
@@ -26,8 +29,17 @@ const EventCard: React.FC<EventCardProps> = ({
       }
     };
     fetchCoordinator();
+
+    const fetchCategory = async () => {
+      const result = await getCategoryById(coordinator_id);
+      if (result) {
+        setCategory(result);
+        console.log(result);
+      }
+    };
+    fetchCategory();
   }, []);
-  return (
+  return category ? (
     <Link href={`events/${eventPath}`}>
       <Card
         style={{
@@ -76,7 +88,8 @@ const EventCard: React.FC<EventCardProps> = ({
                 // marginLeft: "0.1rem",
               }}
             >
-              {title}
+              {/* this is not title for some reason */}
+              {category.name}
             </h3>
             <p
               style={{
@@ -103,6 +116,8 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
       </Card>
     </Link>
+  ) : (
+    <p>...</p>
   );
 };
 
