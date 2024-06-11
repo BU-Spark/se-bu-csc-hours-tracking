@@ -47,7 +47,7 @@ const CustomSider: React.FC = () => {
         marginTop: "0em",
         overflow: "auto",
         height: "100vh",
-        position: "absolute",
+        position: "fixed",
         zIndex: 2,
         left: 0,
         top: 0,
