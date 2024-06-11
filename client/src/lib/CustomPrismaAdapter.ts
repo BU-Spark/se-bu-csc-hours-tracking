@@ -1,17 +1,23 @@
-import { PrismaClient } from "@prisma/client";
-import { Adapter } from "next-auth/adapters";
-import prisma from "./prisma";
+import prisma from './prisma';
+import { Adapter } from 'next-auth/adapters';
 
 export const CustomPrismaAdapter: Adapter = {
   async createUser(profile) {
-    const user = await prisma.person.create({
-      data: {
-        email: profile.email,
-        name: profile.name,
-        image: profile.image,
-      },
-    });
-    return { ...user, id: user.id.toString() };
+    try {
+      console.log('Creating user with profile:', profile);
+      const user = await prisma.person.create({
+        data: {
+          email: profile.email,
+          name: profile.name,
+          image: profile.image,
+        },
+      });
+      console.log('User created:', user);
+      return { ...user, id: user.id.toString() };
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   },
   async getUser(id) {
     const user = await prisma.person.findUnique({
@@ -43,21 +49,29 @@ export const CustomPrismaAdapter: Adapter = {
     return { ...deletedUser, id: deletedUser.id.toString() };
   },
   async linkAccount(account) {
-    const linkedAccount = await prisma.account.create({
-      data: {
-        provider: account.provider,
-        providerAccountId: account.providerAccountId,
-        refresh_token: account.refresh_token,
-        access_token: account.access_token,
-        expires_at: account.expires_at,
-        token_type: account.token_type,
-        scope: account.scope,
-        id_token: account.id_token,
-        session_state: account.session_state,
-        userId: parseInt(account.userId),
-      },
-    });
-    return linkedAccount;
+    try {
+      console.log('Linking account:', account);
+      const linkedAccount = await prisma.account.create({
+        data: {
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+          refresh_token: account.refresh_token,
+          access_token: account.access_token,
+          expires_at: account.expires_at,
+          token_type: account.token_type,
+          scope: account.scope,
+          id_token: account.id_token,
+          session_state: account.session_state,
+          userId: parseInt(account.userId),
+          type: account.type,
+        },
+      });
+      console.log('Account linked:', linkedAccount);
+      return linkedAccount;
+    } catch (error) {
+      console.error('Error linking account:', error);
+      throw error;
+    }
   },
   async unlinkAccount(accountId) {
     const unlinkedAccount = await prisma.account.delete({

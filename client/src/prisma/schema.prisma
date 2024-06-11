@@ -11,10 +11,10 @@ model Person {
   id                  Int              @id @default(autoincrement())
   name                String
   email               String           @unique
-  phone_number        String           @unique
   role                Role             @default(USER)
   class               Int?
-  affiliation_id      Int
+  affiliation_id      Int?
+  image               String?
   applications        Application[]
   comments            Comment[]
   events              Event[]
@@ -22,7 +22,7 @@ model Person {
   deleted_submissions HourSubmission[] @relation("deleter")
   updated_submissions HourSubmission[] @relation("updater")
   hour_submissions    HourSubmission[]
-  affiliation         Organization     @relation(fields: [affiliation_id], references: [id])
+  affiliation         Organization?    @relation(fields: [affiliation_id], references: [id])
   accounts            Account[]
   sessions            Session[]
 }

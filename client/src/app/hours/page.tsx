@@ -3,20 +3,24 @@
 import React from 'react';
 import styled from 'styled-components';
 import CustomSider from '../../components/Sider/CustomSider';
-import CustomHeader from '../../components/Header/CustomHeader';
 
 const Container = styled.div`
   display: flex;
+  height: 100vh;
+  flex-direction: column;
+`;
+
+const ContentArea = styled.div`
+  display: flex;
+  flex: 1;
+  margin-top: 4em;  /* Adjust this value to match the height of your header */
 `;
 
 const MainContent = styled.div`
-  margin-left: 250px; 
+  margin-left: 250px;  /* Ensure this matches the width of your CustomSider */
   padding: 20px;
-  width: 100%;
-`;
-
-const HeaderOffset = styled.div`
-  margin-top: 70px; 
+  width: calc(100% - 250px);  /* Subtract the width of CustomSider */
+  overflow-y: auto;
 `;
 
 const HoursSummary = styled.div`
@@ -73,71 +77,69 @@ const MyHours: React.FC = () => {
   return (
     <Container>
       <CustomSider />
-      <MainContent>
-        <CustomHeader />
-        <HeaderOffset>
-          <h1>My Hours</h1>
-          <HoursSummary>
-            <HoursBox>
-              <h2>4</h2>
-              <p>Approved</p>
-              <button>View more</button>
-            </HoursBox>
-            <HoursBox>
-              <h2>2</h2>
-              <p>Pending</p>
-              <button>View more</button>
-            </HoursBox>
-            <HoursBox>
-              <h2>6</h2>
-              <p>Submitted</p>
-              <button>View more</button>
-            </HoursBox>
-          </HoursSummary>
-          <FilterButtons>
-            <button>This Month</button>
-            <button>This Year</button>
-            <button>Cumulative</button>
-          </FilterButtons>
-          <HoursList>
-            <HoursItem>
-              <img src="/farm_table.png" alt="Farm to Table" />
-              <div>
-                <p>Farm to Table</p>
-                <p>5 Hours - Rocky Hill Farm - Approved - 12/13/2023 - Reviewed by: Alex</p>
-              </div>
-            </HoursItem>
-            <HoursItem>
-              <img src="/beach-cleanup.png" alt="Beach Cleanup" />
-              <div>
-                <p>Beach Cleanup</p>
-                <p>4 Hours - Revere Beach - Approved - 12/17/2023 - Reviewed by: Alex</p>
-              </div>
-            </HoursItem>
-            <HoursItem>
-              <img src="/clothing.png" alt="Clothing Drive" />
-              <div>
-                <p>Clothing Drive</p>
-                <p>1 Hour - George Sherman Union - Approved - 02/05/2024 - Reviewed by: Alex</p>
-              </div>
-            </HoursItem>
-            <HoursItem>
-              <img src="/boy-girl.png" alt="Boys & Girls Club" />
-              <div>
-                <p>Boys & Girls Club</p>
-                <p>2 Hours - Harvard Yard - Pending - 03/10/2024 - Reviewed by: Stella</p>
-              </div>
-            </HoursItem>
-            <HoursItem>
-              <img src="/market.png" alt="Mobile Market" />
-              <div>
-                <p>Mobile Market</p>
-                <p>5 Hours - Newbury St - Approved - 03/15/2024 - Reviewed by: Admin</p>
-              </div>
-            </HoursItem>
-          </HoursList>
-        </HeaderOffset>
-      </MainContent>
+      <div style={{ width: '100%' }}>
+        <MainContent>
+            <HoursSummary>
+              <HoursBox>
+                <h2>4</h2>
+                <p>Approved</p>
+                <button>View more</button>
+              </HoursBox>
+              <HoursBox>
+                <h2>2</h2>
+                <p>Pending</p>
+                <button>View more</button>
+              </HoursBox>
+              <HoursBox>
+                <h2>6</h2>
+                <p>Submitted</p>
+                <button>View more</button>
+              </HoursBox>
+            </HoursSummary>
+            <FilterButtons>
+              <button>This Month</button>
+              <button>This Year</button>
+              <button>Cumulative</button>
+            </FilterButtons>
+            <HoursList>
+              <HoursItem>
+                <img src="/farm_table.png" alt="Farm to Table" />
+                <div>
+                  <p>Farm to Table</p>
+                  <p>5 Hours - Rocky Hill Farm - Approved - 12/13/2023 - Reviewed by: Alex</p>
+                </div>
+              </HoursItem>
+              <HoursItem>
+                <img src="/beach-cleanup.png" alt="Beach Cleanup" />
+                <div>
+                  <p>Beach Cleanup</p>
+                  <p>4 Hours - Revere Beach - Approved - 12/17/2023 - Reviewed by: Alex</p>
+                </div>
+              </HoursItem>
+              <HoursItem>
+                <img src="/clothing.png" alt="Clothing Drive" />
+                <div>
+                  <p>Clothing Drive</p>
+                  <p>1 Hour - George Sherman Union - Approved - 02/05/2024 - Reviewed by: Alex</p>
+                </div>
+              </HoursItem>
+              <HoursItem>
+                <img src="/boy-girl.png" alt="Boys & Girls Club" />
+                <div>
+                  <p>Boys & Girls Club</p>
+                  <p>2 Hours - Harvard Yard - Pending - 03/10/2024 - Reviewed by: Stella</p>
+                </div>
+              </HoursItem>
+              <HoursItem>
+                <img src="/market.png" alt="Mobile Market" />
+                <div>
+                  <p>Mobile Market</p>
+                  <p>5 Hours - Newbury St - Approved - 03/15/2024 - Reviewed by: Admin</p>
+                </div>
+              </HoursItem>
+            </HoursList>
+        </MainContent>
+      </div>
     </Container>
   );
 };
