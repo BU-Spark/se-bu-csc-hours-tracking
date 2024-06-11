@@ -1,7 +1,20 @@
 "use client";
 
-import React from 'react';
-import styled from "styled-components";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { getSession } from 'next-auth/react';
+import { getHoursByUserEmail } from './action';
+
+interface Hour {
+  id: number;
+  image: string;
+  eventName: string;
+  location: string;
+  status: string;
+  date: string;
+  reviewer: string;
+  hours: number;
+}
 
 const HeaderOffset = styled.div`
   margin-top: 70px;
@@ -58,21 +71,45 @@ const HoursItem = styled.div`
 `;
 
 const MyHours: React.FC = () => {
+  const [hours, setHours] = useState<Hour[]>([]);
+  const [approvedHours, setApprovedHours] = useState(0);
+  const [pendingHours, setPendingHours] = useState(0);
+  const [submittedHours, setSubmittedHours] = useState(0);
+
+  useEffect(() => {
+    const fetchHours = async () => {
+      const session = await getSession();
+      if (session?.user?.email) {
+        try {
+          const data = await getHoursByUserEmail(session.user.email);
+          setHours(data);
+          setApprovedHours(data.filter((hour: Hour) => hour.status === 'approved').length);
+          setPendingHours(data.filter((hour: Hour) => hour.status === 'pending').length);
+          setSubmittedHours(data.length);
+        } catch (error) {
+          console.error('Error fetching hours:', error);
+        }
+      }
+    };
+
+    fetchHours();
+  }, []);
+
   return (
     <HeaderOffset>
       <HoursSummary>
         <HoursBox>
-          <h2>4</h2>
+          <h2>{approvedHours}</h2>
           <p>Approved</p>
           <button>View more</button>
         </HoursBox>
         <HoursBox>
-          <h2>2</h2>
+          <h2>{pendingHours}</h2>
           <p>Pending</p>
           <button>View more</button>
         </HoursBox>
         <HoursBox>
-          <h2>6</h2>
+          <h2>{submittedHours}</h2>
           <p>Submitted</p>
           <button>View more</button>
         </HoursBox>
@@ -83,54 +120,17 @@ const MyHours: React.FC = () => {
         <button>Cumulative</button>
       </FilterButtons>
       <HoursList>
-        <HoursItem>
-          <img src="/farm_table.png" alt="Farm to Table" />
-          <div>
-            <p>Farm to Table</p>
-            <p>
-              5 Hours - Rocky Hill Farm - Approved - 12/13/2023 - Reviewed by:
-              Alex
-            </p>
-          </div>
-        </HoursItem>
-        <HoursItem>
-          <img src="/beach-cleanup.png" alt="Beach Cleanup" />
-          <div>
-            <p>Beach Cleanup</p>
-            <p>
-              4 Hours - Revere Beach - Approved - 12/17/2023 - Reviewed by: Alex
-            </p>
-          </div>
-        </HoursItem>
-        <HoursItem>
-          <img src="/clothing.png" alt="Clothing Drive" />
-          <div>
-            <p>Clothing Drive</p>
-            <p>
-              1 Hour - George Sherman Union - Approved - 02/05/2024 - Reviewed
-              by: Alex
-            </p>
-          </div>
-        </HoursItem>
-        <HoursItem>
-          <img src="/boy-girl.png" alt="Boys & Girls Club" />
-          <div>
-            <p>Boys & Girls Club</p>
-            <p>
-              2 Hours - Harvard Yard - Pending - 03/10/2024 - Reviewed by:
-              Stella
-            </p>
-          </div>
-        </HoursItem>
-        <HoursItem>
-          <img src="/market.png" alt="Mobile Market" />
-          <div>
-            <p>Mobile Market</p>
-            <p>
-              5 Hours - Newbury St - Approved - 03/15/2024 - Reviewed by: Admin
-            </p>
-          </div>
-        </HoursItem>
+        {hours.map((hour: Hour) => (
+          <HoursItem key={hour.id}>
+            <img src={hour.image} alt={hour.eventName} />
+            <div>
+              <p>{hour.eventName}</p>
+              <p>
+                {hour.hours} Hours - {hour.location} - {hour.status.charAt(0).toUpperCase() + hour.status.slice(1)} - {new Date(hour.date).toLocaleDateString()} - Reviewed by: {hour.reviewer}
+              </p>
+            </div>
+          </HoursItem>
+        ))}
       </HoursList>
     </HeaderOffset>
   );
