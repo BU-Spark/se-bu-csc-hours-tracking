@@ -3,6 +3,8 @@ import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, Event } from "@/interfaces/interfaces";
 
+
+
 function CardGrid(props: CardGridProps) {
   const { events } = props;
 

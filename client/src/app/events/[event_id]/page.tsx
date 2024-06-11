@@ -13,6 +13,10 @@ export default function Page() {
   const [event, setEvent] = useState<Event>();
   const event_id: string = useParams().event_id.toString();
 
+  const convertToBase64 = (arrayBuffer: ArrayBuffer) => {
+    return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  };
+
   useEffect(() => {
     const fetchEvent = async () => {
       const response = await getEvent(Number(event_id));
@@ -63,7 +67,7 @@ export default function Page() {
         }}
       >
         <img
-          src={event.image.toString()}
+          src={`data:image/jpeg;base64,${convertToBase64(event.image.data)}`}
           alt={event.title.toString()}
           style={{
             width: "100%",
