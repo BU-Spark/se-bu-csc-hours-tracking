@@ -22,7 +22,7 @@ function CardGrid(props: CardGridProps) {
             : "";
 
           return (
-            <Col span={5} key={index} style={{ margin: "1rem 2.5rem" }}>
+            <Col span={5} key={index} style={{ margin: "0rem 2.5rem" }}>
               <EventCard
                 key={index}
                 event_id={event.id}

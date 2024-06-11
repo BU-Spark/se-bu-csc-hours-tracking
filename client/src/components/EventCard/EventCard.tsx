@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "antd";
 import { buRed } from "@/common/styles";
-import { EventCardProps } from "@/interfaces/interfaces";
+import { EventCardProps, Person } from "@/interfaces/interfaces";
 import Link from "next/link";
+import { getCoordinatorById } from "./action";
+import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 
 const EventCard: React.FC<EventCardProps> = ({
   event_id,
@@ -12,7 +14,19 @@ const EventCard: React.FC<EventCardProps> = ({
   image,
   event_start,
 }) => {
+  const [coordinator, setCoordinator] = useState<Person>();
   const eventPath = decodeURIComponent(event_id.toString());
+
+  useEffect(() => {
+    const fetchCoordinator = async () => {
+      const result = await getCoordinatorById(coordinator_id);
+      if (result) {
+        setCoordinator(result);
+        console.log(result);
+      }
+    };
+    fetchCoordinator();
+  }, []);
   return (
     <Link href={`events/${eventPath}`}>
       <Card
@@ -38,20 +52,53 @@ const EventCard: React.FC<EventCardProps> = ({
             position: "absolute",
             bottom: "0",
             left: "0",
-            width: "15rem",
+            width: "100%",
             zIndex: 2,
           }}
         >
           <div
             className="card-text"
             style={{
-              position: "relative",
-              top: "0",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "start",
+              justifyContent: "center",
+              padding: "1rem",
             }}
           >
-            <h3 style={{ color: "white", zIndex: 3, marginTop: "0" }}>
+            <h3
+              style={{
+                color: "white",
+                zIndex: 3,
+                marginTop: "0",
+                marginBottom: "0",
+                // marginLeft: "0.1rem",
+              }}
+            >
               {title}
-            </h3>{" "}
+            </h3>
+            <p
+              style={{
+                color: "white",
+                padding: 0,
+                margin: 0,
+                fontSize: "0.8rem",
+              }}
+            >
+              {coordinator?.name}
+            </p>
+            <div
+              className="location"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+              }}
+            >
+              <FmdGoodOutlinedIcon style={{ fontSize: "1rem" }} /> {location}
+            </div>
           </div>
         </div>
       </Card>
