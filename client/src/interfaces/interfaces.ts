@@ -49,7 +49,7 @@ export interface Event {
   coordinator_id: number;
   form_id: number | null;
   organization_id: number;
-  image: String;
+  image: Buffer;
 }
 
 export interface EventCardProps {
@@ -57,7 +57,7 @@ export interface EventCardProps {
   title: String;
   coordinator_id: number;
   location: String;
-  image: String;
+  image: string;
   event_start: Date;
 }
 
@@ -71,9 +71,10 @@ export interface EventInput {
   location: string;
   transit: string;
   description: string;
-  category_id: number;
-  coordinator_id: number;
   form_id: number | null;
-  organization_id: number;
   image: string;
+}
+
+export interface CardGridProps {
+  events: Event[];
 }

@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard/EventCard";
 import { Event, EventCardProps, EventInput } from "@/interfaces/interfaces";
-import { createEvent, getEvents } from "./action";
+import { createDummyEvent, createEvent, getEvents } from "./action";
 import { Col, Row, Layout } from "antd";
 import { now } from "next-auth/client/_utils";
 import icon from "../../../public/photos/full_logo.png";
 import CardGrid from "./CardGrid";
 import { Content } from "antd/es/layout/layout";
 const { Sider } = Layout;
+import img from "../../../public/photos/beach-cleanup.png";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>();
@@ -34,11 +35,9 @@ function Events() {
     location: "Nowhere",
     transit: "Walk",
     description: "This is a fake Event",
-    category_id: 1,
-    coordinator_id: 1,
     form_id: null,
-    organization_id: 1,
-    image: dummyPic,
+    image:
+      "/Users/owenmariani/Desktop/se-bu-csc-hours-tracking/client/public/photos/beach-cleanup.png",
   };
 
   return (
@@ -55,7 +54,7 @@ function Events() {
         {events ? <CardGrid events={events} /> : <p>loading</p>}
         <button
           onClick={() => {
-            createEvent(dummyEvent);
+            createDummyEvent(dummyEvent);
           }}
           style={{ position: "fixed", bottom: 0 }}
         >
