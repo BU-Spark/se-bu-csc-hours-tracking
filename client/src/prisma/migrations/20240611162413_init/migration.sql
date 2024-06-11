@@ -6,10 +6,10 @@ CREATE TABLE "Person" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
     "class" INTEGER,
-    "affiliation_id" INTEGER NOT NULL,
+    "affiliation_id" INTEGER,
+    "image" TEXT,
 
     CONSTRAINT "Person_pkey" PRIMARY KEY ("id")
 );
@@ -160,9 +160,6 @@ CREATE TABLE "VerificationToken" (
 CREATE UNIQUE INDEX "Person_email_key" ON "Person"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Person_phone_number_key" ON "Person"("phone_number");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
 -- CreateIndex
@@ -175,7 +172,7 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- AddForeignKey
-ALTER TABLE "Person" ADD CONSTRAINT "Person_affiliation_id_fkey" FOREIGN KEY ("affiliation_id") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Person" ADD CONSTRAINT "Person_affiliation_id_fkey" FOREIGN KEY ("affiliation_id") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
