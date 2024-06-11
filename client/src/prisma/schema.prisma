@@ -11,6 +11,7 @@ model Person {
   id                  Int              @id @default(autoincrement())
   name                String
   email               String           @unique
+  phone_number        String           @unique
   role                Role             @default(USER)
   class               Int?
   affiliation_id      Int?
@@ -42,6 +43,7 @@ model Event {
   coordinator_id         Int
   form_id                Int?
   organization_id        Int
+  image                  Bytes            @db.ByteA
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])
@@ -128,19 +130,19 @@ model FormCode {
 }
 
 model Account {
-  id                Int      @id @default(autoincrement())
+  id                Int     @id @default(autoincrement())
   userId            Int
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?  @db.Text
-  access_token      String?  @db.Text
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?  @db.Text
+  id_token          String? @db.Text
   session_state     String?
-  user              Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              Person  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
