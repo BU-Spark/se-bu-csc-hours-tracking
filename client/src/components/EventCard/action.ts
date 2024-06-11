@@ -16,7 +16,6 @@ export const getCoordinatorById = async (coordinatorId: number) => {
   }
 };
 
-
 export const getCategoryById = async (categoryId: number) => {
   try {
     const result = await prisma?.category.findUnique({
