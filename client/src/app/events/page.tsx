@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard/EventCard";
 import { Event, EventCardProps, EventInput } from "@/interfaces/interfaces";
-import { createDummyEvent, createEvent, getEvents } from "./action";
+import { createDummyEvent, getEvents } from "./action";
 import { Col, Row, Layout } from "antd";
 import { now } from "next-auth/client/_utils";
 import icon from "../../../public/photos/full_logo.png";

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useParams } from "next/navigation";
@@ -10,9 +11,6 @@ import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import { formatDate, formatTime } from "@/app/utilities/DateFormatters";
-
-
-
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();

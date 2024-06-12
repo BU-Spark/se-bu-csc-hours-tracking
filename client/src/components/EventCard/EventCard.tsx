@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "antd";
 import { buRed } from "@/common/styles";
-import { EventCardProps, Person } from "@/interfaces/interfaces";
+import { EventCardProps } from "@/interfaces/interfaces";
+import { Person } from "@prisma/client";
 import Link from "next/link";
 import { getCategoryById, getCoordinatorById } from "./action";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
@@ -38,7 +39,7 @@ const EventCard: React.FC<EventCardProps> = ({
       }
     };
     fetchCategory();
-  }, []);
+  }, [category_id, coordinator_id]);
   return category ? (
     <Link href={`events/${eventPath}`}>
       <Card
