@@ -31,6 +31,7 @@ function CardGrid(props: CardGridProps) {
                 location={event.location}
                 image={base64Image}
                 event_start={event.event_start}
+                category_id={event.category_id}
               />
             </Col>
           );

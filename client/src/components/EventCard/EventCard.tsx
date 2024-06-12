@@ -22,19 +22,19 @@ const EventCard: React.FC<EventCardProps> = ({
 
   useEffect(() => {
     const fetchCoordinator = async () => {
-      const result = await getCoordinatorById(coordinator_id);
+      const result: Person | undefined = await getCoordinatorById(
+        coordinator_id
+      );
       if (result) {
         setCoordinator(result);
-        console.log(result);
       }
     };
     fetchCoordinator();
 
     const fetchCategory = async () => {
-      const result = await getCategoryById(coordinator_id);
+      const result = await getCategoryById(category_id);
       if (result) {
         setCategory(result);
-        console.log(result);
       }
     };
     fetchCategory();

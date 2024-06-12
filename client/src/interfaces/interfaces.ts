@@ -96,5 +96,5 @@ enum Role {
 }
 
 export interface GroupedEvents {
-  list: { date: Date; events: Event };
+  [date: string]: Event[];
 }
