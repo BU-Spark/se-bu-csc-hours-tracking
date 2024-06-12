@@ -37,7 +37,7 @@ const options: NextAuthOptions = {
       const userByEmail = await prisma.person.findUnique({
         where: { email: user.email },
       });
-      if (!userByEmail && user && user.email && user.name) {
+      if (!userByEmail && user && user.email && user.name && user.image) {
         console.log("Creating new user for email:", user.email);
         await prisma.person.create({
           data: {
