@@ -13,7 +13,7 @@ function CardGrid(props: CardGridProps) {
   };
 
   return (
-    <Row justify="space-between" style={{ marginRight: "3rem" }}>
+    <Row justify="start" style={{ marginRight: "3rem" }}>
       {events ? (
         events.map((event: Event, index: number) => {
           // Convert image to base64 string
@@ -22,7 +22,16 @@ function CardGrid(props: CardGridProps) {
             : "";
 
           return (
-            <Col span={5} key={index} style={{ margin: "0rem 2.5rem" }}>
+            <Col
+              span={5}
+              key={index}
+              style={{
+                margin: "0rem 2.5rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "start",
+              }}
+            >
               <EventCard
                 key={index}
                 event_id={event.id}
