@@ -38,8 +38,8 @@ const options: NextAuthOptions = {
       const userByEmail = await prisma.person.findUnique({
         where: { email: user.email },
       });
-      if (!userByEmail) {
-        console.log('Creating new user for email:', user.email);
+      if (!userByEmail && user && user.email && user.name) {
+        console.log("Creating new user for email:", user.email);
         await prisma.person.create({
           data: {
             email: user.email,
@@ -56,13 +56,13 @@ const options: NextAuthOptions = {
                 scope: account!.scope,
                 id_token: account!.id_token,
                 session_state: account!.session_state,
-                type: account!.type || 'oauth', // Adding type field here
+                type: account!.type || "oauth", // Adding type field here
               },
             },
           },
         });
       } else {
-        console.log('User exists, linking account:', user.email);
+        console.log("User exists, linking account:", user.email);
         const existingAccount = await prisma.account.findUnique({
           where: {
             provider_providerAccountId: {
@@ -72,8 +72,8 @@ const options: NextAuthOptions = {
           },
         });
 
-        if (!existingAccount) {
-          console.log('Linking account to existing user:', user.email);
+        if (!existingAccount && userByEmail) {
+          console.log("Linking account to existing user:", user.email);
           await prisma.account.create({
             data: {
               provider: account!.provider,
@@ -86,7 +86,7 @@ const options: NextAuthOptions = {
               id_token: account!.id_token,
               session_state: account!.session_state,
               userId: userByEmail.id,
-              type: account!.type || 'oauth', // Adding type field here
+              type: account!.type || "oauth", // Adding type field here
             },
           });
         }
