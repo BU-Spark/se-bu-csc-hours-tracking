@@ -144,9 +144,17 @@ function EventSider() {
     const formattedDate = formatDate(new Date(date), false);
 
     return (
-      <div>
-        <h3>{formattedDate}</h3>
-        <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "start",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+        className="wrapper"
+      >
+        <p style={{ marginBottom: "1rem", fontWeight: 400 }}>{formattedDate}</p>
+        <div style={{ margin: 0 }} className="events">
           {events.map((event: Event, eventIndex: number) => {
             const application = myApplications?.find(
               (app) => app.event_id === event.id
@@ -159,7 +167,8 @@ function EventSider() {
                 style={{
                   borderLeft: `4px ${buRed} solid`,
                   padding: "0rem 0.5rem",
-                  margin: "1.5rem 0rem",
+                  marginBottom: "1.5rem",
+                  marginTop: 0,
                   borderRadius: "2px",
                   height: "2rem",
                   display: "flex",
@@ -169,6 +178,7 @@ function EventSider() {
                   fontSize: "small",
                   flexDirection: "column",
                 }}
+                className="event"
               >
                 <p style={{ margin: 0, fontWeight: 500 }}>
                   {categoryNames[event.category_id]}
@@ -192,7 +202,7 @@ function EventSider() {
 
   return isDisplayed ? (
     <Sider
-      width="18%"
+      width="20%"
       style={{
         background: "white",
         marginTop: "0em",
@@ -203,13 +213,24 @@ function EventSider() {
         right: 0,
         top: 0,
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+        paddingLeft: "1rem",
       }}
     >
       <div
         className="sider-content"
-        style={{ marginTop: "6rem", fontWeight: "900" }}
+        style={{
+          marginLeft: 0,
+          marginRight: 0,
+          marginTop: "5rem",
+          fontWeight: "900",
+          display: "flex",
+          alignItems: "start",
+          flexDirection: "column",
+        }}
       >
-        Upcoming Events
+        <p style={{ marginBottom: "3rem", fontSize: "large" }}>
+          Upcoming Events
+        </p>
         {loading ? (
           <p>...</p>
         ) : (
