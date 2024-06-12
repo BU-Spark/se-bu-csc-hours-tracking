@@ -85,27 +85,25 @@ function EventSider() {
     fetchUser();
   }, [session]);
 
-  //Get events user if trying to go to
+  //GET EVENTS USER IS SIGNED UP FOR
   useEffect(() => {
     if (!isDisplayed) return;
     const fetchMyApplications = async () => {
       if (!user?.id) return;
 
-      const userApplications = await getApplicationsByUserId(user.id);
+      const userApplications = await getApplicationsByUserId(user.id); //get all user applications
       if (userApplications) {
         setMyApplications(userApplications);
         const eventIds = userApplications.map(
           (application) => application.event_id
         );
-        const userEvents = await getEventsByApplicationEventIds(eventIds);
+        const userEvents = await getEventsByApplicationEventIds(eventIds); //get all events those applications were related to
         if (userEvents) {
           setMyEvents(userEvents);
         }
         console.log("userEvents:", userEvents);
       }
       console.log("userApplications:", userApplications);
-
-      //
     };
     fetchMyApplications();
   }, [user]);
@@ -149,31 +147,44 @@ function EventSider() {
       <div>
         <h3>{formattedDate}</h3>
         <div>
-          {events.map((event: Event, eventIndex: number) => (
-            <div
-              key={eventIndex}
-              style={{
-                borderLeft: `4px ${buRed} solid`,
-                padding: "0rem 0.5rem",
-                margin: "1.5rem 0rem",
-                borderRadius: "2px",
-                height: "2rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "start",
-                fontWeight: 100,
-                fontSize: "small",
-                flexDirection: "column",
-              }}
-            >
-              <p style={{ margin: 0, fontWeight: 500 }}>
-                {categoryNames[event.category_id]}
-              </p>
-              <p style={{ margin: 0, fontSize: "0.6rem" }}>
-                {event.description}
-              </p>
-            </div>
-          ))}
+          {events.map((event: Event, eventIndex: number) => {
+            const application = myApplications?.find(
+              (app) => app.event_id === event.id
+            );
+            const approved = application ? application.approved : false;
+
+            return (
+              <div
+                key={eventIndex}
+                style={{
+                  borderLeft: `4px ${buRed} solid`,
+                  padding: "0rem 0.5rem",
+                  margin: "1.5rem 0rem",
+                  borderRadius: "2px",
+                  height: "2rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "start",
+                  fontWeight: 100,
+                  fontSize: "small",
+                  flexDirection: "column",
+                }}
+              >
+                <p style={{ margin: 0, fontWeight: 500 }}>
+                  {categoryNames[event.category_id]}
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.6rem",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  {approved ? "Approved" : "Pending"}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
