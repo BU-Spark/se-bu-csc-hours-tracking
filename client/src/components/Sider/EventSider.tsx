@@ -4,32 +4,128 @@ import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
 import { formatDate } from "@/app/events/[event_id]/page";
+import { Application, Person } from "@prisma/client";
 import { GroupedEvents } from "@/interfaces/interfaces";
-import { getEvents } from "@/app/events/action";
+import {
+  getApplicationsByUserId,
+  getEvents,
+  getEventsByApplicationEventIds,
+  getUserByEmail,
+} from "@/app/events/action";
 import { Event } from "@/interfaces/interfaces";
-import { group } from "console";
 import { buRed } from "@/common/styles";
 import { getCategoryById } from "../EventCard/action";
+import { useSession } from "next-auth/react";
 
 function EventSider() {
+  //session and path vars
   const path = usePathname();
+  const { data: session, status } = useSession();
   const isDisplayed = path === "/events";
-  const [events, setEvents] = useState<Event[]>();
-  const [eventGroups, setEventGroups] = useState<GroupedEvents>();
 
+  //useState variables
+  const [user, setUser] = useState<Person>();
+  const [events, setEvents] = useState<Event[]>();
+  const [myEvents, setMyEvents] = useState<Event[]>();
+  const [myApplications, setMyApplications] = useState<Application[]>();
+  const [eventGroups, setEventGroups] = useState<GroupedEvents>();
+  const [categoryNames, setCategoryNames] = useState<{ [key: number]: string }>(
+    {}
+  );
+  const [loading, setLoading] = useState(true);
+
+  //GET ALL EVENTS AND CATEGORY NAMES
   useEffect(() => {
-    const fetchEvents = async () => {
-      const eventResult = await getEvents(); //replace this with 'getEventsByUser()'
+    if (!isDisplayed) return;
+    const fetchEventsAndCategories = async () => {
+      setLoading(true);
+
+      //get events
+      const eventResult = await getEvents();
       setEvents(eventResult);
+
+      //get categories
+      const newCategoryNames = await translateToCategoryNames(eventResult);
+      setCategoryNames(newCategoryNames);
+
+      setLoading(false);
     };
-    fetchEvents();
+
+    fetchEventsAndCategories();
   }, []);
 
+  //GROUP EVENTS BY DATE
   useEffect(() => {
-    if (events) groupEventsByDate(events);
-    console.log(events);
-    console.log(eventGroups);
-  }, [events]);
+    if (!isDisplayed) return;
+    if (myEvents) {
+      groupEventsByDate(myEvents);
+    }
+  }, [myEvents]);
+
+  // GET USER INFO
+  useEffect(() => {
+    if (!isDisplayed) return;
+    const fetchUser = async () => {
+      if (!session?.user.email) {
+        return;
+      }
+      try {
+        const user = await getUserByEmail(session.user.email);
+        if (!user) {
+          console.error("User not found in database");
+          return;
+        }
+        setUser(user);
+        console.log("user", user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [session]);
+
+  //Get events user if trying to go to
+  useEffect(() => {
+    if (!isDisplayed) return;
+    const fetchMyApplications = async () => {
+      if (!user?.id) return;
+
+      const userApplications = await getApplicationsByUserId(user.id);
+      if (userApplications) {
+        setMyApplications(userApplications);
+        const eventIds = userApplications.map(
+          (application) => application.event_id
+        );
+        const userEvents = await getEventsByApplicationEventIds(eventIds);
+        if (userEvents) {
+          setMyEvents(userEvents);
+        }
+        console.log("userEvents:", userEvents);
+      }
+      console.log("userApplications:", userApplications);
+
+      //
+    };
+    fetchMyApplications();
+  }, [user]);
+
+  const translateToCategoryNames = async (events: Event[]) => {
+    const categoryIds = Array.from(
+      new Set(events.map((event) => event.category_id))
+    );
+    const categoryFetchPromises = categoryIds.map((id) => getCategoryById(id));
+    const categoryResults = await Promise.all(categoryFetchPromises);
+
+    const newCategoryNames: { [key: number]: string } = {};
+    categoryResults.forEach((result) => {
+      if (result) {
+        newCategoryNames[result.id] = result.name;
+      }
+    });
+
+    return newCategoryNames;
+  };
 
   function groupEventsByDate(events: Event[]): void {
     const groupedEvents: GroupedEvents = {};
@@ -45,29 +141,9 @@ function EventSider() {
 
     setEventGroups(groupedEvents);
   }
+
   const DateGroup = ({ events, date }: { events: Event[]; date: string }) => {
     const formattedDate = formatDate(new Date(date), false);
-    const [categoryNames, setCategoryNames] = useState<{
-      [key: number]: string;
-    }>({});
-
-    const fetchCategory = async (categoryId: number) => {
-      const result = await getCategoryById(categoryId);
-      if (result) {
-        setCategoryNames((prevNames) => ({
-          ...prevNames,
-          [categoryId]: result.name,
-        }));
-      }
-    };
-
-    useEffect(() => {
-      events.forEach((event) => {
-        if (!categoryNames[event.category_id]) {
-          fetchCategory(event.category_id);
-        }
-      });
-    }, [events]);
 
     return (
       <div>
@@ -79,22 +155,30 @@ function EventSider() {
               style={{
                 borderLeft: `4px ${buRed} solid`,
                 padding: "0rem 0.5rem",
-                margin: "2rem 0rem",
+                margin: "1.5rem 0rem",
                 borderRadius: "2px",
                 height: "2rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "start",
+                fontWeight: 100,
+                fontSize: "small",
+                flexDirection: "column",
               }}
             >
-              <p>{categoryNames[event.category_id]}</p>
-              <p>{event.description}</p>
+              <p style={{ margin: 0, fontWeight: 500 }}>
+                {categoryNames[event.category_id]}
+              </p>
+              <p style={{ margin: 0, fontSize: "0.6rem" }}>
+                {event.description}
+              </p>
             </div>
           ))}
         </div>
       </div>
     );
   };
+
   return isDisplayed ? (
     <Sider
       width="18%"
@@ -115,14 +199,15 @@ function EventSider() {
         style={{ marginTop: "6rem", fontWeight: "900" }}
       >
         Upcoming Events
-        {eventGroups ? (
+        {loading ? (
+          <p>...</p>
+        ) : (
+          eventGroups &&
           Object.entries(eventGroups).map(([date, events], index) => (
             <div key={index}>
               <DateGroup events={events} date={date} />
             </div>
           ))
-        ) : (
-          <></>
         )}
       </div>
     </Sider>
