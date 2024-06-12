@@ -56,6 +56,7 @@ export interface EventCardProps {
   event_id: number;
   title: String;
   coordinator_id: number;
+  category_id: number;
   location: String;
   image: string;
   event_start: Date;
@@ -77,4 +78,23 @@ export interface EventInput {
 
 export interface CardGridProps {
   events: Event[];
+}
+
+export interface Person {
+  id: number;
+  name: string;
+  email: string;
+  phone_number?: string;
+  role: Role;
+  class?: number;
+  affiliation_id?: number;
+  image?: string;
+}
+enum Role {
+  USER,
+  ORGANIZER,
+}
+
+export interface GroupedEvents {
+  [date: string]: Event[];
 }

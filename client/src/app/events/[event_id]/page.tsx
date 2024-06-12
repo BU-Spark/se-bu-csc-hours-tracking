@@ -4,14 +4,47 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getEvent } from "./action";
 import { Event } from "@/interfaces/interfaces";
-import { Typography } from "antd";
+import { Button, Typography } from "antd";
 import e from "express";
-import { CalendarOutlined } from "@ant-design/icons";
+import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
+import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
+
+export const formatDate = (date: Date, hasTime: boolean) => {
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const nonTimeOptions: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+  const option = hasTime ? timeOptions : nonTimeOptions;
+  return date.toLocaleDateString("en-US", option);
+};
+
+export const formatTime = (date: Date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  return `${formattedHours}:${formattedMinutes} ${period}`;
+};
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
   const event_id: string = useParams().event_id.toString();
+
+  const convertToBase64 = (arrayBuffer: ArrayBuffer) => {
+    return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -23,34 +56,13 @@ export default function Page() {
     fetchEvent();
   }, [event_id]);
 
-  const formatDate = (date: Date, hasTime: boolean) => {
-    const timeOptions: Intl.DateTimeFormatOptions = {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-
-    const nonTimeOptions: Intl.DateTimeFormatOptions = {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    };
-    const option = hasTime ? timeOptions : nonTimeOptions;
-    return date.toLocaleDateString("en-US", option);
-  };
-
   return event ? (
     <div
       style={{
         width: "100%",
         height: "50vh",
         position: "relative",
-        border: "1px black solid",
         marginRight: "4rem",
-        borderTopRightRadius: "1rem",
-        borderTopLeftRadius: "1rem",
       }}
     >
       <div
@@ -63,7 +75,7 @@ export default function Page() {
         }}
       >
         <img
-          src={event.image.toString()}
+          src={`data:image/jpeg;base64,${convertToBase64(event.image.data)}`}
           alt={event.title.toString()}
           style={{
             width: "100%",
@@ -72,6 +84,8 @@ export default function Page() {
             objectFit: "cover",
             height: "100%",
             zIndex: "1",
+            borderTopRightRadius: "1rem",
+            borderTopLeftRadius: "1rem",
           }}
         />
         <h1
@@ -89,7 +103,23 @@ export default function Page() {
         </h1>
       </div>
       <div style={{ padding: "2rem 4rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Button
+          danger
+          style={{
+            borderRadius: "20px",
+            marginBottom: "1rem",
+            width: "6rem",
+          }}
+        >
+          Sign Up
+        </Button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography.Title style={{ fontSize: "1.5rem", marginLeft: "1rem" }}>
             At a Glance
           </Typography.Title>
@@ -100,7 +130,8 @@ export default function Page() {
         <div
           style={{
             display: "flex",
-            alignContent: "space-between",
+            alignItems: "center",
+            justifyContent: "space-around",
             padding: "2rem 0rem",
           }}
         >
@@ -125,12 +156,24 @@ export default function Page() {
               justifyContent: "center",
             }}
           >
-            <CalendarOutlined
+            <ClockCircleOutlined
               style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
             />{" "}
-            {formatDate(event.event_start, false)}
+            {formatTime(event.event_start)} - {formatTime(event.event_end)}
+          </div>
+          <div
+            className="location"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FmdGoodOutlinedIcon style={{ fontSize: "2.2rem", color: buRed }} />{" "}
+            {event.location}
           </div>
         </div>
+        <div className="description">{event.description}</div>
       </div>
     </div>
   ) : (

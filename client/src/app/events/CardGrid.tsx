@@ -3,6 +3,8 @@ import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, Event } from "@/interfaces/interfaces";
 
+
+
 function CardGrid(props: CardGridProps) {
   const { events } = props;
 
@@ -20,7 +22,7 @@ function CardGrid(props: CardGridProps) {
             : "";
 
           return (
-            <Col span={5} key={index} style={{ margin: "1rem 2.5rem" }}>
+            <Col span={5} key={index} style={{ margin: "0rem 2.5rem" }}>
               <EventCard
                 key={index}
                 event_id={event.id}
@@ -29,6 +31,7 @@ function CardGrid(props: CardGridProps) {
                 location={event.location}
                 image={base64Image}
                 event_start={event.event_start}
+                category_id={event.category_id}
               />
             </Col>
           );
