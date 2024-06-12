@@ -94,3 +94,7 @@ enum Role {
   USER,
   ORGANIZER,
 }
+
+export interface GroupedEvents {
+  list: { date: Date; events: Event };
+}

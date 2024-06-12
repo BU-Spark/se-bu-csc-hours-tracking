@@ -4,12 +4,13 @@ import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
 import { formatDate } from "@/app/events/[event_id]/page";
+import { GroupedEvents } from "@/interfaces/interfaces";
 
 function EventSider() {
   const path = usePathname();
   const isDisplayed = path === "/events";
 
-  const DateGroup = () => {
+  const DateGroup = (groupedDates: GroupedEvents) => {
     const dummyDate = new Date(); //replace with db call to get all dates of events a user is attending
     const formattedDate = formatDate(dummyDate, false);
   };
