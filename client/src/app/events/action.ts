@@ -1,6 +1,7 @@
 "use server";
 import prisma from "../utils/prisma";
-import { Event, EventInput } from "@/interfaces/interfaces";
+import { EventInput } from "@/interfaces/interfaces";
+import { Role, Person, Event } from "@prisma/client";
 import { randomInt } from "crypto";
 import fs from "fs/promises";
 
@@ -81,3 +82,48 @@ export async function createDummyEvent(eventData: EventInput): Promise<void> {
     console.error("Error creating event with image:", error);
   }
 }
+
+//get user by email for other functions
+export const getUserByEmail = async (
+  email: string
+): Promise<Person | undefined> => {
+  try {
+    const user = await prisma.person.findUnique({ where: { email: email } });
+    if (!user) return;
+
+    return user;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+//get applications to events per user
+export const getApplicationsByUserId = async (id: number) => {
+  try {
+    const applications = prisma.application.findMany({
+      where: { applicant_id: id },
+    });
+    return applications;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//get events by application ids
+export const getEventsByApplicationEventIds = async (
+  ids: number[]
+): Promise<Event[] | undefined> => {
+  try {
+    const events: Event[] = await prisma.event.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    return events;
+  } catch (error) {
+    console.error(error);
+  }
+};

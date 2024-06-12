@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 export interface FormRowParams {
   form: Form;
   codes: any;
@@ -84,16 +86,16 @@ export interface Person {
   id: number;
   name: string;
   email: string;
-  phone_number?: string;
+  phone_number?: string | null;
   role: Role;
   class?: number;
   affiliation_id?: number;
   image?: string;
 }
-enum Role {
-  USER,
-  ORGANIZER,
-}
+// export enum Role {
+//   USER,
+//   ORGANIZER,
+// }
 
 export interface GroupedEvents {
   [date: string]: Event[];
