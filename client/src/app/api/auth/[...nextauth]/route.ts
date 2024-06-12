@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { CustomPrismaAdapter } from '../../../../lib/CustomPrismaAdapter';
-import prisma from '../../../../lib/prisma';
+import NextAuth, { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { CustomPrismaAdapter } from "../../../../lib/CustomPrismaAdapter";
+import prisma from "../../../../lib/prisma";
 
 const options: NextAuthOptions = {
   providers: [
@@ -13,7 +12,7 @@ const options: NextAuthOptions = {
   ],
   adapter: CustomPrismaAdapter,
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
@@ -34,7 +33,7 @@ const options: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      console.log('Signing in user:', user);
+      console.log("Signing in user:", user);
       const userByEmail = await prisma.person.findUnique({
         where: { email: user.email },
       });
@@ -96,7 +95,5 @@ const options: NextAuthOptions = {
   },
 };
 
-export const GET = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
-export const POST = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
-
-export { options as authOptions };
+export const GET = NextAuth(options);
+export const POST = NextAuth(options);
