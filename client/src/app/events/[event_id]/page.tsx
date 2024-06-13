@@ -5,8 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getEvent } from "./action";
 import { Event } from "@/interfaces/interfaces";
-import { Button, Checkbox, DatePicker, Form, Input, Typography } from "antd";
-import e from "express";
+import { Button, Checkbox, DatePicker, Form, message, Typography } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
@@ -14,14 +13,13 @@ import { formatDate, formatTime } from "@/app/utils/DateFormatters";
 import convertToBase64 from "@/app/utils/BufferToString";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import Title from "antd/es/skeleton/Title";
-import StyledButton from "@/components/StyledButton";
 
 dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const event_id: string = useParams().event_id.toString();
 
   useEffect(() => {
@@ -35,6 +33,34 @@ export default function Page() {
   }, [event_id]);
 
   const RegisterForm = () => {
+    const onFinish = (values: any) => {
+      if (
+        dayjs(values.eventDate).format("YYYY-MM-DD HH:mm") ===
+        dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
+      ) {
+        success();
+        setTimeout(() => {
+          setRegistering(false);
+        }, 1000);
+      } else {
+        console.log(false, event?.event_start);
+        error();
+      }
+    };
+    const success = () => {
+      messageApi.open({
+        type: "success",
+        content: "Registration Successful",
+      });
+    };
+
+    const error = () => {
+      messageApi.open({
+        type: "error",
+        content: "Please input the correct event date/time",
+      });
+    };
+
     return (
       <div
         className="event-register"
@@ -46,7 +72,6 @@ export default function Page() {
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: "#F1F1F1",
-
           borderRadius: "4px",
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
           margin: "0rem auto",
@@ -55,6 +80,8 @@ export default function Page() {
         <Form
           layout="horizontal"
           style={{ padding: "2rem", paddingBottom: "0rem" }}
+          onFinish={onFinish}
+          autoComplete="off"
         >
           <Form.Item
             style={{
@@ -67,37 +94,51 @@ export default function Page() {
               Registration Confirmation
             </Typography.Title>
           </Form.Item>
-          <Form.Item label="Confirm the Date">
+          <Form.Item
+            name="eventDate"
+            label="Confirm the Date"
+            rules={[
+              { required: true, message: "Please input the day of the event" },
+            ]}
+          >
             <DatePicker
               format="YYYY-MM-DD hh:mm A"
               showTime={{ format: "hh:mm A" }}
               width="10rem"
             />
           </Form.Item>
-          <Form.Item>
+          <Form.Item
+            name="agreeTerms"
+            valuePropName="checked"
+            rules={[{ required: true, message: "  !" }]}
+          >
             <Checkbox>
               I agree to attend this event if application accepted
             </Checkbox>
-            <Form.Item
+          </Form.Item>
+          <Form.Item
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "1rem",
+            }}
+          >
+            {contextHolder}
+            <Button
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: "1rem",
+                borderRadius: "20px",
+                marginBottom: "0rem",
+                width: "6rem",
+                color: buRed,
+                borderColor: buRed,
+                backgroundColor: "white",
               }}
+              htmlType="submit"
+              type="primary"
             >
-              <Button
-                style={{
-                  borderRadius: "20px",
-                  marginBottom: "0rem",
-                  width: "6rem",
-                  color: buRed,
-                  borderColor: buRed,
-                }}
-              >
-                Apply
-              </Button>
-            </Form.Item>
+              Apply
+            </Button>
           </Form.Item>
         </Form>
       </div>
