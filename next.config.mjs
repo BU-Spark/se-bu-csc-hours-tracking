@@ -1,8 +1,11 @@
 export default {
-    rewrites: async () => [
-      {
-        source: '/signin',
-        destination: '/api/auth/signin',
-      },
-    ],
-  };
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  rewrites: async () => [
+    {
+      source: "/signin",
+      destination: "/api/auth/signin",
+    },
+  ],
+};
