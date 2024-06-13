@@ -30,7 +30,7 @@ model Person {
 
 model Event {
   id                     Int              @id @default(autoincrement())
-  title                  String
+  title                  String           @unique
   event_start            DateTime
   event_end              DateTime
   reg_start              DateTime
@@ -104,6 +104,7 @@ model HourSubmission {
   event_id        Int
   hours           Float
   note            String
+  description     String?
   date_submitted  DateTime  @default(now())
   approval_status Int
   updated_at      DateTime?

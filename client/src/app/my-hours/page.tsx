@@ -1,9 +1,8 @@
-// client/src/app/my-hours/page.tsx
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import { getHoursByUserEmail } from './action';
 import { AiOutlinePlus } from 'react-icons/ai';
@@ -39,7 +38,7 @@ const SummaryBox = styled.div`
   min-width: 150px;
 
   h2 {
-    color: rgba(204, 0, 0, 1); 
+    color: rgba(204, 0, 0, 1);
     font-size: 2rem;
     margin: 0;
   }
@@ -159,8 +158,8 @@ const PlusCircle = styled.div`
   position: relative;
   z-index: 2;
   @media (max-width: 600px) {
-    font-size: 1.5em; 
-  } 
+    font-size: 1.5em;
+  }
 `;
 
 const Rectangle = styled.div`
@@ -179,8 +178,8 @@ const Rectangle = styled.div`
   padding-right: 1.5em;
   font-size: 1em;
   @media (max-width: 600px) {
-    font-size: 1em; 
-  } 
+    font-size: 1em;
+  }
 `;
 
 const MyHours: React.FC = () => {
@@ -201,11 +200,11 @@ const MyHours: React.FC = () => {
           setApprovedHours(data.filter((hour: Hour) => hour.status === 'approved').length);
           setPendingHours(data.filter((hour: Hour) => hour.status === 'pending').length);
           setSubmittedHours(data.length);
-          
+
           const currentDate = new Date();
           const upcoming = data.filter((hour: Hour) => new Date(hour.date) > currentDate).length;
           setUpcomingEvents(upcoming);
-          
+
         } catch (error) {
           console.error('Error fetching hours:', error);
         }

@@ -9,7 +9,6 @@ const FormContainer = styled.div`
   max-width: 600px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #fff;
   display: flex;
@@ -37,40 +36,39 @@ const Label = styled.label`
   display: flex;
   flex-direction: column;
   font-size: 1rem;
-  margin-bottom: 20px; /* Add space between the label and the input */
+  margin-bottom: 20px;
+`;
+
+const CommonInputStyle = `
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 8px; /* Add space between the label and the input */
+  ${CommonInputStyle}
 `;
 
 const TextArea = styled.textarea`
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
+  ${CommonInputStyle}
   resize: none;
-  box-sizing: border-box;
-  margin-top: 8px; /* Add space between the label and the textarea */
 `;
 
 const SubmitButton = styled.button`
   padding: 10px;
   border: none;
   border-radius: 8px;
-  background-color: rgba(204, 0, 0, 1); /* Use the specified shade of red */
+  background-color: rgba(204, 0, 0, 1);
   color: #fff;
   cursor: pointer;
   font-size: 1rem;
   &:hover {
-    background-color: rgba(153, 0, 0, 1); /* Slightly darker shade for hover */
+    background-color: rgba(153, 0, 0, 1);
   }
 `;
 
