@@ -1,5 +1,6 @@
 "use server";
 import { Person } from "@/interfaces/interfaces";
+import prisma from "@/lib/prisma";
 
 export const getCoordinatorById = async (coordinatorId: number) => {
   try {
