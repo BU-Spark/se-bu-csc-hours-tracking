@@ -52,7 +52,7 @@ function EventSider() {
     };
 
     fetchEventsAndCategories();
-  }, [isDisplayed]);
+  }, []);
 
   //GROUP EVENTS BY DATE
   useEffect(() => {
@@ -60,7 +60,7 @@ function EventSider() {
     if (myEvents) {
       groupEventsByDate(myEvents);
     }
-  }, [isDisplayed, myEvents]);
+  }, [myEvents]);
 
   // GET USER INFO
   useEffect(() => {
@@ -83,7 +83,7 @@ function EventSider() {
     };
 
     fetchUser();
-  }, [isDisplayed, session]);
+  }, [session]);
 
   //GET EVENTS USER IS SIGNED UP FOR
   useEffect(() => {
@@ -106,7 +106,7 @@ function EventSider() {
       console.log("userApplications:", userApplications);
     };
     fetchMyApplications();
-  }, [isDisplayed, user]);
+  }, [user]);
 
   const translateToCategoryNames = async (events: Event[]) => {
     const categoryIds = Array.from(
