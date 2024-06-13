@@ -1,53 +1,48 @@
-import { Session } from "next-auth";
-import prisma from "./prisma";
-import { Adapter, AdapterUser } from "next-auth/adapters";
+import { PrismaClient } from "@prisma/client";
+import { Adapter, AdapterUser, AdapterSession } from "next-auth/adapters";
+import { Session, User, Account } from "next-auth";
+
+const prisma = new PrismaClient();
 
 export const CustomPrismaAdapter: Adapter = {
-  async createUser(profile): Promise<any> {
+  async createUser(profile): Promise<AdapterUser> {
     try {
-      console.log("Creating user with profile:", profile);
-      if (profile) {
-        const user = await prisma.person.create({
-          data: {
-            email: profile.email,
-            name: profile.name || "",
-            image: profile.image,
-          },
-        });
-        console.log("User created:", user);
-        // Adapt the user object to match the AdapterUser type
-        const currentDate = new Date();
-        const adaptedUser: any = {
-          id: user.id.toString(),
-          name: user.name,
-          email: user.email,
-          phone_number: user.phone_number,
-          role: user.role,
-          class: user.class,
-          affiliation_id: user.affiliation_id,
-          emailVerified: currentDate, // Assuming email verification is not implemented here
-        };
-        return adaptedUser;
-      }
-      console.error("Error creating user:");
-      throw new Error("Error creating user");
+      const user = await prisma.person.create({
+        data: {
+          email: profile.email,
+          name: profile.name || "",
+          image: profile.image,
+        },
+      });
+
+      return {
+        id: user.id.toString(),
+        email: user.email,
+        emailVerified: new Date(),
+        // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+        name: user.name,
+        image: user.image || undefined,
+      };
     } catch (error) {
       console.error("Error creating user:", error);
       throw error;
     }
   },
+
   async getUser(id: string): Promise<AdapterUser | null> {
     try {
       const user = await prisma.person.findUnique({
         where: { id: parseInt(id) },
       });
-      const currentDate = new Date();
+
       return user
         ? {
-            ...user,
             id: user.id.toString(),
+            email: user.email,
+            emailVerified: new Date(),
+            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            name: user.name,
             image: user.image || undefined,
-            emailVerified: currentDate,
           }
         : null;
     } catch (error) {
@@ -55,17 +50,20 @@ export const CustomPrismaAdapter: Adapter = {
       throw error;
     }
   },
+
   async getUserByEmail(email: string): Promise<AdapterUser | null> {
     try {
       const user = await prisma.person.findUnique({
         where: { email },
       });
-      const currentDate = new Date();
+
       return user
         ? {
-            ...user,
             id: user.id.toString(),
-            emailVerified: currentDate,
+            email: user.email,
+            emailVerified: new Date(),
+            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            name: user.name,
             image: user.image || undefined,
           }
         : null;
@@ -74,6 +72,7 @@ export const CustomPrismaAdapter: Adapter = {
       throw error;
     }
   },
+
   async updateUser(user): Promise<AdapterUser> {
     try {
       const updatedUser = await prisma.person.update({
@@ -84,11 +83,14 @@ export const CustomPrismaAdapter: Adapter = {
           image: user.image || undefined,
         },
       });
+
       return {
-        ...updatedUser,
         id: updatedUser.id.toString(),
+        email: updatedUser.email,
         emailVerified: new Date(),
-        image: user.image || undefined,
+        // emailVerified: updatedUser.emailVerified ? new Date(updatedUser.emailVerified) : null, // Not present in your model
+        name: updatedUser.name,
+        image: updatedUser.image || undefined,
       };
     } catch (error) {
       console.error("Error updating user:", error);
@@ -101,10 +103,13 @@ export const CustomPrismaAdapter: Adapter = {
       const deletedUser = await prisma.person.delete({
         where: { id: parseInt(userId) },
       });
+
       return {
-        ...deletedUser,
         id: deletedUser.id.toString(),
+        email: deletedUser.email,
         emailVerified: new Date(),
+        // emailVerified: deletedUser.emailVerified ? new Date(deletedUser.emailVerified) : null, // Not present in your model
+        name: deletedUser.name,
         image: deletedUser.image || undefined,
       };
     } catch (error) {
@@ -115,7 +120,6 @@ export const CustomPrismaAdapter: Adapter = {
 
   async linkAccount(account): Promise<any> {
     try {
-      console.log("Linking account:", account);
       const linkedAccount = await prisma.account.create({
         data: {
           provider: account.provider,
@@ -131,7 +135,7 @@ export const CustomPrismaAdapter: Adapter = {
           type: account.type,
         },
       });
-      console.log("Account linked:", linkedAccount);
+
       return linkedAccount;
     } catch (error) {
       console.error("Error linking account:", error);
@@ -139,16 +143,12 @@ export const CustomPrismaAdapter: Adapter = {
     }
   },
 
-  async unlinkAccount({
-    provider,
-    providerAccountId,
-  }: Pick<any, "provider" | "providerAccountId">): Promise<
-    void | any | undefined
-  > {
+  async unlinkAccount({ provider, providerAccountId }): Promise<void | any> {
     try {
       const unlinkedAccount = await prisma.account.delete({
         where: { provider_providerAccountId: { provider, providerAccountId } },
       });
+
       return unlinkedAccount;
     } catch (error) {
       console.error("Error unlinking account:", error);
@@ -158,57 +158,94 @@ export const CustomPrismaAdapter: Adapter = {
 
   async getSessionAndUser(
     sessionToken: string
-  ): Promise<{ session: any | null; user: AdapterUser | null }> {
+  ): Promise<{ session: AdapterSession; user: AdapterUser }> {
     try {
+      const dummySession: AdapterSession = {
+        sessionToken: "broken",
+        userId: "9999",
+        expires: new Date(),
+      };
+      const dummyUser: AdapterUser = {
+        id: "9998",
+        email: "fake@gmail.com",
+        emailVerified: new Date(),
+      };
       const session = await prisma.session.findUnique({
         where: { sessionToken },
         include: { user: true },
       });
-      if (!session) return { session: null, user: null };
-      const user = {
-        ...session.user,
+
+      if (!session) return { session: dummySession, user: dummyUser };
+
+      const user: AdapterUser = {
         id: session.user.id.toString(),
-        emailVerified: new Date(),
+        email: session.user.email,
+        emailVerified: new Date(), // Replace with your actual emailVerified logic
+        name: session.user.name,
         image: session.user.image || undefined,
       };
-      return { session, user };
+
+      return {
+        session: {
+          sessionToken: session.sessionToken,
+          userId: session.userId.toString(),
+          expires: session.expires,
+        },
+        user,
+      };
     } catch (error) {
       console.error("Error getting session and user:", error);
       throw error;
     }
   },
 
-  async createSession(session): Promise<any> {
+  async createSession(session): Promise<AdapterSession> {
     try {
       const newSession = await prisma.session.create({
-        data: session,
+        data: {
+          sessionToken: session.sessionToken,
+          userId: parseInt(session.userId),
+          expires: session.expires,
+        },
       });
-      return newSession;
+
+      return {
+        sessionToken: newSession.sessionToken,
+        userId: newSession.userId.toString(),
+        expires: newSession.expires,
+      };
     } catch (error) {
       console.error("Error creating session:", error);
       throw error;
     }
   },
 
-  async updateSession(session): Promise<any> {
+  async updateSession(session): Promise<AdapterSession> {
     try {
       const updatedSession = await prisma.session.update({
         where: { sessionToken: session.sessionToken },
-        data: session,
+        data: {
+          userId: session.userId ? parseInt(session.userId) : 99999,
+          expires: session.expires,
+        },
       });
-      return updatedSession;
+
+      return {
+        sessionToken: updatedSession.sessionToken,
+        userId: updatedSession.userId.toString(),
+        expires: updatedSession.expires,
+      };
     } catch (error) {
       console.error("Error updating session:", error);
       throw error;
     }
   },
 
-  async deleteSession(sessionToken: string): Promise<any> {
+  async deleteSession(sessionToken: string): Promise<void> {
     try {
-      const deletedSession = await prisma.session.delete({
+      await prisma.session.delete({
         where: { sessionToken },
       });
-      return deletedSession;
     } catch (error) {
       console.error("Error deleting session:", error);
       throw error;
@@ -221,23 +258,21 @@ export const CustomPrismaAdapter: Adapter = {
   }): Promise<AdapterUser | null> {
     try {
       const account = await prisma.account.findUnique({
-        where: {
-          provider_providerAccountId: {
-            provider,
-            providerAccountId,
-          },
-        },
-        include: {
-          user: true,
-        },
+        where: { provider_providerAccountId: { provider, providerAccountId } },
+        include: { user: true },
       });
+
       if (!account) return null;
+
       const user = {
-        ...account.user,
         id: account.user.id.toString(),
+        email: account.user.email,
         emailVerified: new Date(),
+        // emailVerified: account.user.emailVerified ? new Date(account.user.emailVerified) : null, // Not present in your model
+        name: account.user.name,
         image: account.user.image || undefined,
       };
+
       return user;
     } catch (error) {
       console.error("Error getting user by account:", error);
