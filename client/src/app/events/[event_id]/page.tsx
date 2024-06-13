@@ -5,16 +5,23 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getEvent } from "./action";
 import { Event } from "@/interfaces/interfaces";
-import { Button, Typography } from "antd";
+import { Button, Checkbox, DatePicker, Form, Input, Typography } from "antd";
 import e from "express";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import { formatDate, formatTime } from "@/app/utils/DateFormatters";
 import convertToBase64 from "@/app/utils/BufferToString";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import Title from "antd/es/skeleton/Title";
+import StyledButton from "@/components/StyledButton";
+
+dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
+  const [registering, setRegistering] = useState<boolean>(false);
   const event_id: string = useParams().event_id.toString();
 
   useEffect(() => {
@@ -26,6 +33,76 @@ export default function Page() {
     };
     fetchEvent();
   }, [event_id]);
+
+  const RegisterForm = () => {
+    return (
+      <div
+        className="event-register"
+        style={{
+          width: "30rem",
+          display: "flex",
+          position: "relative",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#F1F1F1",
+
+          borderRadius: "4px",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+          margin: "0rem auto",
+        }}
+      >
+        <Form
+          layout="horizontal"
+          style={{ padding: "2rem", paddingBottom: "0rem" }}
+        >
+          <Form.Item
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography.Title level={3}>
+              Registration Confirmation
+            </Typography.Title>
+          </Form.Item>
+          <Form.Item label="Confirm the Date">
+            <DatePicker
+              format="YYYY-MM-DD hh:mm A"
+              showTime={{ format: "hh:mm A" }}
+              width="10rem"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Checkbox>
+              I agree to attend this event if application accepted
+            </Checkbox>
+            <Form.Item
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "1rem",
+              }}
+            >
+              <Button
+                style={{
+                  borderRadius: "20px",
+                  marginBottom: "0rem",
+                  width: "6rem",
+                  color: buRed,
+                  borderColor: buRed,
+                }}
+              >
+                Apply
+              </Button>
+            </Form.Item>
+          </Form.Item>
+        </Form>
+      </div>
+    );
+  };
 
   return event ? (
     <div
@@ -74,16 +151,6 @@ export default function Page() {
         </h1>
       </div>
       <div style={{ padding: "2rem 4rem" }}>
-        <Button
-          danger
-          style={{
-            borderRadius: "20px",
-            marginBottom: "1rem",
-            width: "6rem",
-          }}
-        >
-          Sign Up
-        </Button>
         <div
           style={{
             display: "flex",
@@ -144,7 +211,32 @@ export default function Page() {
             {event.location}
           </div>
         </div>
-        <div className="description">{event.description}</div>
+        <div
+          className="signup"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            style={{
+              borderRadius: "20px",
+              marginBottom: "1rem",
+              width: "6rem",
+              color: buRed,
+              borderColor: buRed,
+            }}
+            onClick={() => setRegistering(!registering)}
+          >
+            {registering ? "Close" : "Register"}
+          </Button>
+        </div>
+        {registering ? (
+          <RegisterForm />
+        ) : (
+          <div className="description">{event.description}</div>
+        )}
       </div>
     </div>
   ) : (
