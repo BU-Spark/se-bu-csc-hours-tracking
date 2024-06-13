@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getEvent } from "./action";
+import { checkIfApplied, getEvent } from "./action";
 import { Event } from "@prisma/client";
 import { Button, message, Typography } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
@@ -14,14 +14,27 @@ import convertToBase64 from "@/app/utils/BufferToString";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
+import { useSession } from "next-auth/react";
 
 dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
+  const [hasRegistered, setHasRegistered] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const event_id: string = useParams().event_id.toString();
+  const event_id: number = Number(useParams().event_id);
+  const userId: number = Number(useSession().data?.user.id);
+
+  //CHECK IF USER HAS ALREADY APPLIED
+  useEffect(() => {
+    const fetchCheckApplied = async () => {
+      const result: boolean = await checkIfApplied(event_id, userId);
+
+      setHasRegistered(result);
+    };
+    fetchCheckApplied();
+  }, []);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -148,18 +161,22 @@ export default function Page() {
             justifyContent: "center",
           }}
         >
-          <Button
-            style={{
-              borderRadius: "20px",
-              marginBottom: "1rem",
-              width: "6rem",
-              color: buRed,
-              borderColor: buRed,
-            }}
-            onClick={() => setRegistering(!registering)}
-          >
-            {registering ? "Close" : "Register"}
-          </Button>
+          {hasRegistered ? (
+            <p style={{ color: buRed }}>Registered!</p>
+          ) : (
+            <Button
+              style={{
+                borderRadius: "20px",
+                marginBottom: "1rem",
+                width: "6rem",
+                color: buRed,
+                borderColor: buRed,
+              }}
+              onClick={() => setRegistering(!registering)}
+            >
+              {registering ? "Close" : "Register"}
+            </Button>
+          )}
         </div>
         {registering ? (
           <RegisterForm event={event} setRegistering={setRegistering} />

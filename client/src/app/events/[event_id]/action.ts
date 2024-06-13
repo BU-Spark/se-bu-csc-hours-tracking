@@ -20,3 +20,24 @@ export async function getEvent(eventId: number): Promise<any> {
     await prisma.$disconnect();
   }
 }
+
+export async function checkIfApplied(
+  eventId: number,
+  userId: number
+): Promise<boolean> {
+  try {
+    const applied = await prisma.application.findFirst({
+      where: {
+        event_id: eventId,
+        applicant_id: userId,
+      },
+    });
+    if (applied) return true;
+    return false;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return false;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
