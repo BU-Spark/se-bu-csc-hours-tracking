@@ -14,7 +14,7 @@ function CardGrid(props: CardGridProps) {
           // Convert image to base64 string
           const base64Image = event.image
             ? `data:image/jpeg;base64,${convertToBase64(event.image)}`
-            : "";
+            : "https://picsum.photos/200/300";
 
           return (
             <Col

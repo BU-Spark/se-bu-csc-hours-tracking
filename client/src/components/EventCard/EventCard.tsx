@@ -26,6 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({
       const result: Person | undefined = await getCoordinatorById(
         coordinator_id
       );
+      console.log("coordinator:", result);
       if (result) {
         setCoordinator(result);
       }
@@ -34,6 +35,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
     const fetchCategory = async () => {
       const result = await getCategoryById(category_id);
+      console.log("category:", result);
       if (result) {
         setCategory(result);
       }
