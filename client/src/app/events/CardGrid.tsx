@@ -2,19 +2,10 @@ import React from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
+import convertToBase64 from "../utils/BufferToString";
 
 function CardGrid(props: CardGridProps) {
   const { events } = props;
-
-  const convertToBase64 = (buffer: any): string => {
-    //should be type EventImage but it will error
-    const uint8Array = new Uint8Array(buffer.data);
-    const binaryString = uint8Array.reduce(
-      (acc, byte) => acc + String.fromCharCode(byte),
-      ""
-    );
-    return btoa(binaryString);
-  };
 
   return (
     <Row justify="start" style={{ marginRight: "3rem" }}>

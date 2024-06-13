@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
-import { formatDate } from "@/app/utilities/DateFormatters";
+import { formatDate } from "@/app/utils/DateFormatters";
 import { Application, Person } from "@prisma/client";
 import { GroupedEvents } from "@/interfaces/interfaces";
 import {
