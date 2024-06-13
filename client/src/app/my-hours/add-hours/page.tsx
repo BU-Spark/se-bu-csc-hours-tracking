@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -16,11 +17,27 @@ const FormContainer = styled.div`
   gap: 20px;
 `;
 
+const BackButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+  color: #cc0000;
+
+  &:hover {
+    color: #ff0000;
+  }
+
+  svg {
+    margin-right: 8px;
+  }
+`;
+
 const Label = styled.label`
   display: flex;
   flex-direction: column;
   font-size: 1rem;
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* Add space between the label and the input */
 `;
 
 const Input = styled.input`
@@ -30,6 +47,7 @@ const Input = styled.input`
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
+  margin-top: 8px; /* Add space between the label and the input */
 `;
 
 const TextArea = styled.textarea`
@@ -40,22 +58,23 @@ const TextArea = styled.textarea`
   width: 100%;
   resize: none;
   box-sizing: border-box;
+  margin-top: 8px; /* Add space between the label and the textarea */
 `;
 
 const SubmitButton = styled.button`
   padding: 10px;
   border: none;
   border-radius: 8px;
-  background-color: #ff0000;
+  background-color: rgba(204, 0, 0, 1); /* Use the specified shade of red */
   color: #fff;
   cursor: pointer;
   font-size: 1rem;
   &:hover {
-    background-color: #cc0000;
+    background-color: rgba(153, 0, 0, 1); /* Slightly darker shade for hover */
   }
 `;
 
-const LogHours: React.FC = () => {
+const AddHours: React.FC = () => {
   const [event, setEvent] = useState('');
   const [hours, setHours] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -84,6 +103,10 @@ const LogHours: React.FC = () => {
 
   return (
     <FormContainer>
+      <BackButton onClick={() => router.push('/my-hours')}>
+        <AiOutlineArrowLeft size={24} />
+        <span>Back to Hours</span>
+      </BackButton>
       <h1>Add Hours</h1>
       <form onSubmit={handleSubmit}>
         <Label>
@@ -124,4 +147,4 @@ const LogHours: React.FC = () => {
   );
 };
 
-export default LogHours;
+export default AddHours;

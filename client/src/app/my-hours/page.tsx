@@ -1,8 +1,9 @@
+// client/src/app/my-hours/page.tsx
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; 
 import { getSession } from 'next-auth/react';
 import { getHoursByUserEmail } from './action';
 import { AiOutlinePlus } from 'react-icons/ai';
@@ -38,7 +39,7 @@ const SummaryBox = styled.div`
   min-width: 150px;
 
   h2 {
-    color: rgba(204, 0, 0, 1);
+    color: rgba(204, 0, 0, 1); 
     font-size: 2rem;
     margin: 0;
   }
@@ -182,26 +183,12 @@ const Rectangle = styled.div`
   } 
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
-`;
-
 const MyHours: React.FC = () => {
   const [hours, setHours] = useState<Hour[]>([]);
   const [approvedHours, setApprovedHours] = useState(0);
   const [pendingHours, setPendingHours] = useState(0);
   const [submittedHours, setSubmittedHours] = useState(0);
-  const [upcomingHours, setUpcomingHours] = useState(0);
+  const [upcomingEvents, setUpcomingEvents] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -215,10 +202,9 @@ const MyHours: React.FC = () => {
           setPendingHours(data.filter((hour: Hour) => hour.status === 'pending').length);
           setSubmittedHours(data.length);
           
-          // Compute upcoming events
           const currentDate = new Date();
           const upcoming = data.filter((hour: Hour) => new Date(hour.date) > currentDate).length;
-          setUpcomingHours(upcoming);
+          setUpcomingEvents(upcoming);
           
         } catch (error) {
           console.error('Error fetching hours:', error);
@@ -233,8 +219,8 @@ const MyHours: React.FC = () => {
     <HeaderOffset>
       <SummaryContainer>
         <SummaryBox>
-          <h2>{upcomingHours}</h2>
-          <p>Upcoming Hours</p>
+          <h2>{upcomingEvents}</h2>
+          <p>Upcoming Events</p>
         </SummaryBox>
         <SummaryBox>
           <h2>{submittedHours}</h2>
@@ -273,7 +259,7 @@ const MyHours: React.FC = () => {
         ))}
       </HoursGrid>
       <AddHoursButtonContainer>
-        <AddHoursButton onClick={() => router.push('/hours/add-hours')}>
+        <AddHoursButton onClick={() => router.push('/my-hours/add-hours')}>
           <PlusCircle>
             <AiOutlinePlus />
           </PlusCircle>

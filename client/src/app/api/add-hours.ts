@@ -41,7 +41,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           volunteer: {
             connect: { id: user.id },
           },
-          approval_status: 0, // Adjust this logic as needed
+          approval_status: 0, 
           date_submitted: new Date(),
         },
       });
