@@ -100,3 +100,7 @@ export interface Person {
 export interface GroupedEvents {
   [date: string]: Event[];
 }
+
+export interface EventImage {
+  data: ArrayBuffer;
+}

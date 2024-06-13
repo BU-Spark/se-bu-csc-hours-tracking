@@ -1,15 +1,19 @@
 import React from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
-import { CardGridProps, Event } from "@/interfaces/interfaces";
-
-
+import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
 
 function CardGrid(props: CardGridProps) {
   const { events } = props;
 
-  const convertToBase64 = (arrayBuffer: ArrayBuffer) => {
-    return btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  const convertToBase64 = (buffer: any): string => {
+    //should be type EventImage but it will error
+    const uint8Array = new Uint8Array(buffer.data);
+    const binaryString = uint8Array.reduce(
+      (acc, byte) => acc + String.fromCharCode(byte),
+      ""
+    );
+    return btoa(binaryString);
   };
 
   return (
@@ -18,7 +22,7 @@ function CardGrid(props: CardGridProps) {
         events.map((event: Event, index: number) => {
           // Convert image to base64 string
           const base64Image = event.image
-            ? `data:image/jpeg;base64,${convertToBase64(event.image.data)}`
+            ? `data:image/jpeg;base64,${convertToBase64(event.image)}`
             : "";
 
           return (
