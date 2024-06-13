@@ -43,7 +43,7 @@ const options: NextAuthOptions = {
           data: {
             email: user.email,
             name: user.name,
-            // image: user.image, not needed
+            image: user.image,
             accounts: {
               create: {
                 provider: account!.provider,

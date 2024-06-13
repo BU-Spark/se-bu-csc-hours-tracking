@@ -1,7 +1,4 @@
 export default {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   rewrites: async () => [
     {
       source: "/signin",
