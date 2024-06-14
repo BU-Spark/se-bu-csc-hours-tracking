@@ -2,14 +2,17 @@ import { Event } from "@prisma/client";
 import { message, Checkbox, DatePicker, Form, Typography, Button } from "antd";
 import dayjs from "dayjs";
 import { buRed } from "@/common/styles";
+import { createApplication } from "./action";
 
 interface RegisterFormProps {
   event: Event | undefined;
   setRegistering: (value: boolean) => void;
+  userId: number;
 }
 const RegisterForm: React.FC<RegisterFormProps> = ({
   event,
   setRegistering,
+  userId,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -19,6 +22,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
     ) {
       success();
+      if (event?.id) createApplication(event?.id, userId);
       setTimeout(() => {
         setRegistering(false);
       }, 1000);

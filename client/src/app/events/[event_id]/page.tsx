@@ -179,7 +179,11 @@ export default function Page() {
           )}
         </div>
         {registering ? (
-          <RegisterForm event={event} setRegistering={setRegistering} />
+          <RegisterForm
+            event={event}
+            userId={userId}
+            setRegistering={setRegistering}
+          />
         ) : (
           <div className="description">{event.description}</div>
         )}

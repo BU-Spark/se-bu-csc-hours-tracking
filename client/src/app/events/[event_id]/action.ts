@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/app/utils/prisma";
 import { Event } from "@/interfaces/interfaces";
+import { Application } from "@prisma/client";
 
 export async function getEvent(eventId: number): Promise<any> {
   try {
@@ -39,5 +40,27 @@ export async function checkIfApplied(
     return false;
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+export async function createApplication(
+  event_id: number,
+  userId: number
+): Promise<Application | undefined> {
+  try {
+    const application = await prisma.application.create({
+      data: {
+        date_applied: new Date(),
+        summary: "",
+        approved: false,
+        applicant_id: userId,
+        event_id: event_id,
+      },
+    });
+    console.log("Application Successful", application);
+
+    if (application) return application;
+  } catch (error) {
+    console.log(error);
   }
 }
