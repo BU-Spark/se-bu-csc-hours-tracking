@@ -3,19 +3,41 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getEvent } from "./action";
-import { Event } from "@/interfaces/interfaces";
-import { Button, Typography } from "antd";
-import e from "express";
+import { checkIfApplied, getEvent } from "./action";
+import { Event } from "@prisma/client";
+import { Button, message, Typography } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import { formatDate, formatTime } from "@/app/utils/DateFormatters";
 import convertToBase64 from "@/app/utils/BufferToString";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import RegisterForm from "./RegisterForm";
+import { useSession } from "next-auth/react";
+
+dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
-  const event_id: string = useParams().event_id.toString();
+  const [registering, setRegistering] = useState<boolean>(false);
+  const [hasRegistered, setHasRegistered] = useState<boolean>(false);
+  const event_id: number = Number(useParams().event_id);
+  const session = useSession();
+
+  //CHECK IF USER HAS ALREADY APPLIED
+  useEffect(() => {
+    const fetchCheckApplied = async () => {
+      if (session?.data?.user) {
+        const result: boolean = await checkIfApplied(
+          event_id,
+          Number(session?.data?.user.id)
+        );
+        setHasRegistered(result);
+      }
+    };
+    if (session.status != "loading") fetchCheckApplied();
+  }, [session.status]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -74,16 +96,6 @@ export default function Page() {
         </h1>
       </div>
       <div style={{ padding: "2rem 4rem" }}>
-        <Button
-          danger
-          style={{
-            borderRadius: "20px",
-            marginBottom: "1rem",
-            width: "6rem",
-          }}
-        >
-          Sign Up
-        </Button>
         <div
           style={{
             display: "flex",
@@ -144,7 +156,40 @@ export default function Page() {
             {event.location}
           </div>
         </div>
-        <div className="description">{event.description}</div>
+        <div
+          className="signup"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {hasRegistered ? (
+            <p style={{ color: buRed }}>Registered!</p>
+          ) : (
+            <Button
+              style={{
+                borderRadius: "20px",
+                marginBottom: "1rem",
+                width: "6rem",
+                color: buRed,
+                borderColor: buRed,
+              }}
+              onClick={() => setRegistering(!registering)}
+            >
+              {registering ? "Close" : "Register"}
+            </Button>
+          )}
+        </div>
+        {registering ? (
+          <RegisterForm
+            event={event}
+            userId={userId}
+            setRegistering={setRegistering}
+          />
+        ) : (
+          <div className="description">{event.description}</div>
+        )}
       </div>
     </div>
   ) : (

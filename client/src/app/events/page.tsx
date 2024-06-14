@@ -1,15 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import EventCard from "@/components/EventCard/EventCard";
-import { Event, EventCardProps, EventInput } from "@/interfaces/interfaces";
+import { Event, EventInput } from "@/interfaces/interfaces";
 import { createDummyEvent, getEvents } from "./action";
-import { Col, Row, Layout } from "antd";
-import { now } from "next-auth/client/_utils";
-import icon from "../../../public/photos/full_logo.png";
+import { Layout } from "antd";
 import CardGrid from "./CardGrid";
 import { Content } from "antd/es/layout/layout";
-const { Sider } = Layout;
-import img from "../../../public/photos/beach-cleanup.png";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>();
@@ -23,7 +18,7 @@ function Events() {
   }, []);
 
   const dummyEvent: EventInput = {
-    title: "Dummy",
+    title: "Dummy " + new Date().toTimeString(),
     event_start: new Date(),
     event_end: new Date(),
     reg_start: new Date(),
