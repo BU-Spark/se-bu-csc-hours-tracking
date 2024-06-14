@@ -87,10 +87,16 @@ const EventCard: React.FC<EventCardProps> = ({
                 marginTop: "0",
                 marginBottom: "0",
                 // marginLeft: "0.1rem",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {/* this is not title for some reason */}
-              {category.name}
+              {title}
+              {/* {category.name} */}
             </h3>
             <p
               style={{

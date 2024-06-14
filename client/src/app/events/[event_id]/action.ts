@@ -27,6 +27,7 @@ export async function checkIfApplied(
   userId: number
 ): Promise<boolean> {
   try {
+    console.log("EVENT", eventId, "APPLICANT", userId);
     const applied = await prisma.application.findFirst({
       where: {
         event_id: eventId,

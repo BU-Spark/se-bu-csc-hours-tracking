@@ -22,19 +22,22 @@ export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
   const [hasRegistered, setHasRegistered] = useState<boolean>(false);
-  const [messageApi, contextHolder] = message.useMessage();
   const event_id: number = Number(useParams().event_id);
-  const userId: number = Number(useSession().data?.user.id);
+  const session = useSession();
 
   //CHECK IF USER HAS ALREADY APPLIED
   useEffect(() => {
     const fetchCheckApplied = async () => {
-      const result: boolean = await checkIfApplied(event_id, userId);
-
-      setHasRegistered(result);
+      if (session?.data?.user) {
+        const result: boolean = await checkIfApplied(
+          event_id,
+          Number(session?.data?.user.id)
+        );
+        setHasRegistered(result);
+      }
     };
-    fetchCheckApplied();
-  }, []);
+    if (session.status != "loading") fetchCheckApplied();
+  }, [session.status]);
 
   useEffect(() => {
     const fetchEvent = async () => {

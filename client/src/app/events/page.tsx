@@ -18,7 +18,7 @@ function Events() {
   }, []);
 
   const dummyEvent: EventInput = {
-    title: "Dummy",
+    title: "Dummy " + new Date().toTimeString(),
     event_start: new Date(),
     event_end: new Date(),
     reg_start: new Date(),
