@@ -3,7 +3,12 @@ import React, { useState } from "react";
 import { Button } from "antd";
 import { buRed } from "@/common/styles";
 
-const StyledButton = (text: string) => {
+interface StyledButtonProps {
+  text: string;
+  onClick: () => Promise<void>;
+}
+
+const StyledButton: React.FC<StyledButtonProps> = ({ text, onClick }) => {
   const [hover, setHover] = useState(false);
 
   return (
@@ -18,6 +23,7 @@ const StyledButton = (text: string) => {
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={onClick}
     >
       {text}
     </Button>

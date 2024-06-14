@@ -2,10 +2,9 @@
 import { buRed } from "../common/styles";
 import { useSession } from "next-auth/react";
 
-const Pfp: React.FC<any> = ({ height: dimension }) => {
+const Pfp: React.FC<any> = ({ dimension, session }) => {
   const defaultImageUrl =
     "https://static.vecteezy.com/system/resources/thumbnails/002/534/006/small/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg";
-  const { data: session, status } = useSession();
 
   return session?.user?.image ? (
     <img
