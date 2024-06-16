@@ -81,13 +81,14 @@ const AddHours: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const editorId = null; // or the ID of the editor if available
     try {
       const response = await fetch('/api/add-hours', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ event, hours, feedback, description }),
+        body: JSON.stringify({ event, hours, feedback, description, editorId }),
       });
       if (response.ok) {
         router.push('/my-hours');

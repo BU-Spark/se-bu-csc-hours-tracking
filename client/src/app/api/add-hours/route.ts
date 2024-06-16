@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     const token = await getToken({ req });
 
     if (!token || !token.email) {
+      console.error('Unauthorized: No token or email found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -18,62 +19,33 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
+      console.error('User not found');
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if the default category exists
-    let defaultCategory = await prisma.category.findFirst({
-      where: { name: 'Default Category' },
-    });
-
-    // If the default category does not exist, create it
-    if (!defaultCategory) {
-      defaultCategory = await prisma.category.create({
-        data: {
-          name: 'Default Category',
-        },
-      });
-    }
-
-    // Check if the default organization exists
-    let defaultOrganization = await prisma.organization.findFirst({
-      where: { name: 'Default Organization' },
-    });
-
-    // If the default organization does not exist, create it
-    if (!defaultOrganization) {
-      defaultOrganization = await prisma.organization.create({
-        data: {
-          name: 'Default Organization',
-          abbreviation: 'DO',
-        },
-      });
-    }
-
-    // Check if the event exists
     let eventData = await prisma.event.findUnique({
       where: { title: event },
+      select: {
+        id: true,
+        title: true,
+        event_start: true,
+        event_end: true,
+        reg_start: true,
+        reg_end: true,
+        estimated_participants: true,
+        location: true,
+        transit: true,
+        description: true,
+        category_id: true,
+        coordinator_id: true,
+        form_id: true,
+        organization_id: true,
+      },
     });
 
-    // If event does not exist, create it
     if (!eventData) {
-      eventData = await prisma.event.create({
-        data: {
-          title: event,
-          event_start: new Date(), // Adjust as needed
-          event_end: new Date(), // Adjust as needed
-          reg_start: new Date(), // Adjust as needed
-          reg_end: new Date(), // Adjust as needed
-          estimated_participants: 0, // Adjust as needed
-          location: 'Default Location', // Adjust as needed
-          transit: 'Default Transit', // Adjust as needed
-          description: 'Default Description', // Adjust as needed
-          category_id: defaultCategory.id,
-          coordinator_id: user.id,
-          organization_id: defaultOrganization.id,
-          image: Buffer.from(''), // Placeholder for image
-        },
-      });
+      console.error('Event not found');
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
     const newHourSubmission = await prisma.hourSubmission.create({
@@ -89,6 +61,9 @@ export async function POST(req: NextRequest) {
         },
         approval_status: 0,
         date_submitted: new Date(),
+        updated_by: {
+          connect: { id: user.id }, 
+        },
       },
     });
 

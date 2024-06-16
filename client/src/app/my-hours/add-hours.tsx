@@ -75,12 +75,12 @@ const LogHours: React.FC = () => {
       if (response.ok) {
         router.push('/my-hours');
       } else {
-        console.error('Failed to log hours');
+        console.error('Failed to log hours:', await response.json());
       }
     } catch (error) {
       console.error('Error submitting form:', error);
     }
-  };
+  };  
 
   return (
     <FormContainer>

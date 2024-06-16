@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/react';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { event, hours, comments } = req.body;
+    const { event, hours, comments, description, editorId } = req.body;
     const session = await getSession({ req });
 
     if (!session?.user?.email) {
@@ -35,14 +35,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: {
           hours: parseFloat(hours),
           note: comments,
+          description: description,
           event: {
             connect: { id: eventData.id },
           },
           volunteer: {
             connect: { id: user.id },
           },
-          approval_status: 0, 
+          approval_status: 0,
           date_submitted: new Date(),
+          updated_by: {
+            connect: {
+              id: editorId || user.id, // Use editor ID if available, otherwise use submitter's ID
+            },
+          },
         },
       });
 
@@ -54,4 +60,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
-};
+}

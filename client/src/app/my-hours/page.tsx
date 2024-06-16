@@ -12,10 +12,11 @@ interface Hour {
   id: number;
   image: string;
   eventName: string;
+  organization: string;
   location: string;
   status: string;
   date: string;
-  reviewer: string;
+  reviewer: string | null;
   hours: number;
 }
 
@@ -26,7 +27,13 @@ const HeaderOffset = styled.div`
 const SummaryContainer = styled.div`
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const SummaryBox = styled.div`
@@ -34,84 +41,148 @@ const SummaryBox = styled.div`
   border-radius: 10px;
   padding: 20px;
   text-align: center;
+  font-weight: bold;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 150px;
+  display: flex;
+  align-items: center;
+  width: 150px;
+  margin: 10px;
 
   h2 {
     color: rgba(204, 0, 0, 1);
     font-size: 2rem;
-    margin: 0;
+    margin: 0 10px 0 0;
   }
 
   p {
     font-size: 1rem;
     color: #000;
+    margin: 0;
   }
-`;
 
-const FilterButtons = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  button {
-    margin: 0 10px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background-color: #ccc;
-    cursor: pointer;
-    &:hover {
-      background-color: #bbb;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: auto;
+    h2 {
+      margin: 0 0 10px 0;
     }
   }
 `;
 
 const HoursGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   padding: 0 20px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 992px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `;
 
 const HoursItem = styled.div<{ status: string }>`
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;
   background-color: #f9f9f9;
-  img {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
-    margin-right: 20px;
-    object-fit: cover;
-  }
-  div {
-    flex-grow: 1;
-    display: flex;
+  width: calc(100% - 40px); /* Added padding for the container */
+  max-width: 1000px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
     flex-direction: column;
+    align-items: flex-start;
   }
+
+  img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+
+    @media (max-width: 768px) {
+      margin-bottom: 10px;
+    }
+  }
+
+  .divider {
+    width: 2px;
+    height: 100px;
+    background-color: rgba(204, 0, 0, 1);
+    margin-left: 20px;
+    margin-right: 20px;
+
+    @media (max-width: 768px) {
+      height: 2px;
+      width: 100%;
+      margin: 10px 0;
+    }
+  }
+
   .details {
     display: flex;
+    flex-grow: 1;
     justify-content: space-between;
     align-items: center;
+    padding-left: 20px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-left: 0;
+    }
   }
+
+  .section {
+    flex: 1;
+    padding: 0 20px;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+      padding: 10px 0;
+    }
+  }
+
   .status {
     font-weight: bold;
-    color: ${(props) => (props.status === 'approved' ? 'green' : 'orange')};
+    color: ${(props) => (props.status === 'approved' ? 'green' : props.status === 'denied' ? 'red' : 'orange')};
+    text-transform: capitalize;
   }
+
   .date {
     color: #888;
   }
+`;
+
+const EventName = styled.h3`
+  font-weight: bold;
+  margin: 0;
+`;
+
+const SubTitle = styled.p`
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+`;
+
+const BoldText = styled.p`
+  font-weight: bold;
+  margin: 0;
+`;
+
+const SubText = styled.p`
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
 `;
 
 const AddHoursButtonContainer = styled.div`
@@ -131,6 +202,7 @@ const AddHoursButton = styled.button`
   padding: 0;
   position: relative;
   font-size: 1vw;
+
   @media (min-width: 600px) {
     font-size: 0.5rem;
   }
@@ -157,6 +229,7 @@ const PlusCircle = styled.div`
   font-size: 1.5em;
   position: relative;
   z-index: 2;
+
   @media (max-width: 600px) {
     font-size: 1.5em;
   }
@@ -177,6 +250,7 @@ const Rectangle = styled.div`
   padding-left: 4em;
   padding-right: 1.5em;
   font-size: 1em;
+
   @media (max-width: 600px) {
     font-size: 1em;
   }
@@ -186,7 +260,7 @@ const MyHours: React.FC = () => {
   const [hours, setHours] = useState<Hour[]>([]);
   const [approvedHours, setApprovedHours] = useState(0);
   const [pendingHours, setPendingHours] = useState(0);
-  const [submittedHours, setSubmittedHours] = useState(0);
+  const [totalHours, setTotalHours] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState(0);
   const router = useRouter();
 
@@ -197,14 +271,17 @@ const MyHours: React.FC = () => {
         try {
           const data = await getHoursByUserEmail(session.user.email);
           setHours(data);
-          setApprovedHours(data.filter((hour: Hour) => hour.status === 'approved').length);
-          setPendingHours(data.filter((hour: Hour) => hour.status === 'pending').length);
-          setSubmittedHours(data.length);
+          const approved = data.filter((hour: Hour) => hour.status === 'approved');
+          const pending = data.filter((hour: Hour) => hour.status === 'pending');
+          const total = data.reduce((acc: number, hour: Hour) => acc + hour.hours, 0);
+
+          setApprovedHours(approved.length);
+          setPendingHours(pending.length);
+          setTotalHours(total);
 
           const currentDate = new Date();
           const upcoming = data.filter((hour: Hour) => new Date(hour.date) > currentDate).length;
           setUpcomingEvents(upcoming);
-
         } catch (error) {
           console.error('Error fetching hours:', error);
         }
@@ -222,7 +299,7 @@ const MyHours: React.FC = () => {
           <p>Upcoming Events</p>
         </SummaryBox>
         <SummaryBox>
-          <h2>{submittedHours}</h2>
+          <h2>{totalHours}</h2>
           <p>Submitted Hours</p>
         </SummaryBox>
         <SummaryBox>
@@ -230,30 +307,31 @@ const MyHours: React.FC = () => {
           <p>Approved Hours</p>
         </SummaryBox>
       </SummaryContainer>
-      <FilterButtons>
-        <button>This Month</button>
-        <button>This Year</button>
-        <button>Cumulative</button>
-      </FilterButtons>
       <HoursGrid>
         {hours.map((hour: Hour) => (
           <HoursItem key={hour.id} status={hour.status}>
             <img src={hour.image} alt={hour.eventName} />
-            <div>
-              <div className="details">
-                <div>
-                  <h3>{hour.eventName}</h3>
-                  <p>{hour.hours} Hours</p>
-                  <p>{hour.location}</p>
-                </div>
-                <div>
-                  <p className="status">{hour.status}</p>
-                  <p className="date">{new Date(hour.date).toLocaleDateString()}</p>
-                  <p>Reviewed By: {hour.reviewer}</p>
-                </div>
+            <div className="divider"></div>
+            <div className="details">
+              <div className="section">
+                <BoldText>{hour.eventName}</BoldText>
+                <SubText>{hour.organization}</SubText>
+              </div>
+              <div className="section">
+                <BoldText>{hour.hours} Hours</BoldText>
+                <SubText>{hour.location}</SubText>
+              </div>
+              <div className="section">
+                <BoldText className="status">{hour.status}</BoldText>
+                <SubText>Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}</SubText>
+              </div>
+              <div className="section">
+                <BoldText>{new Date(hour.date).toLocaleDateString()}</BoldText>
+              </div>
+              <div className="section">
+                <FaComment />
               </div>
             </div>
-            <FaComment />
           </HoursItem>
         ))}
       </HoursGrid>
