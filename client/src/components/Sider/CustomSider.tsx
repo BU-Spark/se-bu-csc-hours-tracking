@@ -13,19 +13,19 @@ const CustomSider: React.FC = () => {
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] = [
-    {
-      key: "dashboard",
-      label: "Dashboard",
-      onClick: () => router.push("/"),
-    },
+    // {
+    //   key: "dashboard",
+    //   label: "Dashboard",
+    //   onClick: () => router.push("/"),
+    // },
     {
       key: "my_hours",
       label: "My Hours",
       onClick: () => router.push("/my-hours"),
     },
     {
-      key: "my_events",
-      label: "My Events",
+      key: "events",
+      label: "Events",
       onClick: () => router.push("/events"),
     },
     {
@@ -56,7 +56,7 @@ const CustomSider: React.FC = () => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp dimension={"6em"} />
+          <Pfp dimension={"6em"} session={session} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
               {session?.user.name}

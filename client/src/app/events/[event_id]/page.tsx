@@ -1,17 +1,43 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getEvent } from "./action";
-import { Event } from "@/interfaces/interfaces";
-import { Typography } from "antd";
-import e from "express";
-import { CalendarOutlined } from "@ant-design/icons";
+import { checkIfApplied, getEvent } from "./action";
+import { Event } from "@prisma/client";
+import { Button, message, Typography } from "antd";
+import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "@/common/styles";
+import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
+import { formatDate, formatTime } from "@/app/utils/DateFormatters";
+import convertToBase64 from "@/app/utils/BufferToString";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import RegisterForm from "./RegisterForm";
+import { useSession } from "next-auth/react";
+
+dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
-  const event_id: string = useParams().event_id.toString();
+  const [registering, setRegistering] = useState<boolean>(false);
+  const [hasRegistered, setHasRegistered] = useState<boolean>(false);
+  const event_id: number = Number(useParams().event_id);
+  const session = useSession();
+
+  //CHECK IF USER HAS ALREADY APPLIED
+  useEffect(() => {
+    const fetchCheckApplied = async () => {
+      if (session?.data?.user) {
+        const result: boolean = await checkIfApplied(
+          event_id,
+          Number(session?.data?.user.id)
+        );
+        setHasRegistered(result);
+      }
+    };
+    if (session.status != "loading") fetchCheckApplied();
+  }, [session.status]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -23,34 +49,13 @@ export default function Page() {
     fetchEvent();
   }, [event_id]);
 
-  const formatDate = (date: Date, hasTime: boolean) => {
-    const timeOptions: Intl.DateTimeFormatOptions = {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-
-    const nonTimeOptions: Intl.DateTimeFormatOptions = {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    };
-    const option = hasTime ? timeOptions : nonTimeOptions;
-    return date.toLocaleDateString("en-US", option);
-  };
-
   return event ? (
     <div
       style={{
         width: "100%",
         height: "50vh",
         position: "relative",
-        border: "1px black solid",
         marginRight: "4rem",
-        borderTopRightRadius: "1rem",
-        borderTopLeftRadius: "1rem",
       }}
     >
       <div
@@ -63,7 +68,7 @@ export default function Page() {
         }}
       >
         <img
-          src={event.image.toString()}
+          src={`data:image/jpeg;base64,${convertToBase64(event.image)}`}
           alt={event.title.toString()}
           style={{
             width: "100%",
@@ -72,6 +77,8 @@ export default function Page() {
             objectFit: "cover",
             height: "100%",
             zIndex: "1",
+            borderTopRightRadius: "1rem",
+            borderTopLeftRadius: "1rem",
           }}
         />
         <h1
@@ -89,7 +96,13 @@ export default function Page() {
         </h1>
       </div>
       <div style={{ padding: "2rem 4rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography.Title style={{ fontSize: "1.5rem", marginLeft: "1rem" }}>
             At a Glance
           </Typography.Title>
@@ -100,7 +113,8 @@ export default function Page() {
         <div
           style={{
             display: "flex",
-            alignContent: "space-between",
+            alignItems: "center",
+            justifyContent: "space-around",
             padding: "2rem 0rem",
           }}
         >
@@ -125,12 +139,57 @@ export default function Page() {
               justifyContent: "center",
             }}
           >
-            <CalendarOutlined
+            <ClockCircleOutlined
               style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
             />{" "}
-            {formatDate(event.event_start, false)}
+            {formatTime(event.event_start)} - {formatTime(event.event_end)}
+          </div>
+          <div
+            className="location"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FmdGoodOutlinedIcon style={{ fontSize: "2.2rem", color: buRed }} />{" "}
+            {event.location}
           </div>
         </div>
+        <div
+          className="signup"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {hasRegistered ? (
+            <p style={{ color: buRed }}>Registered!</p>
+          ) : (
+            <Button
+              style={{
+                borderRadius: "20px",
+                marginBottom: "1rem",
+                width: "6rem",
+                color: buRed,
+                borderColor: buRed,
+              }}
+              onClick={() => setRegistering(!registering)}
+            >
+              {registering ? "Close" : "Register"}
+            </Button>
+          )}
+        </div>
+        {registering ? (
+          <RegisterForm
+            event={event}
+            userId={userId}
+            setRegistering={setRegistering}
+          />
+        ) : (
+          <div className="description">{event.description}</div>
+        )}
       </div>
     </div>
   ) : (

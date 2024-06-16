@@ -83,7 +83,7 @@ const HoursItem = styled.div<{ status: string }>`
   border: 1px solid #ccc;
   border-radius: 10px;
   background-color: #f9f9f9;
-  width: calc(100% - 40px); /* Added padding for the container */
+  width: calc(100% - 40px);
   max-width: 1000px;
   margin: 0 auto;
 

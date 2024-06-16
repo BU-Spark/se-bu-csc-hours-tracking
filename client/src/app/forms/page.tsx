@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Typography, Upload } from "antd";
 import { buRed } from "@/common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
-import { getCodes, getForms } from "./action";
+import { createDummyForms, getCodes, getForms } from "./action";
 import useDownloader from "react-use-downloader";
 import Link from "next/link";
 import {
@@ -208,6 +208,12 @@ function Forms() {
           </div>
         )}
       </Row>
+      <button
+        style={{ position: "fixed", bottom: 0 }}
+        onClick={() => createDummyForms()}
+      >
+        Create Forms
+      </button>
     </>
   );
 }

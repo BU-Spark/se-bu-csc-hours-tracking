@@ -1,25 +1,45 @@
 import React from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
-import { Event } from "@/interfaces/interfaces";
+import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
+import convertToBase64 from "../utils/BufferToString";
 
-function CardGrid({ events }: Event[]) {
+function CardGrid(props: CardGridProps) {
+  const { events } = props;
+
   return (
-    <Row justify="space-between" style={{ marginRight: "3rem" }}>
+    <Row justify="start" style={{ marginRight: "3rem" }}>
       {events ? (
-        events.map((e, index) => (
-          <Col span={5} key={index} style={{ margin: "1rem 2.5rem" }}>
-            <EventCard
+        events.map((event: Event, index: number) => {
+          // Convert image to base64 string
+          const base64Image = event.image
+            ? `data:image/jpeg;base64,${convertToBase64(event.image)}`
+            : "https://picsum.photos/200/300";
+
+          return (
+            <Col
+              span={5}
               key={index}
-              event_id={e.id}
-              title={e.title}
-              coordinator_id={e.coordinator_id}
-              location={e.location}
-              image={e.image}
-              event_start={e.event_start}
-            />
-          </Col>
-        ))
+              style={{
+                margin: "0rem 2.5rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "start",
+              }}
+            >
+              <EventCard
+                key={index}
+                event_id={event.id}
+                title={event.title}
+                coordinator_id={event.coordinator_id}
+                location={event.location}
+                image={base64Image}
+                event_start={event.event_start}
+                category_id={event.category_id}
+              />
+            </Col>
+          );
+        })
       ) : (
         <div>
           <p>Loading events...</p>

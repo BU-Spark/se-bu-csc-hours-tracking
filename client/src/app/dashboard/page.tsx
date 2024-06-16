@@ -5,10 +5,7 @@ import React from 'react'
   const Dashboard: React.FC = () => {
 
     
-  return (
-    <div>
-    <button onClick={() => signOut()}>Sign out</button></div>
-  )
+  return <div></div>;
 }
 
 export default Dashboard

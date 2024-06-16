@@ -1,56 +1,125 @@
-import prisma from './prisma';
-import { Adapter } from 'next-auth/adapters';
+import { PrismaClient } from "@prisma/client";
+import { Adapter, AdapterUser, AdapterSession } from "next-auth/adapters";
+import { Session, User, Account } from "next-auth";
+
+const prisma = new PrismaClient();
 
 export const CustomPrismaAdapter: Adapter = {
-  async createUser(profile) {
+  async createUser(profile): Promise<AdapterUser> {
     try {
-      console.log('Creating user with profile:', profile);
       const user = await prisma.person.create({
         data: {
           email: profile.email,
-          name: profile.name,
+          name: profile.name || "",
           image: profile.image,
         },
       });
-      console.log('User created:', user);
-      return { ...user, id: user.id.toString() };
+
+      return {
+        id: user.id.toString(),
+        email: user.email,
+        emailVerified: new Date(),
+        // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+        name: user.name,
+        image: user.image || undefined,
+      };
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error("Error creating user:", error);
       throw error;
     }
   },
-  async getUser(id) {
-    const user = await prisma.person.findUnique({
-      where: { id: parseInt(id) },
-    });
-    return user ? { ...user, id: user.id.toString() } : null;
-  },
-  async getUserByEmail(email) {
-    const user = await prisma.person.findUnique({
-      where: { email },
-    });
-    return user ? { ...user, id: user.id.toString() } : null;
-  },
-  async updateUser(user) {
-    const updatedUser = await prisma.person.update({
-      where: { id: parseInt(user.id) },
-      data: {
-        email: user.email,
-        name: user.name,
-        image: user.image,
-      },
-    });
-    return { ...updatedUser, id: updatedUser.id.toString() };
-  },
-  async deleteUser(userId) {
-    const deletedUser = await prisma.person.delete({
-      where: { id: parseInt(userId) },
-    });
-    return { ...deletedUser, id: deletedUser.id.toString() };
-  },
-  async linkAccount(account) {
+
+  async getUser(id: string): Promise<AdapterUser | null> {
     try {
-      console.log('Linking account:', account);
+      const user = await prisma.person.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      return user
+        ? {
+            id: user.id.toString(),
+            email: user.email,
+            emailVerified: new Date(),
+            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            name: user.name,
+            image: user.image || undefined,
+          }
+        : null;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      throw error;
+    }
+  },
+
+  async getUserByEmail(email: string): Promise<AdapterUser | null> {
+    try {
+      const user = await prisma.person.findUnique({
+        where: { email },
+      });
+
+      return user
+        ? {
+            id: user.id.toString(),
+            email: user.email,
+            emailVerified: new Date(),
+            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            name: user.name,
+            image: user.image || undefined,
+          }
+        : null;
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
+      throw error;
+    }
+  },
+
+  async updateUser(user): Promise<AdapterUser> {
+    try {
+      const updatedUser = await prisma.person.update({
+        where: { id: parseInt(user.id) },
+        data: {
+          email: user.email,
+          name: user.name,
+          image: user.image || undefined,
+        },
+      });
+
+      return {
+        id: updatedUser.id.toString(),
+        email: updatedUser.email,
+        emailVerified: new Date(),
+        // emailVerified: updatedUser.emailVerified ? new Date(updatedUser.emailVerified) : null, // Not present in your model
+        name: updatedUser.name,
+        image: updatedUser.image || undefined,
+      };
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  },
+
+  async deleteUser(userId: string): Promise<AdapterUser> {
+    try {
+      const deletedUser = await prisma.person.delete({
+        where: { id: parseInt(userId) },
+      });
+
+      return {
+        id: deletedUser.id.toString(),
+        email: deletedUser.email,
+        emailVerified: new Date(),
+        // emailVerified: deletedUser.emailVerified ? new Date(deletedUser.emailVerified) : null, // Not present in your model
+        name: deletedUser.name,
+        image: deletedUser.image || undefined,
+      };
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  },
+
+  async linkAccount(account): Promise<any> {
+    try {
       const linkedAccount = await prisma.account.create({
         data: {
           provider: account.provider,
@@ -66,61 +135,148 @@ export const CustomPrismaAdapter: Adapter = {
           type: account.type,
         },
       });
-      console.log('Account linked:', linkedAccount);
+
       return linkedAccount;
     } catch (error) {
-      console.error('Error linking account:', error);
+      console.error("Error linking account:", error);
       throw error;
     }
   },
-  async unlinkAccount(accountId) {
-    const unlinkedAccount = await prisma.account.delete({
-      where: { id: accountId },
-    });
-    return unlinkedAccount;
+
+  async unlinkAccount({ provider, providerAccountId }): Promise<void | any> {
+    try {
+      const unlinkedAccount = await prisma.account.delete({
+        where: { provider_providerAccountId: { provider, providerAccountId } },
+      });
+
+      return unlinkedAccount;
+    } catch (error) {
+      console.error("Error unlinking account:", error);
+      throw error;
+    }
   },
-  async getSessionAndUser(sessionToken) {
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: true },
-    });
-    if (!session) return null;
-    const user = { ...session.user, id: session.user.id.toString() };
-    return { session, user };
-  },
-  async createSession(session) {
-    const newSession = await prisma.session.create({
-      data: session,
-    });
-    return newSession;
-  },
-  async updateSession(session) {
-    const updatedSession = await prisma.session.update({
-      where: { sessionToken: session.sessionToken },
-      data: session,
-    });
-    return updatedSession;
-  },
-  async deleteSession(sessionToken) {
-    const deletedSession = await prisma.session.delete({
-      where: { sessionToken },
-    });
-    return deletedSession;
-  },
-  async getUserByAccount({ provider, providerAccountId }) {
-    const account = await prisma.account.findUnique({
-      where: {
-        provider_providerAccountId: {
-          provider,
-          providerAccountId,
+
+  async getSessionAndUser(
+    sessionToken: string
+  ): Promise<{ session: AdapterSession; user: AdapterUser }> {
+    try {
+      const dummySession: AdapterSession = {
+        sessionToken: "broken",
+        userId: "9999",
+        expires: new Date(),
+      };
+      const dummyUser: AdapterUser = {
+        id: "9998",
+        email: "fake@gmail.com",
+        emailVerified: new Date(),
+      };
+      const session = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: { user: true },
+      });
+
+      if (!session) return { session: dummySession, user: dummyUser };
+
+      const user: AdapterUser = {
+        id: session.user.id.toString(),
+        email: session.user.email,
+        emailVerified: new Date(), // Replace with your actual emailVerified logic
+        name: session.user.name,
+        image: session.user.image || undefined,
+      };
+
+      return {
+        session: {
+          sessionToken: session.sessionToken,
+          userId: session.userId.toString(),
+          expires: session.expires,
         },
-      },
-      include: {
-        user: true,
-      },
-    });
-    if (!account) return null;
-    const user = { ...account.user, id: account.user.id.toString() };
-    return user;
+        user,
+      };
+    } catch (error) {
+      console.error("Error getting session and user:", error);
+      throw error;
+    }
+  },
+
+  async createSession(session): Promise<AdapterSession> {
+    try {
+      const newSession = await prisma.session.create({
+        data: {
+          sessionToken: session.sessionToken,
+          userId: parseInt(session.userId),
+          expires: session.expires,
+        },
+      });
+
+      return {
+        sessionToken: newSession.sessionToken,
+        userId: newSession.userId.toString(),
+        expires: newSession.expires,
+      };
+    } catch (error) {
+      console.error("Error creating session:", error);
+      throw error;
+    }
+  },
+
+  async updateSession(session): Promise<AdapterSession> {
+    try {
+      const updatedSession = await prisma.session.update({
+        where: { sessionToken: session.sessionToken },
+        data: {
+          userId: session.userId ? parseInt(session.userId) : 99999,
+          expires: session.expires,
+        },
+      });
+
+      return {
+        sessionToken: updatedSession.sessionToken,
+        userId: updatedSession.userId.toString(),
+        expires: updatedSession.expires,
+      };
+    } catch (error) {
+      console.error("Error updating session:", error);
+      throw error;
+    }
+  },
+
+  async deleteSession(sessionToken: string): Promise<void> {
+    try {
+      await prisma.session.delete({
+        where: { sessionToken },
+      });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      throw error;
+    }
+  },
+
+  async getUserByAccount({
+    provider,
+    providerAccountId,
+  }): Promise<AdapterUser | null> {
+    try {
+      const account = await prisma.account.findUnique({
+        where: { provider_providerAccountId: { provider, providerAccountId } },
+        include: { user: true },
+      });
+
+      if (!account) return null;
+
+      const user = {
+        id: account.user.id.toString(),
+        email: account.user.email,
+        emailVerified: new Date(),
+        // emailVerified: account.user.emailVerified ? new Date(account.user.emailVerified) : null, // Not present in your model
+        name: account.user.name,
+        image: account.user.image || undefined,
+      };
+
+      return user;
+    } catch (error) {
+      console.error("Error getting user by account:", error);
+      throw error;
+    }
   },
 };

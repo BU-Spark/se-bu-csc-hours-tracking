@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 export interface FormRowParams {
   form: Form;
   codes: any;
@@ -49,15 +51,16 @@ export interface Event {
   coordinator_id: number;
   form_id: number | null;
   organization_id: number;
-  image: String;
+  image: Buffer;
 }
 
 export interface EventCardProps {
   event_id: number;
   title: String;
   coordinator_id: number;
+  category_id: number;
   location: String;
-  image: String;
+  image: string;
   event_start: Date;
 }
 
@@ -71,9 +74,33 @@ export interface EventInput {
   location: string;
   transit: string;
   description: string;
-  category_id: number;
-  coordinator_id: number;
   form_id: number | null;
-  organization_id: number;
   image: string;
+}
+
+export interface CardGridProps {
+  events: Event[];
+}
+
+export interface Person {
+  id: number;
+  name: string;
+  email: string;
+  phone_number?: string | null;
+  role: Role;
+  class?: number;
+  affiliation_id?: number;
+  image?: string;
+}
+// export enum Role {
+//   USER,
+//   ORGANIZER,
+// }
+
+export interface GroupedEvents {
+  [date: string]: Event[];
+}
+
+export interface EventImage {
+  data: ArrayBuffer;
 }
