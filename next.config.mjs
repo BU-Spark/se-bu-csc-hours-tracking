@@ -1,8 +1,11 @@
 export default {
-    rewrites: async () => [
-      {
-        source: '/signin',
-        destination: '/api/auth/signin',
-      },
-    ],
-  };
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client'],
+  },
+  rewrites: async () => [
+    {
+      source: '/signin',
+      destination: '/api/auth/signin',
+    },
+  ],
+};
