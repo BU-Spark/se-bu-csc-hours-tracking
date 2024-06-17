@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getHoursByUserEmail } from "../action";
+import { getHoursByUserEmail } from "../../my-hours/action";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { email } = req.query;
