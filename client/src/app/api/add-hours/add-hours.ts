@@ -4,7 +4,7 @@ import { getSession } from 'next-auth/react';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { event, hours, comments, description, editorId } = req.body;
+    const { event, hours, feedback, description } = req.body;
     const session = await getSession({ req });
 
     if (!session?.user?.email) {
@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const newHourSubmission = await prisma.hourSubmission.create({
         data: {
           hours: parseFloat(hours),
-          note: comments,
+          note: feedback,
           description: description,
           event: {
             connect: { id: eventData.id },
@@ -44,11 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           approval_status: 0,
           date_submitted: new Date(),
-          updated_by: {
-            connect: {
-              id: editorId || user.id, // Use editor ID if available, otherwise use submitter's ID
-            },
-          },
         },
       });
 

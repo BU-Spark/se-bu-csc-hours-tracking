@@ -44,7 +44,7 @@ export const getHoursByUserEmail = async (email: string) => {
     location: submission.event.location,
     status: submission.approval_status === 1 ? 'approved' : 'pending',
     date: submission.date_submitted.toString(),
-    reviewer: submission.updated_by?.name || 'N/A',
+    reviewer: submission.updated_by && submission.updated_by.name !== user.name ? submission.updated_by.name : 'N/A',
     hours: submission.hours,
     description: submission.description,
     feedback: submission.note,

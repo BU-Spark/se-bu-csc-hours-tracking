@@ -258,50 +258,45 @@ const Rectangle = styled.div`
   }
 `;
 
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+`;
+
 const PopupContainer = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
+  background: #fff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  width: 80%;
-  max-width: 600px;
+  max-width: 90%;
+  width: 500px;
 
   h3 {
     margin-top: 0;
-  }
-
-  p {
-    margin-bottom: 20px;
-    font-size: 1rem;
-    color: #333;
   }
 
   button {
     background-color: rgba(204, 0, 0, 1);
     color: #fff;
     border: none;
+    border-radius: 5px;
     padding: 10px 20px;
-    border-radius: 8px;
     cursor: pointer;
+    margin-top: 20px;
     &:hover {
       background-color: rgba(153, 0, 0, 1);
     }
   }
-`;
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
 `;
 
 const MyHours: React.FC = () => {
