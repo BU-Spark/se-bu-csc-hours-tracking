@@ -9,6 +9,8 @@ interface HourSubmission {
   approval_status: number;
   event: Event;
   updated_by?: { name: string };
+  description: string;
+  note: string;
 }
 
 interface Event {
@@ -44,5 +46,7 @@ export const getHoursByUserEmail = async (email: string) => {
     date: submission.date_submitted.toString(),
     reviewer: submission.updated_by?.name || 'N/A',
     hours: submission.hours,
+    description: submission.description,
+    feedback: submission.note,
   }));
 };

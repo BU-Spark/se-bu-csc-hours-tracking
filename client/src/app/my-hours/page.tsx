@@ -18,6 +18,8 @@ interface Hour {
   date: string;
   reviewer: string | null;
   hours: number;
+  description: string;
+  feedback: string;
 }
 
 const HeaderOffset = styled.div`
@@ -256,8 +258,55 @@ const Rectangle = styled.div`
   }
 `;
 
+const PopupContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 80%;
+  max-width: 600px;
+
+  h3 {
+    margin-top: 0;
+  }
+
+  p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  button {
+    background-color: rgba(204, 0, 0, 1);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    &:hover {
+      background-color: rgba(153, 0, 0, 1);
+    }
+  }
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+`;
+
 const MyHours: React.FC = () => {
   const [hours, setHours] = useState<Hour[]>([]);
+  const [expandedHour, setExpandedHour] = useState<Hour | null>(null);
   const [approvedHours, setApprovedHours] = useState(0);
   const [pendingHours, setPendingHours] = useState(0);
   const [totalHours, setTotalHours] = useState(0);
@@ -291,6 +340,10 @@ const MyHours: React.FC = () => {
     fetchHours();
   }, []);
 
+  const toggleExpand = (hour: Hour) => {
+    setExpandedHour(expandedHour === hour ? null : hour);
+  };
+
   return (
     <HeaderOffset>
       <SummaryContainer>
@@ -323,18 +376,30 @@ const MyHours: React.FC = () => {
               </div>
               <div className="section">
                 <BoldText className="status">{hour.status}</BoldText>
-                <SubText>Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}</SubText>
+                <SubText>Reviewed By: {hour.reviewer ? hour.reviewer : 'N/A'}</SubText>
               </div>
               <div className="section">
                 <BoldText>{new Date(hour.date).toLocaleDateString()}</BoldText>
               </div>
               <div className="section">
-                <FaComment />
+                <FaComment onClick={() => toggleExpand(hour)} style={{ cursor: 'pointer' }} />
               </div>
             </div>
           </HoursItem>
         ))}
       </HoursGrid>
+      {expandedHour && (
+        <>
+          <Overlay onClick={() => setExpandedHour(null)} />
+          <PopupContainer>
+            <h3>Description</h3>
+            <p>{expandedHour.description}</p>
+            <h3>Feedback</h3>
+            <p>{expandedHour.feedback}</p>
+            <button onClick={() => setExpandedHour(null)}>Close</button>
+          </PopupContainer>
+        </>
+      )}
       <AddHoursButtonContainer>
         <AddHoursButton onClick={() => router.push('/my-hours/add-hours')}>
           <PlusCircle>
