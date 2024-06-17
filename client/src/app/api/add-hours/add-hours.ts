@@ -4,11 +4,11 @@ import { getSession } from 'next-auth/react';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { event, hours, feedback, description } = req.body;
+    const { event, hours, feedback, description, editorId } = req.body;
     const session = await getSession({ req });
 
     if (!session?.user?.email) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
@@ -18,16 +18,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       if (!user) {
-        res.status(404).json({ error: 'User not found' });
+        res.status(404).json({ error: "User not found" });
         return;
       }
 
-      const eventData = await prisma.event.findUnique({
+      const eventData = await prisma.event.findFirst({
         where: { title: event },
       });
 
       if (!eventData) {
-        res.status(404).json({ error: 'Event not found' });
+        res.status(404).json({ error: "Event not found" });
         return;
       }
 
@@ -44,13 +44,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           approval_status: 0,
           date_submitted: new Date(),
+          updated_by_id: editorId,
+          updated_at: new Date(),
+          deleted_by_id: undefined,
+          deleted_at: undefined,
+          updated_by: {
+            connect: { id: editorId },
+          },
         },
       });
 
       res.status(201).json(newHourSubmission);
     } catch (error) {
-      console.error('Error adding hours:', error);
-      res.status(500).json({ error: 'Error adding hours' });
+      console.error("Error adding hours:", error);
+      res.status(500).json({ error: "Error adding hours" });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });

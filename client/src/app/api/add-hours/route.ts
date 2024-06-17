@@ -5,12 +5,12 @@ import { getToken } from 'next-auth/jwt';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { event, hours, feedback, description } = body;
+    const { event, hours, feedback, description, editorId } = body;
     const token = await getToken({ req });
 
     if (!token || !token.email) {
-      console.error('Unauthorized: No token or email found');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      console.error("Unauthorized: No token or email found");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userEmail = token.email;
@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      console.error('User not found');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      console.error("User not found");
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     let eventData = await prisma.event.findUnique({
@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!eventData) {
-      console.error('Event not found');
-      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+      console.error("Event not found");
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     const newHourSubmission = await prisma.hourSubmission.create({
@@ -61,8 +61,12 @@ export async function POST(req: NextRequest) {
         },
         approval_status: 0,
         date_submitted: new Date(),
+        updated_by_id: editorId,
+        updated_at: new Date(),
+        deleted_by_id: undefined,
+        deleted_at: undefined,
         updated_by: {
-          connect: { id: user.id }, 
+          connect: { id: editorId },
         },
       },
     });

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
+import { useSession } from "next-auth/react";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -73,36 +74,37 @@ const SubmitButton = styled.button`
 `;
 
 const AddHours: React.FC = () => {
-  const [event, setEvent] = useState('');
-  const [hours, setHours] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [description, setDescription] = useState('');
+  const [event, setEvent] = useState<string>("");
+  const [hours, setHours] = useState<number>(0);
+  const [feedback, setFeedback] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const editorId = null; // or the ID of the editor if available
+    const editorId = session?.user.id || "9999"; // or the ID of the editor if available
     try {
-      const response = await fetch('/api/add-hours', {
-        method: 'POST',
+      const response = await fetch("/api/add-hours", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ event, hours, feedback, description, editorId }),
       });
       if (response.ok) {
-        router.push('/my-hours');
+        router.push("/my-hours");
       } else {
-        console.error('Failed to log hours');
+        console.error("Failed to log hours");
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
   return (
     <FormContainer>
-      <BackButton onClick={() => router.push('/my-hours')}>
+      <BackButton onClick={() => router.push("/my-hours")}>
         <AiOutlineArrowLeft size={24} />
         <span>Back to Hours</span>
       </BackButton>
@@ -121,7 +123,7 @@ const AddHours: React.FC = () => {
           <Input
             type="number"
             value={hours}
-            onChange={(e) => setHours(e.target.value)}
+            onChange={(e) => setHours(Number(e.target.value))}
           />
         </Label>
         <Label>
