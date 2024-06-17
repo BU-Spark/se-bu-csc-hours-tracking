@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { CustomPrismaAdapter } from "../../../../lib/CustomPrismaAdapter";
@@ -96,7 +95,5 @@ const options: NextAuthOptions = {
   },
 };
 
-export const GET = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
-export const POST = async (req: NextApiRequest, res: NextApiResponse) => NextAuth(req, res, options);
-
-export { options as authOptions };
+export const GET = NextAuth(options);
+export const POST = NextAuth(options);
