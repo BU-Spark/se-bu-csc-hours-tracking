@@ -181,11 +181,12 @@ export default function Page() {
             </Button>
           )}
         </div>
-        {registering ? (
+        {registering && session.data?.user.id ? (
           <RegisterForm
             event={event}
-            userId={userId}
+            userId={Number(session.data?.user.id)}
             setRegistering={setRegistering}
+            setHasRegistered={setHasRegistered}
           />
         ) : (
           <div className="description">{event.description}</div>

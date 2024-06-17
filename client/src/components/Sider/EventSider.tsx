@@ -29,29 +29,38 @@ function EventSider() {
   const [myEvents, setMyEvents] = useState<Event[]>();
   const [myApplications, setMyApplications] = useState<Application[]>();
   const [eventGroups, setEventGroups] = useState<GroupedEvents>();
-  const [categoryNames, setCategoryNames] = useState<{ [key: number]: string }>(
-    {}
-  );
+  // const [categoryNames, setCategoryNames] = useState<{ [key: number]: string }>(
+  //   {}
+  // );
   const [loading, setLoading] = useState(true);
 
   //GET ALL EVENTS AND CATEGORY NAMES
+  // **Uncomment if you want the categories
   useEffect(() => {
     if (!isDisplayed) return;
-    const fetchEventsAndCategories = async () => {
-      setLoading(true);
 
-      //get events
+    const fetchEvents = async () => {
+      setLoading(true);
       const eventResult = await getEvents();
       setEvents(eventResult);
-
-      //get categories
-      const newCategoryNames = await translateToCategoryNames(eventResult);
-      setCategoryNames(newCategoryNames);
-
       setLoading(false);
     };
+    // const fetchEventsAndCategories = async () => {
+    //   setLoading(true);
 
-    fetchEventsAndCategories();
+    //   //get events
+    //   const eventResult = await getEvents();
+    //   setEvents(eventResult);
+
+    //   //get categories
+    //   const newCategoryNames = await translateToCategoryNames(eventResult);
+    //   setCategoryNames(newCategoryNames);
+
+    //   setLoading(false);
+    // };
+
+    // fetchEventsAndCategories();
+    fetchEvents();
   }, []);
 
   //GROUP EVENTS BY DATE
@@ -108,22 +117,23 @@ function EventSider() {
     fetchMyApplications();
   }, [user]);
 
-  const translateToCategoryNames = async (events: Event[]) => {
-    const categoryIds = Array.from(
-      new Set(events.map((event) => event.category_id))
-    );
-    const categoryFetchPromises = categoryIds.map((id) => getCategoryById(id));
-    const categoryResults = await Promise.all(categoryFetchPromises);
+  // **Uncomment if you want category names
+  // const translateToCategoryNames = async (events: Event[]) => {
+  //   const categoryIds = Array.from(
+  //     new Set(events.map((event) => event.category_id))
+  //   );
+  //   const categoryFetchPromises = categoryIds.map((id) => getCategoryById(id));
+  //   const categoryResults = await Promise.all(categoryFetchPromises);
 
-    const newCategoryNames: { [key: number]: string } = {};
-    categoryResults.forEach((result) => {
-      if (result) {
-        newCategoryNames[result.id] = result.name;
-      }
-    });
+  //   const newCategoryNames: { [key: number]: string } = {};
+  //   categoryResults.forEach((result) => {
+  //     if (result) {
+  //       newCategoryNames[result.id] = result.name;
+  //     }
+  //   });
 
-    return newCategoryNames;
-  };
+  //   return newCategoryNames;
+  // };
 
   function groupEventsByDate(events: Event[]): void {
     const groupedEvents: GroupedEvents = {};
@@ -180,8 +190,22 @@ function EventSider() {
                 }}
                 className="event"
               >
-                <p style={{ margin: 0, fontWeight: 500 }}>
-                  {categoryNames[event.category_id]}
+                <p
+                  style={{
+                    margin: 0,
+                    right: 0,
+                    left: 0,
+
+                    fontWeight: 500,
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 2,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {event.title}
+                  {/* {categoryNames[event.category_id]} */}
                 </p>
                 <p
                   style={{

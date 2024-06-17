@@ -3,18 +3,24 @@ import { message, Checkbox, DatePicker, Form, Typography, Button } from "antd";
 import dayjs from "dayjs";
 import { buRed } from "@/common/styles";
 import { createApplication } from "./action";
+import { useState } from "react";
 
 interface RegisterFormProps {
   event: Event | undefined;
   setRegistering: (value: boolean) => void;
   userId: number;
+  setHasRegistered: (value: boolean) => void;
 }
+
 const RegisterForm: React.FC<RegisterFormProps> = ({
   event,
   setRegistering,
   userId,
+  setHasRegistered,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm();
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const onFinish = (values: any) => {
     if (
@@ -25,12 +31,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       if (event?.id) createApplication(event?.id, userId);
       setTimeout(() => {
         setRegistering(false);
+        setHasRegistered(true);
       }, 1000);
     } else {
       console.log(false, event?.event_start);
       error();
     }
   };
+
   const success = () => {
     messageApi.open({
       type: "success",
@@ -43,6 +51,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       type: "error",
       content: "Please input the correct event date/time",
     });
+  };
+
+  const onFieldsChange = () => {
+    const hasErrors = form
+      .getFieldsError()
+      .some(({ errors }) => errors.length > 0);
+    const isFormTouched = form.isFieldsTouched(true);
+    setIsFormValid(isFormTouched && !hasErrors);
   };
 
   return (
@@ -66,6 +82,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         style={{ padding: "2rem", paddingBottom: "0rem" }}
         onFinish={onFinish}
         autoComplete="off"
+        form={form}
+        onFieldsChange={onFieldsChange}
       >
         <Form.Item
           style={{
@@ -83,6 +101,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           label="Confirm the Date"
           rules={[
             { required: true, message: "Please input the day of the event" },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (
+                  dayjs(getFieldValue("eventDate")).format(
+                    "YYYY-MM-DD HH:mm"
+                  ) != dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
+                ) {
+                  return Promise.reject(
+                    "Please enter the correct start date/time"
+                  );
+                }
+                return Promise.resolve();
+              },
+            }),
           ]}
         >
           <DatePicker
@@ -94,7 +126,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         <Form.Item
           name="agreeTerms"
           valuePropName="checked"
-          rules={[{ required: true, message: "  !" }]}
+          rules={[
+            { required: true, message: "Please agree" },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (getFieldValue("agreeTerms") != true) {
+                  return Promise.reject("Please agree to the terms");
+                }
+                return Promise.resolve();
+              },
+            }),
+          ]}
         >
           <Checkbox>
             I agree to attend this event if application accepted
@@ -117,9 +159,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
               color: buRed,
               borderColor: buRed,
               backgroundColor: "white",
+              opacity: isFormValid ? "100%" : "30%",
             }}
             htmlType="submit"
             type="primary"
+            disabled={!isFormValid}
           >
             Apply
           </Button>

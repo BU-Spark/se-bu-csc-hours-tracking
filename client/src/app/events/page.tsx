@@ -44,14 +44,15 @@ function Events() {
     >
       <Content>
         {events ? <CardGrid events={events} /> : <p>loading</p>}
-        <button
+        {/* UNCOMMENT TO MAKE DUMMY DATA */}
+        {/* <button
           onClick={() => {
             createDummyEvent(dummyEvent);
           }}
           style={{ position: "fixed", bottom: 0 }}
         >
           Make new Event
-        </button>
+        </button> */}
       </Content>
     </Layout>
   );
