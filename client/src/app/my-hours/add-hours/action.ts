@@ -83,26 +83,64 @@ export async function createNewHourSubmission({
   }
 }
 
+
 export const getAllApprovedEventsByUserId = async (
   userId: number
 ): Promise<Event[] | undefined> => {
   try {
-    const approvedSubmissions = await prisma.application.findMany({
+    // Get all approved applications for the user
+    const approvedApplications = await prisma.application.findMany({
       where: {
         applicant_id: userId,
-        approved: true, // Assuming 1 means approved
+        approved: true,
       },
       include: {
         event: true,
       },
     });
 
-    const events: Event[] = approvedSubmissions.map(
-      (submission) => submission.event
+    // Extract event IDs from approved applications
+    const eventIdsWithApplications = approvedApplications.map(
+      (application) => application.event_id
     );
 
-    return events;
+    // Get all hour submissions for the user
+    const hourSubmissions = await prisma.hourSubmission.findMany({
+      where: {
+        volunteer_id: userId,
+      },
+      select: {
+        event_id: true,
+      },
+    });
+
+    // Extract event IDs from hour submissions
+    const eventIdsWithSubmissions = hourSubmissions.map(
+      (submission) => submission.event_id
+    );
+
+    // Retrieve all events
+    const allEvents = await prisma.event.findMany({
+      where: {
+        id: {
+          in: eventIdsWithApplications,
+        },
+        event_end: {
+          lte: new Date(),
+        },
+      },
+    });
+
+    // Filter events where there is an approved application but no hour submission
+    const eventsWithoutSubmissions = allEvents.filter(
+      (event) =>
+        eventIdsWithApplications.includes(event.id) &&
+        !eventIdsWithSubmissions.includes(event.id)
+    );
+
+    return eventsWithoutSubmissions;
   } catch (error) {
     console.error(error);
+    return undefined;
   }
 };
