@@ -44,7 +44,7 @@ export const getHourSubmissionsByUserEmail = async (
 
       const fullEvent: EventHours = {
         id: submission.id,
-        image: convertToBase64(event.image),
+        image: event.image.toString("base64"),
         eventName: event.title,
         location: event.location,
         status: submission.approval_status === 1 ? "approved" : "pending",
@@ -59,7 +59,6 @@ export const getHourSubmissionsByUserEmail = async (
         feedback: submission.note,
         approval_status: submission.approval_status,
       };
-      console.log("fullEvent:", fullEvent);
       return fullEvent;
     })
   );

@@ -296,7 +296,6 @@ const MyHours: React.FC = () => {
   const [expandedHour, setExpandedHour] = useState<EventHours | null>(null);
   const [approvedHours, setApprovedHours] = useState<Number>(0);
   const [submittedHours, setSubmittedHours] = useState<Number>(0);
-  // const [totalHours, setTotalHours] = useState<Number>(0);
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); //you cant submit hours for it yet, projected amount
   const router = useRouter();
 
@@ -310,9 +309,6 @@ const MyHours: React.FC = () => {
           const approved = data.filter(
             (hour: EventHours) => hour.approval_status === 1
           );
-          const submitted = data.filter(
-            (hour: EventHours) => hour.approval_status === 0
-          );
           const submittedTotal = data.reduce(
             (acc: number, hour: EventHours) => acc + hour.hours,
             0
@@ -320,7 +316,6 @@ const MyHours: React.FC = () => {
 
           setApprovedHours(approved.length);
           setSubmittedHours(submittedTotal);
-          // setTotalHours(total);
 
           const upcoming = await getUpcomingHoursByUser(
             Number(session.user.id)
@@ -338,8 +333,6 @@ const MyHours: React.FC = () => {
   const toggleExpand = (hour: EventHours) => {
     setExpandedHour(expandedHour === hour ? null : hour);
   };
-
-  console.log("eventHours:", eventHours);
 
   return (
     <HeaderOffset>
@@ -360,7 +353,10 @@ const MyHours: React.FC = () => {
       <HoursGrid>
         {eventHours.map((hour: EventHours) => (
           <HoursItem key={hour.id} status={hour.approval_status}>
-            <img src={hour.image} alt={hour.eventName} />
+            <img
+              src={`data:image/png;base64,${hour.image}`}
+              alt={hour.eventName}
+            />
             <div className="divider"></div>
             <div className="details">
               <div className="section">
