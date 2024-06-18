@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { AiOutlineArrowLeft } from "react-icons/ai";
@@ -11,7 +11,7 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { Button, Dropdown, Menu, MenuProps, Space } from "antd";
+import { Button, Dropdown, InputNumber, Menu, MenuProps, Space } from "antd";
 import { buRed } from "@/common/styles";
 import { DownOutlined } from "@ant-design/icons";
 
@@ -60,6 +60,17 @@ const CommonInputStyle = `
   font-family: inherit;
 `;
 
+const StyledInputNumber = styled(InputNumber)`
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+`;
+
 const Input = styled.input`
   ${CommonInputStyle}
 `;
@@ -85,7 +96,7 @@ const SubmitButton = styled.button`
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>();
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
-  const [hours, setHours] = useState<number>(0);
+  const [hours, setHours] = useState<number | string>(0);
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const router = useRouter();
@@ -108,7 +119,7 @@ const AddHours: React.FC = () => {
     const body: CreateNewHourSubmissionParams = {
       eventId: Number(event.id),
       userId: Number(session?.user.id),
-      hours: hours,
+      hours: Number(hours),
       feedback: feedback,
       description: description,
     };
@@ -124,6 +135,11 @@ const AddHours: React.FC = () => {
     } catch (error) {
       console.error("Error submitting form:", error);
     }
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = parseFloat(e.target.value);
+    return Number.isNaN(inputValue) ? null : inputValue;
   };
 
   const items: MenuProps["items"] =
@@ -151,18 +167,16 @@ const AddHours: React.FC = () => {
               </Space>
             </a>
           </Dropdown>
-          {/* <Input
-            type="text"
-            value={event}
-            onChange={(e) => setEvent(e.target.value)}
-          /> */}
         </Label>
         <Label>
           Hours
-          <Input
-            type="number"
-            value={hours}
-            onChange={(e) => setHours(Number(e.target.value))}
+          <StyledInputNumber
+            defaultValue="1"
+            min="0"
+            max="10"
+            step="0.25"
+            onChange={(value) => setHours(Number(value))}
+            stringMode
           />
         </Label>
         <Label>
