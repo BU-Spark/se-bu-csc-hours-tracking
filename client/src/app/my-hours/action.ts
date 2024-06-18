@@ -3,7 +3,6 @@
 import { Event, HourSubmission, Organization } from "@prisma/client";
 import prisma from "../../lib/prisma";
 import { EventHours } from "@/interfaces/interfaces";
-import convertToBase64 from "../utils/BufferToString";
 
 export const getHourSubmissionsByUserEmail = async (
   email: string
@@ -64,7 +63,17 @@ export const getHourSubmissionsByUserEmail = async (
   );
 
   // Filter out any null values in case an event was not found
-  return hourSubmissionsWithEventDetails.filter(Boolean);
+  const filteredHourSubmissions =
+    hourSubmissionsWithEventDetails.filter(Boolean);
+
+  filteredHourSubmissions.sort((a, b) => {
+    if (!a || !b) return 0;
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  return filteredHourSubmissions;
 };
 
 export const getUpcomingHoursByUser = async (
