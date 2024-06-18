@@ -16,6 +16,8 @@ model Person {
   class               Int?
   affiliation_id      Int?
   image               String?
+  college             String?
+  dietary_restrictions String?
   applications        Application[]
   comments            Comment[]
   events              Event[]

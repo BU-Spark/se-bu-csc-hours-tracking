@@ -18,8 +18,7 @@ export const CustomPrismaAdapter: Adapter = {
       return {
         id: user.id.toString(),
         email: user.email,
-        emailVerified: new Date(),
-        // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+        emailVerified: null,
         name: user.name,
         image: user.image || undefined,
       };
@@ -39,8 +38,7 @@ export const CustomPrismaAdapter: Adapter = {
         ? {
             id: user.id.toString(),
             email: user.email,
-            emailVerified: new Date(),
-            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            emailVerified: null,
             name: user.name,
             image: user.image || undefined,
           }
@@ -61,8 +59,7 @@ export const CustomPrismaAdapter: Adapter = {
         ? {
             id: user.id.toString(),
             email: user.email,
-            emailVerified: new Date(),
-            // emailVerified: user.emailVerified ? new Date(user.emailVerified) : null, // Not present in your model
+            emailVerified: null,
             name: user.name,
             image: user.image || undefined,
           }
@@ -87,8 +84,7 @@ export const CustomPrismaAdapter: Adapter = {
       return {
         id: updatedUser.id.toString(),
         email: updatedUser.email,
-        emailVerified: new Date(),
-        // emailVerified: updatedUser.emailVerified ? new Date(updatedUser.emailVerified) : null, // Not present in your model
+        emailVerified: null,
         name: updatedUser.name,
         image: updatedUser.image || undefined,
       };
@@ -107,8 +103,7 @@ export const CustomPrismaAdapter: Adapter = {
       return {
         id: deletedUser.id.toString(),
         email: deletedUser.email,
-        emailVerified: new Date(),
-        // emailVerified: deletedUser.emailVerified ? new Date(deletedUser.emailVerified) : null, // Not present in your model
+        emailVerified: null,
         name: deletedUser.name,
         image: deletedUser.image || undefined,
       };
@@ -156,31 +151,34 @@ export const CustomPrismaAdapter: Adapter = {
     }
   },
 
-  async getSessionAndUser(
-    sessionToken: string
-  ): Promise<{ session: AdapterSession; user: AdapterUser }> {
+  async getSessionAndUser(sessionToken: string): Promise<{ session: AdapterSession; user: AdapterUser }> {
     try {
-      const dummySession: AdapterSession = {
-        sessionToken: "broken",
-        userId: "9999",
-        expires: new Date(),
-      };
-      const dummyUser: AdapterUser = {
-        id: "9998",
-        email: "fake@gmail.com",
-        emailVerified: new Date(),
-      };
       const session = await prisma.session.findUnique({
         where: { sessionToken },
         include: { user: true },
       });
 
-      if (!session) return { session: dummySession, user: dummyUser };
+      if (!session) {
+        return {
+          session: {
+            sessionToken: "",
+            userId: "",
+            expires: new Date(),
+          },
+          user: {
+            id: "",
+            email: "",
+            emailVerified: null,
+            name: "",
+            image: "",
+          },
+        };
+      }
 
       const user: AdapterUser = {
         id: session.user.id.toString(),
         email: session.user.email,
-        emailVerified: new Date(), // Replace with your actual emailVerified logic
+        emailVerified: null,
         name: session.user.name,
         image: session.user.image || undefined,
       };
@@ -201,6 +199,10 @@ export const CustomPrismaAdapter: Adapter = {
 
   async createSession(session): Promise<AdapterSession> {
     try {
+      if (!session.userId) {
+        throw new Error("User ID is undefined");
+      }
+      
       const newSession = await prisma.session.create({
         data: {
           sessionToken: session.sessionToken,
@@ -222,10 +224,14 @@ export const CustomPrismaAdapter: Adapter = {
 
   async updateSession(session): Promise<AdapterSession> {
     try {
+      if (!session.userId) {
+        throw new Error("User ID is undefined");
+      }
+      
       const updatedSession = await prisma.session.update({
         where: { sessionToken: session.sessionToken },
         data: {
-          userId: session.userId ? parseInt(session.userId) : 99999,
+          userId: parseInt(session.userId),
           expires: session.expires,
         },
       });
@@ -252,10 +258,7 @@ export const CustomPrismaAdapter: Adapter = {
     }
   },
 
-  async getUserByAccount({
-    provider,
-    providerAccountId,
-  }): Promise<AdapterUser | null> {
+  async getUserByAccount({ provider, providerAccountId }): Promise<AdapterUser | null> {
     try {
       const account = await prisma.account.findUnique({
         where: { provider_providerAccountId: { provider, providerAccountId } },
@@ -264,11 +267,10 @@ export const CustomPrismaAdapter: Adapter = {
 
       if (!account) return null;
 
-      const user = {
+      const user: AdapterUser = {
         id: account.user.id.toString(),
         email: account.user.email,
-        emailVerified: new Date(),
-        // emailVerified: account.user.emailVerified ? new Date(account.user.emailVerified) : null, // Not present in your model
+        emailVerified: null,
         name: account.user.name,
         image: account.user.image || undefined,
       };

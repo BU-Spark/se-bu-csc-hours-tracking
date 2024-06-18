@@ -371,7 +371,7 @@ const MyHours: React.FC = () => {
               </div>
               <div className="section">
                 <BoldText className="status">{hour.status}</BoldText>
-                <SubText>Reviewed By: {hour.reviewer ? hour.reviewer : 'N/A'}</SubText>
+                <SubText>Reviewed By: {hour.status === 'pending' ? 'N/A' : hour.reviewer}</SubText>
               </div>
               <div className="section">
                 <BoldText>{new Date(hour.date).toLocaleDateString()}</BoldText>
