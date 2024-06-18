@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { CustomPrismaAdapter } from "../../../../lib/CustomPrismaAdapter";
 import prisma from "../../../../lib/prisma";
+import { Role } from "@prisma/client";
 
 const options: NextAuthOptions = {
   providers: [
@@ -22,13 +23,19 @@ const options: NextAuthOptions = {
       }
       if (user) {
         token.id = user.id;
+        // Fetch user role from the database
+        const dbUser = await prisma.person.findUnique({
+          where: { id: Number(user.id) },
+          select: { role: true }, // Assuming 'role' is a field in your user model
+        });
+        token.role = dbUser?.role || "user"; // Default to 'user' if role is not found
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        (session as any).accessToken = token.accessToken as string;
+        session.user.role = token.role as Role; // Add role to session
       }
       return session;
     },
