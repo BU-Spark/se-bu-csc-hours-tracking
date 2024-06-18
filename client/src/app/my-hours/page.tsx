@@ -309,13 +309,18 @@ const MyHours: React.FC = () => {
           const approved = data.filter(
             (hour: EventHours) => hour.approval_status === 1
           );
+
+          const approvedTotal = approved.reduce(
+            (acc: number, hour: EventHours) => acc + hour.hours,
+            0
+          );
           const submittedTotal = data.reduce(
             (acc: number, hour: EventHours) => acc + hour.hours,
             0
           );
 
-          setApprovedHours(approved.length);
-          setSubmittedHours(submittedTotal);
+          setApprovedHours(approvedTotal);
+          setSubmittedHours(submittedTotal - approvedTotal);
 
           const upcoming = await getUpcomingHoursByUser(
             Number(session.user.id)
@@ -339,11 +344,11 @@ const MyHours: React.FC = () => {
       <SummaryContainer>
         <SummaryBox>
           <h2>{upcomingHours.toString()}</h2>
-          <p>Upcoming Events</p>
+          <p>Upcoming Hours</p>
         </SummaryBox>
         <SummaryBox>
           <h2>{submittedHours.toString()}</h2>
-          <p>Submitted Hours</p>
+          <p>Pending Hours</p>
         </SummaryBox>
         <SummaryBox>
           <h2>{approvedHours.toString()}</h2>
