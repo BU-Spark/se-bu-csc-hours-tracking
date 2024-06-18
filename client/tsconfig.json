@@ -31,7 +31,8 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts",
     "next-auth.d.ts",
-    "next.config.mjs"
+    "next.config.js",
+    "middleware.ts"
   ],
   "exclude": ["node_modules"]
 }
