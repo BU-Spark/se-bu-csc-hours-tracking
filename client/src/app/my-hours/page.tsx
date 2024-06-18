@@ -12,6 +12,7 @@ import {
 import { AiOutlinePlus } from "react-icons/ai";
 import { FaComment } from "react-icons/fa";
 import { EventHours } from "@/interfaces/interfaces";
+import StyledButton from "@/components/StyledButton";
 
 const HeaderOffset = styled.div`
   margin-top: 70px;
@@ -297,6 +298,7 @@ const MyHours: React.FC = () => {
   const [approvedHours, setApprovedHours] = useState<Number>(0);
   const [submittedHours, setSubmittedHours] = useState<Number>(0);
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); //you cant submit hours for it yet, projected amount
+  const [filter, setFilter] = useState<number>(3); // 0 is pending, 1 is approved, 2 is denied, 3 is all
   const router = useRouter();
 
   useEffect(() => {
@@ -339,6 +341,13 @@ const MyHours: React.FC = () => {
     setExpandedHour(expandedHour === hour ? null : hour);
   };
 
+  const filteredHours = eventHours.filter((hour: EventHours) => {
+    if (filter === 1) return hour.approval_status === 1; // Approved
+    if (filter === 2) return hour.approval_status === 2; // Denied
+    if (filter === 0) return hour.approval_status === 0; // Pending
+    return true; // Show all for filter === 3 (none)
+  });
+
   return (
     <HeaderOffset>
       <SummaryContainer>
@@ -355,8 +364,41 @@ const MyHours: React.FC = () => {
           <p>Approved Hours</p>
         </SummaryBox>
       </SummaryContainer>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "40%",
+          margin: "1rem auto",
+        }}
+      >
+        <StyledButton
+          text="See All"
+          onClick={() => {
+            setFilter(0);
+          }}
+        />
+        <StyledButton
+          text="Approved"
+          onClick={() => {
+            setFilter(1);
+          }}
+        />
+        <StyledButton
+          text="Pending"
+          onClick={() => {
+            setFilter(3);
+          }}
+        />
+        <StyledButton
+          text="Denied"
+          onClick={() => {
+            setFilter(2);
+          }}
+        />
+      </div>
       <HoursGrid>
-        {eventHours.map((hour: EventHours) => (
+        {filteredHours.map((hour: EventHours) => (
           <HoursItem key={hour.id} status={hour.approval_status}>
             <img
               src={`data:image/png;base64,${hour.image}`}

@@ -5,7 +5,7 @@ import { buRed } from "@/common/styles";
 
 interface StyledButtonProps {
   text: string;
-  onClick: () => Promise<void>;
+  onClick: () => any;
 }
 
 const StyledButton: React.FC<StyledButtonProps> = ({ text, onClick }) => {
