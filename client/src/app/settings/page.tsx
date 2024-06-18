@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { checkIfNewUser, updateUserDetails } from './action';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { checkIfNewUser, getUserDetails, updateUserDetails } from "./action";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -72,30 +72,39 @@ const Settings: React.FC = () => {
   const { status } = useSession();
   const router = useRouter();
   const [isNewUser, setIsNewUser] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [college, setCollege] = useState<string>('');
-  const [dietaryRestrictions, setDietaryRestrictions] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [college, setCollege] = useState<string>("");
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string>("");
 
   useEffect(() => {
     if (status === "authenticated") {
       const fetchUserStatus = async () => {
         const status = await checkIfNewUser();
-        if (!status.isNewUser) {
-          router.push('/dashboard');
-        } else {
+        if (status.isNewUser) {
           setIsNewUser(true);
+        } else {
+          const user = await getUserDetails();
+          if (user) {
+            setPhoneNumber(user.phone_number || "");
+            setCollege(user.college || "");
+            setDietaryRestrictions(user.dietary_restrictions || "");
+          }
         }
       };
 
       fetchUserStatus();
     }
-  }, [status, router]);
+  }, [status]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateUserDetails({ phone_number: phoneNumber, college, dietary_restrictions: dietaryRestrictions });
-      router.push('/dashboard');
+      await updateUserDetails({
+        phone_number: phoneNumber,
+        college,
+        dietary_restrictions: dietaryRestrictions,
+      });
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error updating user details:", error);
     }
@@ -105,13 +114,9 @@ const Settings: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  if (!isNewUser) {
-    return null;
-  }
-
   return (
     <FormContainer>
-      <BackButton onClick={() => router.push('/dashboard')}>
+      <BackButton onClick={() => router.push("/dashboard")}>
         <span>Back to Dashboard</span>
       </BackButton>
       <h1>Settings</h1>

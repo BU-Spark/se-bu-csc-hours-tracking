@@ -26,6 +26,20 @@ export const checkIfNewUser = async () => {
   return { isNewUser };
 };
 
+export const getUserDetails = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user || !session.user.email) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await prisma.person.findUnique({
+    where: { email: session.user.email },
+  });
+
+  return user;
+};
+
 export const updateUserDetails = async (details: { phone_number: string, college: string, dietary_restrictions: string }) => {
   const session = await getServerSession(authOptions);
 
