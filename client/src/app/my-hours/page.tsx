@@ -1,26 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { useRouter } from 'next/navigation';
-import { getSession } from 'next-auth/react';
-import { getHoursByUserEmail } from './action';
-import { AiOutlinePlus } from 'react-icons/ai';
-import { FaComment } from 'react-icons/fa';
-
-interface Hour {
-  id: number;
-  image: string;
-  eventName: string;
-  organization: string;
-  location: string;
-  status: string;
-  date: string;
-  reviewer: string | null;
-  hours: number;
-  description: string;
-  feedback: string;
-}
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
+import {
+  getHourSubmissionsByUserEmail,
+  getUpcomingHoursByUser,
+} from "./action";
+import { AiOutlinePlus } from "react-icons/ai";
+import { FaComment } from "react-icons/fa";
+import { EventHours } from "@/interfaces/interfaces";
 
 const HeaderOffset = styled.div`
   margin-top: 70px;
@@ -78,7 +69,7 @@ const HoursGrid = styled.div`
   padding: 0 20px;
 `;
 
-const HoursItem = styled.div<{ status: string }>`
+const HoursItem = styled.div<{ status: number }>`
   display: flex;
   align-items: center;
   padding: 20px;
@@ -156,7 +147,8 @@ const HoursItem = styled.div<{ status: string }>`
 
   .status {
     font-weight: bold;
-    color: ${(props) => (props.status === 'approved' ? 'green' : props.status === 'denied' ? 'red' : 'orange')};
+    color: ${(props) =>
+      props.status === 1 ? "green" : props.status === 0 ? "red" : "orange"};
     text-transform: capitalize;
   }
 
@@ -300,12 +292,12 @@ const PopupContainer = styled.div`
 `;
 
 const MyHours: React.FC = () => {
-  const [hours, setHours] = useState<Hour[]>([]);
-  const [expandedHour, setExpandedHour] = useState<Hour | null>(null);
-  const [approvedHours, setApprovedHours] = useState(0);
-  const [pendingHours, setPendingHours] = useState(0);
-  const [totalHours, setTotalHours] = useState(0);
-  const [upcomingEvents, setUpcomingEvents] = useState(0);
+  const [eventHours, setEventHours] = useState<EventHours[]>([]);
+  const [expandedHour, setExpandedHour] = useState<EventHours | null>(null);
+  const [approvedHours, setApprovedHours] = useState<Number>(0);
+  const [submittedHours, setSubmittedHours] = useState<Number>(0);
+  // const [totalHours, setTotalHours] = useState<Number>(0);
+  const [upcomingHours, setUpcomingHours] = useState<Number>(0); //you cant submit hours for it yet, projected amount
   const router = useRouter();
 
   useEffect(() => {
@@ -313,21 +305,29 @@ const MyHours: React.FC = () => {
       const session = await getSession();
       if (session?.user?.email) {
         try {
-          const data = await getHoursByUserEmail(session.user.email);
-          setHours(data);
-          const approved = data.filter((hour: Hour) => hour.status === 'approved');
-          const pending = data.filter((hour: Hour) => hour.status === 'pending');
-          const total = data.reduce((acc: number, hour: Hour) => acc + hour.hours, 0);
+          const data = await getHourSubmissionsByUserEmail(session.user.email);
+          setEventHours(data);
+          const approved = data.filter(
+            (hour: EventHours) => hour.approval_status === 1
+          );
+          const submitted = data.filter(
+            (hour: EventHours) => hour.approval_status === 0
+          );
+          const submittedTotal = data.reduce(
+            (acc: number, hour: EventHours) => acc + hour.hours,
+            0
+          );
 
           setApprovedHours(approved.length);
-          setPendingHours(pending.length);
-          setTotalHours(total);
+          setSubmittedHours(submittedTotal);
+          // setTotalHours(total);
 
-          const currentDate = new Date();
-          const upcoming = data.filter((hour: Hour) => new Date(hour.date) > currentDate).length;
-          setUpcomingEvents(upcoming);
+          const upcoming = await getUpcomingHoursByUser(
+            Number(session.user.id)
+          );
+          if (upcoming) setUpcomingHours(upcoming);
         } catch (error) {
-          console.error('Error fetching hours:', error);
+          console.error("Error fetching hours:", error);
         }
       }
     };
@@ -335,29 +335,31 @@ const MyHours: React.FC = () => {
     fetchHours();
   }, []);
 
-  const toggleExpand = (hour: Hour) => {
+  const toggleExpand = (hour: EventHours) => {
     setExpandedHour(expandedHour === hour ? null : hour);
   };
+
+  console.log("eventHours:", eventHours);
 
   return (
     <HeaderOffset>
       <SummaryContainer>
         <SummaryBox>
-          <h2>{upcomingEvents}</h2>
+          <h2>{upcomingHours.toString()}</h2>
           <p>Upcoming Events</p>
         </SummaryBox>
         <SummaryBox>
-          <h2>{totalHours}</h2>
+          <h2>{submittedHours.toString()}</h2>
           <p>Submitted Hours</p>
         </SummaryBox>
         <SummaryBox>
-          <h2>{approvedHours}</h2>
+          <h2>{approvedHours.toString()}</h2>
           <p>Approved Hours</p>
         </SummaryBox>
       </SummaryContainer>
       <HoursGrid>
-        {hours.map((hour: Hour) => (
-          <HoursItem key={hour.id} status={hour.status}>
+        {eventHours.map((hour: EventHours) => (
+          <HoursItem key={hour.id} status={hour.approval_status}>
             <img src={hour.image} alt={hour.eventName} />
             <div className="divider"></div>
             <div className="details">
@@ -370,14 +372,22 @@ const MyHours: React.FC = () => {
                 <SubText>{hour.location}</SubText>
               </div>
               <div className="section">
-                <BoldText className="status">{hour.status}</BoldText>
-                <SubText>Reviewed By: {hour.reviewer ? hour.reviewer : 'N/A'}</SubText>
+                <BoldText className="status">
+                  {hour.approval_status === 1 ? "Approved" : "Pending"}
+                </BoldText>
+                <SubText>
+                  {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
+                  Reviewed By: {"N/A"}
+                </SubText>
               </div>
               <div className="section">
                 <BoldText>{new Date(hour.date).toLocaleDateString()}</BoldText>
               </div>
               <div className="section">
-                <FaComment onClick={() => toggleExpand(hour)} style={{ cursor: 'pointer' }} />
+                <FaComment
+                  onClick={() => toggleExpand(hour)}
+                  style={{ cursor: "pointer" }}
+                />
               </div>
             </div>
           </HoursItem>
@@ -396,13 +406,11 @@ const MyHours: React.FC = () => {
         </>
       )}
       <AddHoursButtonContainer>
-        <AddHoursButton onClick={() => router.push('/my-hours/add-hours')}>
+        <AddHoursButton onClick={() => router.push("/my-hours/add-hours")}>
           <PlusCircle>
             <AiOutlinePlus />
           </PlusCircle>
-          <Rectangle>
-            Log Hours
-          </Rectangle>
+          <Rectangle>Log Hours</Rectangle>
         </AddHoursButton>
       </AddHoursButtonContainer>
     </HeaderOffset>

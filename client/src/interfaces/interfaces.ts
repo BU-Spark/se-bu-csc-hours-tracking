@@ -104,3 +104,25 @@ export interface GroupedEvents {
 export interface EventImage {
   data: ArrayBuffer;
 }
+export interface EventHours {
+  id: number;
+  image: string;
+  eventName: string;
+  organization: string;
+  location: string;
+  status: string;
+  date: string;
+  reviewer: string | number;
+  hours: number;
+  description: string;
+  feedback: string;
+  approval_status: number;
+}
+
+export interface CreateNewHourSubmissionParams {
+  eventId: number;
+  userId: number;
+  hours: number;
+  feedback: string;
+  description: string;
+}

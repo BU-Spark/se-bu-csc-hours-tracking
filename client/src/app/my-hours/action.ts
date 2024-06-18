@@ -1,9 +1,13 @@
 "use server";
 
-import { Event, HourSubmission } from "@prisma/client";
+import { Event, HourSubmission, Organization } from "@prisma/client";
 import prisma from "../../lib/prisma";
+import { EventHours } from "@/interfaces/interfaces";
+import convertToBase64 from "../utils/BufferToString";
 
-export const getHoursByUserEmail = async (email: string) => {
+export const getHourSubmissionsByUserEmail = async (
+  email: string
+): Promise<any[]> => {
   const user = await prisma.person.findUnique({
     where: { email },
     include: {
@@ -17,8 +21,11 @@ export const getHoursByUserEmail = async (email: string) => {
   });
 
   if (!user) {
+    console.log("No user found with the provided email.");
     return [];
   }
+
+  console.log("user:", user);
 
   const hourSubmissionsWithEventDetails = await Promise.all(
     user.hour_submissions.map(async (submission: HourSubmission) => {
@@ -26,13 +33,18 @@ export const getHoursByUserEmail = async (email: string) => {
         where: { id: submission.event_id },
       });
 
-      if (!event) {
+      const organization: Organization | null =
+        await prisma.organization.findUnique({
+          where: { id: event?.organization_id },
+        });
+
+      if (!event || !organization) {
         return null;
       }
 
-      return {
+      const fullEvent: EventHours = {
         id: submission.id,
-        image: event.image.toString("base64"),
+        image: convertToBase64(event.image),
         eventName: event.title,
         location: event.location,
         status: submission.approval_status === 1 ? "approved" : "pending",
@@ -42,12 +54,47 @@ export const getHoursByUserEmail = async (email: string) => {
             ? submission.updated_by_id
             : "N/A",
         hours: submission.hours,
-        description: submission.description,
+        description: "",
+        organization: organization.name,
         feedback: submission.note,
+        approval_status: submission.approval_status,
       };
+      console.log("fullEvent:", fullEvent);
+      return fullEvent;
     })
   );
 
   // Filter out any null values in case an event was not found
   return hourSubmissionsWithEventDetails.filter(Boolean);
+};
+
+export const getUpcomingHoursByUser = async (
+  userId: number
+): Promise<Number | undefined> => {
+  try {
+    const futureHourSubmissions = await prisma.hourSubmission.findMany({
+      where: {
+        volunteer_id: userId,
+        approval_status: 1, // Assuming 1 means approved
+        event: {
+          event_start: {
+            // Filter events that are in the future
+            gte: new Date(), // Only include events that haven't happened yet
+          },
+        },
+      },
+      include: {
+        event: true,
+      },
+    });
+
+    const totalHours = futureHourSubmissions.reduce(
+      (acc, submission) => acc + submission.hours,
+      0
+    );
+
+    return totalHours;
+  } catch (error) {
+    console.error(error);
+  }
 };

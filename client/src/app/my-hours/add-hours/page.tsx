@@ -1,10 +1,19 @@
 "use client";
 
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useRouter } from 'next/navigation';
-import { AiOutlineArrowLeft } from 'react-icons/ai';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useRouter } from "next/navigation";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSession } from "next-auth/react";
+import {
+  createNewHourSubmission,
+  getAllApprovedEventsByUserId,
+} from "./action";
+import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
+import { Event } from "@prisma/client";
+import { Button, Dropdown, Menu, MenuProps, Space } from "antd";
+import { buRed } from "@/common/styles";
+import { DownOutlined } from "@ant-design/icons";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -74,33 +83,56 @@ const SubmitButton = styled.button`
 `;
 
 const AddHours: React.FC = () => {
-  const [event, setEvent] = useState<string>("");
+  const [event, setEvent] = useState<Event | null>();
+  const [eventOptions, setEventOptions] = useState<Event[]>([]);
   const [hours, setHours] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  useEffect(() => {
+    const fetchValidEvents = async () => {
+      if (!session?.user.id) return;
+      const validEvents: Event[] | undefined =
+        await getAllApprovedEventsByUserId(Number(session?.user.id));
+      if (!validEvents) return;
+      setEventOptions(validEvents);
+    };
+    fetchValidEvents();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const editorId = session?.user.id || "9999"; // or the ID of the editor if available
+    if (!event) return;
+    const body: CreateNewHourSubmissionParams = {
+      eventId: Number(event.id),
+      userId: Number(session?.user.id),
+      hours: hours,
+      feedback: feedback,
+      description: description,
+    };
     try {
-      const response = await fetch("/api/add-hours", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ event, hours, feedback, description, editorId }),
-      });
-      if (response.ok) {
+      const response = await createNewHourSubmission(body);
+      if (response) {
         router.push("/my-hours");
+        console.log("Success");
       } else {
-        console.error("Failed to log hours");
+        console.log("Failed to log hours");
+        router.push("/my-hours");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
+
+  const items: MenuProps["items"] =
+    eventOptions?.map((event) => {
+      return {
+        key: event.id,
+        label: <p onClick={() => setEvent(event)}> {event.title}</p>,
+      };
+    }) || [];
 
   return (
     <FormContainer>
@@ -110,13 +142,20 @@ const AddHours: React.FC = () => {
       </BackButton>
       <h1>Add Hours</h1>
       <form onSubmit={handleSubmit}>
-        <Label>
-          Event
-          <Input
+        <Label style={{ width: "100%" }}>
+          <Dropdown menu={{ items, selectable: true }} placement="bottomLeft">
+            <a onClick={(e) => e.preventDefault()}>
+              <Space>
+                {event ? event.title : "Choose Event"}
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
+          {/* <Input
             type="text"
             value={event}
             onChange={(e) => setEvent(e.target.value)}
-          />
+          /> */}
         </Label>
         <Label>
           Hours

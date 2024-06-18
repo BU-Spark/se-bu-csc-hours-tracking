@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useRouter } from 'next/navigation'; 
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useRouter } from "next/navigation";
+import { getAllApprovedEventsByUserId } from "./add-hours/action";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -56,31 +57,31 @@ const SubmitButton = styled.button`
 `;
 
 const LogHours: React.FC = () => {
-  const [event, setEvent] = useState('');
-  const [hours, setHours] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [description, setDescription] = useState('');
+  const [event, setEvent] = useState("");
+  const [hours, setHours] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [description, setDescription] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/add-hours', {
-        method: 'POST',
+      const response = await fetch("/api/add-hours", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ event, hours, feedback, description }),
       });
       if (response.ok) {
-        router.push('/my-hours');
+        router.push("/my-hours");
       } else {
-        console.error('Failed to log hours:', await response.json());
+        console.error("Failed to log hours:", await response.json());
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
-  };  
+  };
 
   return (
     <FormContainer>
