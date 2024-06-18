@@ -137,11 +137,6 @@ const AddHours: React.FC = () => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = parseFloat(e.target.value);
-    return Number.isNaN(inputValue) ? null : inputValue;
-  };
-
   const items: MenuProps["items"] =
     eventOptions?.map((event) => {
       return {
