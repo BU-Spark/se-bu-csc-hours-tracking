@@ -1,11 +1,36 @@
-"use client"
-import { signOut} from 'next-auth/react';
-import React from 'react'
+"use client";
 
-  const Dashboard: React.FC = () => {
+import React, { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'; 
+import { checkIfNewUser } from '../settings/action';
 
-    
-  return <div></div>;
-}
+const Dashboard: React.FC = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-export default Dashboard
+  useEffect(() => {
+    const checkFirstTimeLogin = async () => {
+      try {
+        const response = await checkIfNewUser();
+        if (response.isNewUser) {
+          router.push("/settings");
+        }
+      } catch (error) {
+        console.error("Error checking if new user:", error);
+      }
+    };
+
+    if (status === "authenticated" && session?.user) {
+      checkFirstTimeLogin();
+    }
+  }, [status, session, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  return <div>Dashboard Content</div>;
+};
+
+export default Dashboard;

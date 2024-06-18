@@ -36,7 +36,7 @@ const CustomSider: React.FC = () => {
     {
       key: "settings",
       label: "Settings",
-      disabled: true,
+      onClick: () => router.push("/settings"),
     },
   ];
 

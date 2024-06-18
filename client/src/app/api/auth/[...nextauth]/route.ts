@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { CustomPrismaAdapter } from "../../../../lib/CustomPrismaAdapter";
 import prisma from "../../../../lib/prisma";
 
-const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -33,12 +33,11 @@ const options: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account, profile }) {
-      console.log("Signing in user:", user);
       const userByEmail = await prisma.person.findUnique({
         where: { email: user.email },
       });
+
       if (!userByEmail && user && user.email && user.name && user.image) {
-        console.log("Creating new user for email:", user.email);
         await prisma.person.create({
           data: {
             email: user.email,
@@ -55,13 +54,12 @@ const options: NextAuthOptions = {
                 scope: account!.scope,
                 id_token: account!.id_token,
                 session_state: account!.session_state,
-                type: account!.type || "oauth", // Adding type field here
+                type: account!.type || "oauth",
               },
             },
           },
         });
       } else {
-        console.log("User exists, linking account:", user.email);
         const existingAccount = await prisma.account.findUnique({
           where: {
             provider_providerAccountId: {
@@ -72,7 +70,6 @@ const options: NextAuthOptions = {
         });
 
         if (!existingAccount && userByEmail) {
-          console.log("Linking account to existing user:", user.email);
           await prisma.account.create({
             data: {
               provider: account!.provider,
@@ -85,7 +82,7 @@ const options: NextAuthOptions = {
               id_token: account!.id_token,
               session_state: account!.session_state,
               userId: userByEmail.id,
-              type: account!.type || "oauth", // Adding type field here
+              type: account!.type || "oauth",
             },
           });
         }
@@ -95,5 +92,5 @@ const options: NextAuthOptions = {
   },
 };
 
-export const GET = NextAuth(options);
-export const POST = NextAuth(options);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

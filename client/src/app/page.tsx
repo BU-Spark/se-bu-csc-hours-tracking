@@ -9,7 +9,6 @@ import "./page.css";
 import icon from "../../public/photos/full_logo.png";
 import Image from 'next/image';
 
-
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -19,10 +18,10 @@ export default function Home() {
   // console.log('Status:', status);
 
   useEffect(() => {
-    if (status != "authenticated") {
-      setIsLoggedIn(true);
-    } else {
+    if (status !== "authenticated") {
       setIsLoggedIn(false);
+    } else {
+      setIsLoggedIn(true);
     }
   }, [status]);
 
@@ -37,11 +36,9 @@ export default function Home() {
     >
       <Image src={icon} alt="icon" width={500} height={100} className="loading-image"/>
     </div>
-  ) : isLoggedIn ? (
+  ) : !isLoggedIn ? (
     <Login />
   ) : (
-    <>
-        <Dashboard/>
-    </>
+    <Dashboard />
   );
 }
