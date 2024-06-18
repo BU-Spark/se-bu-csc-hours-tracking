@@ -1,16 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
 import convertToBase64 from "../utils/BufferToString";
 
 function CardGrid(props: CardGridProps) {
-  const { events } = props;
+  const { events, filter, myEvents } = props;
+
+  let filteredEvents = events;
+
+  if (myEvents && filter == 1) {
+    filteredEvents = myEvents;
+  }
 
   return (
     <Row justify="start" style={{ marginRight: "3rem" }}>
-      {events ? (
-        events.map((event: Event, index: number) => {
+      {filteredEvents ? (
+        filteredEvents.map((event: Event, index: number) => {
           // Convert image to base64 string
           const base64Image = event.image
             ? `data:image/jpeg;base64,${convertToBase64(event.image)}`

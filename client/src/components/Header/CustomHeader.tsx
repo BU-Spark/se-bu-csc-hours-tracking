@@ -38,7 +38,11 @@ const CustomHeader: React.FC = () => {
       <div className="header-right">
         {status === "authenticated" ? (
           <div style={{ marginRight: "1rem" }}>
-            <StyledButton onClick={() => signOut()} text="Sign out" />
+            <StyledButton
+              onClick={() => signOut()}
+              text="Sign out"
+              selected={false}
+            />
           </div>
         ) : (
           <></>

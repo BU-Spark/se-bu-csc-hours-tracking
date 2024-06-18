@@ -298,7 +298,7 @@ const MyHours: React.FC = () => {
   const [approvedHours, setApprovedHours] = useState<Number>(0);
   const [submittedHours, setSubmittedHours] = useState<Number>(0);
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); //you cant submit hours for it yet, projected amount
-  const [filter, setFilter] = useState<number>(3); // 0 is pending, 1 is approved, 2 is denied, 3 is all
+  const [filter, setFilter] = useState<number>(0); // 0 is pending, 1 is approved, 2 is denied, 3 is all
   const router = useRouter();
 
   useEffect(() => {
@@ -377,24 +377,28 @@ const MyHours: React.FC = () => {
           onClick={() => {
             setFilter(0);
           }}
+          selected={filter == 0}
         />
         <StyledButton
           text="Approved"
           onClick={() => {
             setFilter(1);
           }}
+          selected={filter == 1}
         />
         <StyledButton
           text="Pending"
           onClick={() => {
             setFilter(3);
           }}
+          selected={filter == 3}
         />
         <StyledButton
           text="Denied"
           onClick={() => {
             setFilter(2);
           }}
+          selected={filter == 2}
         />
       </div>
       <HoursGrid>
