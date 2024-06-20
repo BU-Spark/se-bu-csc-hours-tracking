@@ -1,13 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event, EventInput } from "@/interfaces/interfaces";
-import { createDummyEvent, getEvents } from "./action";
+import {
+  createDummyEvent,
+  getApplicationsByUserId,
+  getEvents,
+  getEventsByApplicationEventIds,
+} from "./action";
 import { Layout } from "antd";
 import CardGrid from "./CardGrid";
 import { Content } from "antd/es/layout/layout";
+import StyledButton from "@/components/StyledButton";
+import { useSession } from "next-auth/react";
 
 function Events() {
-  const [events, setEvents] = useState<Event[]>();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [filter, setFilter] = useState<number>(0);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -16,6 +26,26 @@ function Events() {
     };
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    const fetchMyApplications = async () => {
+      if (!session?.user.id) return;
+
+      const userApplications = await getApplicationsByUserId(
+        Number(session.user.id)
+      ); //get all user applications
+      if (userApplications) {
+        const eventIds = userApplications.map(
+          (application) => application.event_id
+        );
+        const userEvents = await getEventsByApplicationEventIds(eventIds); //get all events those applications were related to
+        if (userEvents) {
+          setMyEvents(userEvents);
+        }
+      }
+    };
+    fetchMyApplications();
+  }, [filter]);
 
   const dummyEvent: EventInput = {
     title: "Dummy " + new Date().toTimeString(),
@@ -43,7 +73,30 @@ function Events() {
       }}
     >
       <Content>
-        {events ? <CardGrid events={events} /> : <p>loading</p>}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "28%",
+            margin: "1rem auto",
+          }}
+        >
+          <StyledButton
+            text="My Events"
+            onClick={() => setFilter(1)}
+            selected={filter == 1}
+          />
+          <StyledButton
+            text="All Events"
+            onClick={() => setFilter(0)}
+            selected={filter == 0}
+          />
+        </div>
+        {events ? (
+          <CardGrid events={events} filter={filter} myEvents={myEvents} />
+        ) : (
+          <p>loading</p>
+        )}
         {/* UNCOMMENT TO MAKE DUMMY DATA */}
         {/* <button
           onClick={() => {

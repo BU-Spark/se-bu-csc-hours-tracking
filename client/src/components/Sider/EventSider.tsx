@@ -252,7 +252,7 @@ function EventSider() {
           flexDirection: "column",
         }}
       >
-        <p style={{ marginBottom: "3rem", fontSize: "large" }}>
+        <p style={{ marginBottom: "0rem", fontSize: "large" }}>
           Upcoming Events
         </p>
         {loading ? (

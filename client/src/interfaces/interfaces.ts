@@ -80,6 +80,8 @@ export interface EventInput {
 
 export interface CardGridProps {
   events: Event[];
+  filter: number;
+  myEvents: Event[] | undefined;
 }
 
 export interface Person {

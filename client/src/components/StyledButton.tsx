@@ -6,10 +6,19 @@ import { buRed } from "@/common/styles";
 interface StyledButtonProps {
   text: string;
   onClick: () => any;
+  selected: boolean | undefined;
 }
 
-const StyledButton: React.FC<StyledButtonProps> = ({ text, onClick }) => {
-  const [hover, setHover] = useState(false);
+const StyledButton: React.FC<StyledButtonProps> = ({
+  text,
+  onClick,
+  selected,
+}) => {
+  const [hover, setHover] = useState<boolean>(false);
+
+  const handleOnClick = () => {
+    onClick();
+  };
 
   return (
     <Button
@@ -17,13 +26,13 @@ const StyledButton: React.FC<StyledButtonProps> = ({ text, onClick }) => {
         borderRadius: "20px",
         marginBottom: "0rem",
         width: "6rem",
-        color: hover ? "white" : buRed,
+        color: hover || selected ? "white" : buRed,
         borderColor: buRed,
-        backgroundColor: hover ? buRed : "transparent",
+        backgroundColor: hover || selected ? buRed : "transparent",
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={onClick}
+      onClick={handleOnClick}
     >
       {text}
     </Button>
