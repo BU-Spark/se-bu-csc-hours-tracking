@@ -17,6 +17,7 @@ model Person {
   affiliation_id      Int?
   image               String?
   college             String?          @db.VarChar(255)
+  dietary_restrictions String?
   accounts            Account[]
   applications        Application[]
   comments            Comment[]
