@@ -39,7 +39,7 @@ const CustomHeader: React.FC = () => {
         {status === "authenticated" ? (
           <div style={{ marginRight: "1rem" }}>
             <StyledButton
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: "/login" })}
               text="Sign out"
               selected={false}
             />
@@ -47,9 +47,6 @@ const CustomHeader: React.FC = () => {
         ) : (
           <></>
         )}
-        {/* <button onClick={() => signOut()} style={{ marginRight: "2rem" }}> */}
-        {/* Sign out
-        </button> */}
         <Pfp dimension={"2.5rem"} session={session} />
       </div>
     </Header>
@@ -57,4 +54,3 @@ const CustomHeader: React.FC = () => {
 };
 
 export default CustomHeader;
-

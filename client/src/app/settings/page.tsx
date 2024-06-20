@@ -5,6 +5,10 @@ import styled from "styled-components";
 import { checkIfNewUser, getUserDetails, updateUserDetails } from "./action";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import PhoneInput from "react-phone-input-2";
+import Select from "react-select";
+import "react-phone-input-2/lib/style.css";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -35,9 +39,14 @@ const BackButton = styled.div`
 
 const Label = styled.label`
   display: flex;
-  flex-direction: column;
+  align-items: center;
   font-size: 1rem;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+`;
+
+const Asterisk = styled.span`
+  color: red;
+  margin-left: 5px;
 `;
 
 const CommonInputStyle = `
@@ -46,13 +55,31 @@ const CommonInputStyle = `
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-  margin-top: 8px;
   border: 1px solid #ccc;
   font-family: inherit;
+  margin-bottom: 20px; 
 `;
 
 const Input = styled.input`
   ${CommonInputStyle}
+`;
+
+const StyledPhoneInput = styled(PhoneInput)`
+  width: 100%;
+
+  .form-control {
+    width: calc(100% - 50px) !important;
+    padding: 10px;
+    padding-left: 50px;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+  }
+
+  .flag-dropdown {
+    position: absolute;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -68,14 +95,25 @@ const SubmitButton = styled.button`
   }
 `;
 
+const dietaryOptions = [
+  { value: "none", label: "None" },
+  { value: "vegetarian", label: "Vegetarian" },
+  { value: "vegan", label: "Vegan" },
+  { value: "gluten_free", label: "Gluten-Free" },
+  { value: "dairy_free", label: "Dairy-Free" },
+  { value: "nut_free", label: "Nut-Free" },
+  { value: "halal", label: "Halal" },
+  { value: "kosher", label: "Kosher" },
+];
+
 const Settings: React.FC = () => {
   const { status } = useSession();
   const router = useRouter();
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [college, setCollege] = useState<string>("");
-  const [dietaryRestrictions, setDietaryRestrictions] = useState<string>("");
   const [classYear, setClassYear] = useState<string>("");
+  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -88,8 +126,12 @@ const Settings: React.FC = () => {
           if (user) {
             setPhoneNumber(user.phone_number || "");
             setCollege(user.college || "");
-            setDietaryRestrictions(user.dietary_restrictions || "");
-            setClassYear(user.class ? user.class.toString() : "");
+            setClassYear(user.class?.toString() || "");
+            setDietaryRestrictions(
+              user.dietary_restrictions
+                ? user.dietary_restrictions.split(",")
+                : []
+            );
           }
         }
       };
@@ -100,16 +142,12 @@ const Settings: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!/^(20\d{2})$/.test(classYear)) {
-      alert("Please enter a valid class year (e.g., 2023).");
-      return;
-    }
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
         college,
-        dietary_restrictions: dietaryRestrictions,
-        class: parseInt(classYear, 10),
+        class: Number(classYear),
+        dietary_restrictions: dietaryRestrictions.join(","),
       });
       router.push("/dashboard");
     } catch (error) {
@@ -124,42 +162,70 @@ const Settings: React.FC = () => {
   return (
     <FormContainer>
       <BackButton onClick={() => router.push("/dashboard")}>
+        <AiOutlineArrowLeft size={24} />
         <span>Back to Dashboard</span>
       </BackButton>
       <h1>Settings</h1>
       <form onSubmit={handleSubmit}>
         <Label>
-          Phone Number
-          <Input
-            type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
+          Phone Number<Asterisk>*</Asterisk>
         </Label>
+        <StyledPhoneInput
+          country={"us"}
+          value={phoneNumber}
+          onChange={(phone) => setPhoneNumber(phone)}
+          inputStyle={{
+            padding: "10px",
+            borderRadius: "8px",
+            paddingLeft: "50px",
+          }}
+          containerStyle={{ marginBottom: "20px" }}
+        />
         <Label>
-          College
-          <Input
-            type="text"
-            value={college}
-            onChange={(e) => setCollege(e.target.value)}
-          />
+          College<Asterisk>*</Asterisk>
         </Label>
+        <Input
+          type="text"
+          value={college}
+          onChange={(e) => setCollege(e.target.value)}
+        />
         <Label>
-          Class Year
-          <Input
-            type="text"
-            value={classYear}
-            onChange={(e) => setClassYear(e.target.value)}
-          />
+          Class Year<Asterisk>*</Asterisk>
         </Label>
+        <Input
+          type="text"
+          value={classYear}
+          onChange={(e) => setClassYear(e.target.value)}
+        />
         <Label>
-          Dietary Restrictions
-          <Input
-            type="text"
-            value={dietaryRestrictions}
-            onChange={(e) => setDietaryRestrictions(e.target.value)}
-          />
+          Dietary Restrictions<Asterisk>*</Asterisk>
         </Label>
+        <Select
+          isMulti
+          options={dietaryOptions}
+          value={dietaryOptions.filter((option) =>
+            dietaryRestrictions.includes(option.value)
+          )}
+          onChange={(selected) =>
+            setDietaryRestrictions(selected.map((option) => option.value))
+          }
+          styles={{
+            container: (provided) => ({
+              ...provided,
+              marginBottom: "20px",
+            }),
+            control: (provided) => ({
+              ...provided,
+              padding: "10px",
+              borderRadius: "8px",
+              fontSize: "1rem",
+              width: "100%",
+              boxSizing: "border-box",
+              border: "1px solid #ccc",
+              fontFamily: "inherit",
+            }),
+          }}
+        />
         <SubmitButton type="submit">Submit</SubmitButton>
       </form>
     </FormContainer>

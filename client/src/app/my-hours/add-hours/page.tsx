@@ -11,9 +11,8 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { Button, Dropdown, InputNumber, Menu, MenuProps, Space } from "antd";
+import { Button, InputNumber, AutoComplete } from "antd";
 import { buRed } from "@/common/styles";
-import { DownOutlined } from "@ant-design/icons";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -45,8 +44,19 @@ const BackButton = styled.div`
 const Label = styled.label`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   font-size: 1rem;
   margin-bottom: 20px;
+`;
+
+const LabelTitle = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
+const Asterisk = styled.span`
+  color: red;
+  margin-left: 5px;
 `;
 
 const CommonInputStyle = `
@@ -61,14 +71,7 @@ const CommonInputStyle = `
 `;
 
 const StyledInputNumber = styled(InputNumber)`
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 8px;
-  border: 1px solid #ccc;
-  font-family: inherit;
+  ${CommonInputStyle}
 `;
 
 const Input = styled.input`
@@ -94,7 +97,7 @@ const SubmitButton = styled.button`
 `;
 
 const AddHours: React.FC = () => {
-  const [event, setEvent] = useState<Event | null>();
+  const [event, setEvent] = useState<Event | null>(null);
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
   const [hours, setHours] = useState<number | string>(0);
   const [feedback, setFeedback] = useState<string>("");
@@ -111,7 +114,7 @@ const AddHours: React.FC = () => {
       setEventOptions(validEvents);
     };
     fetchValidEvents();
-  }, []);
+  }, [session?.user.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,13 +140,11 @@ const AddHours: React.FC = () => {
     }
   };
 
-  const items: MenuProps["items"] =
-    eventOptions?.map((event) => {
-      return {
-        key: event.id,
-        label: <p onClick={() => setEvent(event)}> {event.title}</p>,
-      };
-    }) || [];
+  const options = eventOptions.map((event) => ({
+    value: event.title,
+    label: event.title,
+    event: event,
+  }));
 
   return (
     <FormContainer>
@@ -153,18 +154,26 @@ const AddHours: React.FC = () => {
       </BackButton>
       <h1>Add Hours</h1>
       <form onSubmit={handleSubmit}>
-        <Label style={{ width: "100%" }}>
-          <Dropdown menu={{ items, selectable: true }} placement="bottomLeft">
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                {event ? event.title : "Choose Event"}
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
+        <Label>
+          <LabelTitle>
+            Event
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
+          <AutoComplete
+            options={options}
+            style={{ width: "100%" }}
+            placeholder="Choose Event"
+            onSelect={(value, option) => setEvent(option.event)}
+            filterOption={(inputValue, option) =>
+              option!.value.toUpperCase().includes(inputValue.toUpperCase())
+            }
+          />
         </Label>
         <Label>
-          Hours
+          <LabelTitle>
+            Hours
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
           <StyledInputNumber
             defaultValue="1"
             min="0"
@@ -175,7 +184,10 @@ const AddHours: React.FC = () => {
           />
         </Label>
         <Label>
-          Feedback
+          <LabelTitle>
+            Feedback
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
           <TextArea
             rows={5}
             value={feedback}
@@ -183,7 +195,10 @@ const AddHours: React.FC = () => {
           />
         </Label>
         <Label>
-          Description of work done
+          <LabelTitle>
+            Description of work done
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
           <TextArea
             rows={5}
             value={description}
