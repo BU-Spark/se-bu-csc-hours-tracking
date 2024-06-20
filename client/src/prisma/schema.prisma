@@ -11,13 +11,13 @@ model Person {
   id                  Int              @id @default(autoincrement())
   name                String
   email               String           @unique
-  phone_number        String?           @unique
+  phone_number        String?          @unique
   role                Role             @default(USER)
   class               Int?
   affiliation_id      Int?
   image               String?
-  college             String?
-  dietary_restrictions String?
+  college             String?          @db.VarChar(255)
+  accounts            Account[]
   applications        Application[]
   comments            Comment[]
   events              Event[]
@@ -26,7 +26,6 @@ model Person {
   updated_submissions HourSubmission[] @relation("updater")
   hour_submissions    HourSubmission[]
   affiliation         Organization?    @relation(fields: [affiliation_id], references: [id])
-  accounts            Account[]
   sessions            Session[]
 }
 
@@ -45,7 +44,7 @@ model Event {
   coordinator_id         Int
   form_id                Int?
   organization_id        Int
-  image                  Bytes            @db.ByteA
+  image                  Bytes
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])
@@ -106,13 +105,13 @@ model HourSubmission {
   event_id        Int
   hours           Float
   note            String
-  description     String?
   date_submitted  DateTime  @default(now())
   approval_status Int
   updated_at      DateTime?
   updated_by_id   Int
   deleted_at      DateTime?
   deleted_by_id   Int?
+  description     String?
   deleted_by      Person?   @relation("deleter", fields: [deleted_by_id], references: [id])
   event           Event     @relation(fields: [event_id], references: [id])
   updated_by      Person    @relation("updater", fields: [updated_by_id], references: [id])
@@ -138,12 +137,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              Person  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -169,4 +168,5 @@ model VerificationToken {
 enum Role {
   USER
   ORGANIZER
+  ADMIN
 }
