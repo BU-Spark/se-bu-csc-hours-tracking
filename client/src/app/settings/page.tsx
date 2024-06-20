@@ -75,6 +75,7 @@ const Settings: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [college, setCollege] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string>("");
+  const [classYear, setClassYear] = useState<string>("");
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -88,6 +89,7 @@ const Settings: React.FC = () => {
             setPhoneNumber(user.phone_number || "");
             setCollege(user.college || "");
             setDietaryRestrictions(user.dietary_restrictions || "");
+            setClassYear(user.class ? user.class.toString() : "");
           }
         }
       };
@@ -98,11 +100,16 @@ const Settings: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^(20\d{2})$/.test(classYear)) {
+      alert("Please enter a valid class year (e.g., 2023).");
+      return;
+    }
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
         college,
         dietary_restrictions: dietaryRestrictions,
+        class: parseInt(classYear, 10),
       });
       router.push("/dashboard");
     } catch (error) {
@@ -135,6 +142,14 @@ const Settings: React.FC = () => {
             type="text"
             value={college}
             onChange={(e) => setCollege(e.target.value)}
+          />
+        </Label>
+        <Label>
+          Class Year
+          <Input
+            type="text"
+            value={classYear}
+            onChange={(e) => setClassYear(e.target.value)}
           />
         </Label>
         <Label>

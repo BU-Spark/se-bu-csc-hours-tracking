@@ -21,7 +21,11 @@ export const checkIfNewUser = async () => {
     return { isNewUser: false };
   }
 
-  const isNewUser = !user.phone_number || !user.college || !user.dietary_restrictions;
+  const isNewUser =
+    !user.phone_number ||
+    !user.college ||
+    !user.dietary_restrictions ||
+    !user.class;
 
   return { isNewUser };
 };
@@ -40,14 +44,19 @@ export const getUserDetails = async () => {
   return user;
 };
 
-export const updateUserDetails = async (details: { phone_number: string, college: string, dietary_restrictions: string }) => {
+export const updateUserDetails = async (details: {
+  phone_number: string;
+  college: string;
+  dietary_restrictions: string;
+  class: number;
+}) => {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.email) {
     throw new Error("Not authenticated");
   }
 
-  console.log('Updating user details:', details);
+  console.log("Updating user details:", details);
 
   const user = await prisma.person.update({
     where: { email: session.user.email },
@@ -55,10 +64,11 @@ export const updateUserDetails = async (details: { phone_number: string, college
       phone_number: details.phone_number,
       college: details.college,
       dietary_restrictions: details.dietary_restrictions,
+      class: details.class,
     },
   });
 
-  console.log('Updated user:', user);
+  console.log("Updated user:", user);
 
   return user;
 };
