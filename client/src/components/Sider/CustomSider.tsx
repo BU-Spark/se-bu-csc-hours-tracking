@@ -23,17 +23,17 @@ const CustomSider: React.FC = () => {
           {
             key: "my_hours",
             label: "My Hours",
-            onClick: () => router.push("/my-hours"),
+            onClick: () => router.push("/user/my-hours"),
           },
           {
             key: "events",
             label: "Events",
-            onClick: () => router.push("/events"),
+            onClick: () => router.push("/user/events"),
           },
           {
             key: "forms",
             label: "Forms",
-            onClick: () => router.push("/forms"),
+            onClick: () => router.push("/user/forms"),
           },
           {
             key: "settings",
@@ -46,18 +46,18 @@ const CustomSider: React.FC = () => {
           {
             key: "student_hours",
             label: "Student Hours",
-            onClick: () => router.push("/student-hours"),
+            onClick: () => router.push("/admin/student-hours"),
           },
           {
             key: "events",
             label: "Events",
-            onClick: () => router.push("/events"),
+            onClick: () => router.push("/admin/events"),
             disabled: true,
           },
           {
             key: "forms",
             label: "Forms",
-            onClick: () => router.push("/forms"),
+            onClick: () => router.push("/admin/forms"),
             disabled: true,
           },
         ]

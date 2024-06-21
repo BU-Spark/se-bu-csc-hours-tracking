@@ -1,5 +1,5 @@
 "use server";
-import prisma from "../utils/prisma";
+import prisma from "../../utils/prisma";
 import { EventInput } from "@/interfaces/interfaces";
 import { Role, Person, Event } from "@prisma/client";
 import { randomInt } from "crypto";
