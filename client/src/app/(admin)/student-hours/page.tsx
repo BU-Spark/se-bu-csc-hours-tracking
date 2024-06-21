@@ -24,10 +24,11 @@ const StudentHours: React.FC = () => {
     const fetchPendingSubmissions = async() =>{
       const response = await getPendingSubmissions()
       if(!response) {
+        console.log(response)
         console.error('invalid response')
         return
       }
-      console.log('Pending Submissions', pendingSubmissions)
+      console.log('Pending Submissions', response)
       setPendingSubmissions(response)
     }
     fetchPendingSubmissions()
