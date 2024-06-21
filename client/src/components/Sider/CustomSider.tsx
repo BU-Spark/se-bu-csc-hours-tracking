@@ -12,33 +12,56 @@ const CustomSider: React.FC = () => {
   const {data: session, status} = useSession();
   type MenuItem = Required<MenuProps>["items"][number];
 
-  const items: MenuItem[] = [
-    // {
-    //   key: "dashboard",
-    //   label: "Dashboard",
-    //   onClick: () => router.push("/"),
-    // },
-    {
-      key: "my_hours",
-      label: "My Hours",
-      onClick: () => router.push("/my-hours"),
-    },
-    {
-      key: "events",
-      label: "Events",
-      onClick: () => router.push("/events"),
-    },
-    {
-      key: "forms",
-      label: "Forms",
-      onClick: () => router.push("/forms"),
-    },
-    {
-      key: "settings",
-      label: "Settings",
-      disabled: true,
-    },
-  ];
+  const items: MenuItem[] =
+    session?.user.role == "USER"
+      ? [
+          // {
+          //   key: "dashboard",
+          //   label: "Dashboard",
+          //   onClick: () => router.push("/"),
+          // },
+          {
+            key: "my_hours",
+            label: "My Hours",
+            onClick: () => router.push("/my-hours"),
+          },
+          {
+            key: "events",
+            label: "Events",
+            onClick: () => router.push("/events"),
+          },
+          {
+            key: "forms",
+            label: "Forms",
+            onClick: () => router.push("/forms"),
+          },
+          {
+            key: "settings",
+            label: "Settings",
+            disabled: true,
+          },
+        ]
+      : session?.user.role === "ADMIN"
+      ? [
+          {
+            key: "student_hours",
+            label: "Student Hours",
+            onClick: () => router.push("/student-hours"),
+          },
+          {
+            key: "events",
+            label: "Events",
+            onClick: () => router.push("/events"),
+            disabled: true,
+          },
+          {
+            key: "forms",
+            label: "Forms",
+            onClick: () => router.push("/forms"),
+            disabled: true,
+          },
+        ]
+      : [];
 
   return session?.user?.image ? (
     <Sider
@@ -56,7 +79,7 @@ const CustomSider: React.FC = () => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp dimension={"6em"} session={session} />
+          <Pfp dimension={"6em"} sessionImage={session.user.image} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
               {session?.user.name}

@@ -167,4 +167,5 @@ model VerificationToken {
 enum Role {
   USER
   ORGANIZER
+  ADMIN
 }

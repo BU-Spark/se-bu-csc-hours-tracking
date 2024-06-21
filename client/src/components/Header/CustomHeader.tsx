@@ -50,7 +50,8 @@ const CustomHeader: React.FC = () => {
         {/* <button onClick={() => signOut()} style={{ marginRight: "2rem" }}> */}
         {/* Sign out
         </button> */}
-        <Pfp dimension={"2.5rem"} session={session} />
+
+        <Pfp dimension={"2.5rem"} sessionImage={session?.user.image} />
       </div>
     </Header>
   );

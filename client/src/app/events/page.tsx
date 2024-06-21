@@ -72,7 +72,7 @@ function Events() {
         width: "60vw",
       }}
     >
-      <Content>
+      <Content style={{width: '100%'}}>
         <div
           style={{
             display: "flex",
