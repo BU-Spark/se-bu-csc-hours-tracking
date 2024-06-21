@@ -9,7 +9,7 @@ import {
 } from "@/app/(user)/user/my-hours/page";
 import { HourSubmission } from "@prisma/client";
 import { getHourSubmissionTableData, getPendingSubmissions } from "./action";
-import CustomTable from "@/components/CustomTable";
+import CustomTable from "@/components/Table/CustomTable";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 
 const StudentHours: React.FC = () => {

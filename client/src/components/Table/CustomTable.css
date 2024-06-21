@@ -1,0 +1,35 @@
+:root {
+    --buRed: #CC0000;
+  }
+
+th.ant-table-cell{
+    background-color: var(--buRed) !important;
+    color: white !important;
+    }
+
+th.ant-table-cell::before {
+    width: 0.2rem !important;
+    color: white !important;
+    height: 100% !important;
+}
+
+table.ant-table {
+    background-color: #EBEBEB !important;
+    font-family: 'Inter', sans-serif !important; 
+  }
+
+.ant-table td.ant-table-cell {
+    border-right: 0.2rem solid white !important; 
+    border-top: 0.2rem solid white !important; 
+    border-left: 0 !important;
+    border-bottom: 0 !important;
+    
+  }
+
+  .ant-table td.ant-table-cell:last-child {
+    border-right: none !important; 
+  }
+
+  .anticon{
+    color: white !important;
+  }

@@ -7,6 +7,7 @@ import Highlighter from "react-highlight-words";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
+import "./CustomTable.css";
 
 const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
   const [searchText, setSearchText] = useState("");
@@ -119,12 +120,14 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
     }),
   });
 
-  const hourSubmissionsTableCols = [
+  const hourSubmissionsTableCols: TableColumnType<HoursTableData>[] = [
     {
       title: "Student Name",
       dataIndex: "studentName",
       key: "student_name",
       width: "25%",
+      align: "center",
+      render: (text: string, record: HoursTableData) => <strong>{text}</strong>,
       ...getColumnSearchProps("studentName"),
     },
     {
@@ -132,6 +135,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       dataIndex: "college",
       key: "college",
       width: "10%",
+      align: "center",
       ...getColumnSearchProps("college"),
     },
     {
@@ -139,6 +143,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       dataIndex: "category",
       key: "category",
       width: "10%",
+      align: "center",
       ...getColumnSearchProps("category"),
     },
     {
@@ -146,6 +151,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       dataIndex: "dateSubmitted",
       key: "dateSubmitted",
       width: "20%",
+      align: "center",
       render: (text: string, record: HoursTableData) =>
         new Date(record.dateSubmitted).toLocaleDateString("en-US"),
       ...getColumnSearchProps("dateSubmitted"),
@@ -155,6 +161,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       dataIndex: "hours",
       key: "hours",
       width: "8%",
+      align: "center",
       ...getColumnSearchProps("hours"),
     },
     {
@@ -162,11 +169,16 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       dataIndex: "approvalStatus",
       key: "approval",
       width: "37%",
+      align: "center",
     },
   ];
 
   return data ? (
-    <Table columns={hourSubmissionsTableCols} dataSource={data} />
+    <Table
+      columns={hourSubmissionsTableCols}
+      dataSource={data}
+      rowKey={(record) => record.key}
+    />
   ) : (
     <>No data</>
   );
