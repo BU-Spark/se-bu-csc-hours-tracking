@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Typography, Upload } from "antd";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
 import { createDummyForms, getCodes, getForms } from "./action";
 import useDownloader from "react-use-downloader";

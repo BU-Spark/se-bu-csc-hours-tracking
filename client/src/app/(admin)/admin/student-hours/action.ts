@@ -17,20 +17,20 @@ export async function getPendingSubmissions(): Promise<HourSubmission[] | undefi
 
 export async function getHourSubmissionTableData(): Promise<any | undefined> {
   try {
-    const pendingSubmisions: HourSubmission[] =
+    const pendingSubmissions: HourSubmission[] =
       await prisma.hourSubmission.findMany({ where: { approval_status: 0 } });
     const reviewedSubmissions: HourSubmission[] =
       await prisma.hourSubmission.findMany({
         where: { approval_status: { not: 0 } },
       });
-    if (!pendingSubmisions || reviewedSubmissions) {
+    if (!pendingSubmissions || reviewedSubmissions) {
       console.error("Failure in retrieving");
     }
 
-    console.log("pendingSubmisions", pendingSubmisions);
+    console.log("pendingSubmisions", pendingSubmissions);
     console.log("reviewedSubmissions", reviewedSubmissions);
     return {
-      pendingSubmisions: pendingSubmisions,
+      pendingSubmissions: pendingSubmissions,
       reviewedSubmissions: reviewedSubmissions,
     };
   } catch (error) {

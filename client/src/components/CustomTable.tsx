@@ -5,7 +5,7 @@ import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
-import { isHoursTableData } from "@/app/utils/typeChecker";
+import { isHoursTableData } from "@/app/_utils/typeChecker";
 
 const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
   const [searchText, setSearchText] = useState("");

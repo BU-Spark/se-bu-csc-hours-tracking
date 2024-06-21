@@ -1,7 +1,7 @@
 import { Event } from "@prisma/client";
 import { message, Checkbox, DatePicker, Form, Typography, Button } from "antd";
 import dayjs from "dayjs";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 import { createApplication } from "./action";
 import { useState } from "react";
 

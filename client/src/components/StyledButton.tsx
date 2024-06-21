@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "antd";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 
 interface StyledButtonProps {
   text: string;

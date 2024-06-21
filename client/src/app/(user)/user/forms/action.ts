@@ -1,5 +1,5 @@
 "use server";
-import prisma from "../../../utils/prisma";
+import prisma from "../../../_utils/prisma";
 import { Form, Code } from "@/interfaces/interfaces";
 
 export async function getForms(): Promise<Form[]> {

@@ -19,7 +19,7 @@ const StudentHours: React.FC = () => {
   const [pendingSubmissions, setPendingSubmissions] = useState<
     HourSubmission[]
   >([]);
-  const [approvedSubmissions, setApprovedSubmissions] = useState<
+  const [reviewedSubmissions, setReviewedSubmissions] = useState<
     HourSubmission[]
   >([]);
 
@@ -41,9 +41,17 @@ const StudentHours: React.FC = () => {
     };
 
     const fetchAllSubmissions = async () => {
-      const respsonse = await getHourSubmissionTableData();
+      const response = await getHourSubmissionTableData();
+      if (!response) {
+        console.log(response);
+        console.error("invalid response");
+        return;
+      }
+      console.log("All Submissions", response);
+      setPendingSubmissions(response.pendingSubmissions);
+      setReviewedSubmissions(response.reviewedSubmissions);
     };
-    fetchPendingSubmissions();
+    fetchAllSubmissions();
   }, []);
   return (
     <HeaderOffset>
@@ -87,11 +95,16 @@ const StudentHours: React.FC = () => {
           }}
         >
           <SummaryBox>
-            <h2>{pendingSubmissions.length.toString()}</h2>
+            <h2>
+              {pendingSubmissions ? pendingSubmissions.length.toString() : 0}
+            </h2>
             <p>Pending Submissions</p>
           </SummaryBox>
           <SummaryBox>
-            <h2>{approvedSubmissions.length.toString()}</h2>
+            <h2>
+              {reviewedSubmissions ? reviewedSubmissions.length.toString() : 0}
+            </h2>{" "}
+            {/* CHANGE TO HOURS APPROVED*/}
             <p>Approved Submissions</p>
           </SummaryBox>
         </div>

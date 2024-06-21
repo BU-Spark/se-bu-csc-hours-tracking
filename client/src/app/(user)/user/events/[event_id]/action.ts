@@ -1,5 +1,5 @@
 "use server";
-import prisma from "@/app/utils/prisma";
+import prisma from "@/app/_utils/prisma";
 import { Event } from "@/interfaces/interfaces";
 import { Application } from "@prisma/client";
 

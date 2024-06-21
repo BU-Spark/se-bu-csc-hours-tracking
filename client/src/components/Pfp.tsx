@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { buRed } from "../common/styles";
+import { buRed } from "../_common/styles";
 
 const Pfp: React.FC<any> = ({ dimension, sessionImage }) => {
   const defaultImageUrl =
