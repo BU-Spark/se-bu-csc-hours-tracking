@@ -36,11 +36,12 @@ export async function getHourSubmissionTableData(): Promise<
         approval_status: { not: 0 },
       },
       select: {
-        event: true,
-        volunteer: true,
+        event: { select: { category: true } },
+        volunteer: { select: { name: true, college: true } },
         id: true,
         date_submitted: true,
         approval_status: true,
+        hours: true,
       },
     });
     if (!pendingSubmissions || reviewedSubmissions) {
