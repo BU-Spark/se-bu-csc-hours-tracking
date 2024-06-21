@@ -32,7 +32,7 @@ const StudentHours: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "end",
-            width: "25%",
+            width: "30%",
             margin: "1rem 0",
           }}
         >
