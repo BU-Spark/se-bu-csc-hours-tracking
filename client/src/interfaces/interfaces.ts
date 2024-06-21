@@ -137,7 +137,7 @@ export interface HoursTableData {
   category: string;
   dateSubmitted: Date;
   hours: number;
-  approval_status: number;
+  approvalStatus: number;
 }
 
 export interface CustomTableParams {

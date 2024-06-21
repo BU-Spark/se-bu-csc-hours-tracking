@@ -6,6 +6,7 @@ import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
+import { formatDate } from "@/app/_utils/DateFormatters";
 
 const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
   const [searchText, setSearchText] = useState("");
@@ -108,17 +109,14 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
+    onCell: (record) => ({
+      style: {
+        maxWidth: 200,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      },
+    }),
   });
 
   const hourSubmissionsTableCols = [
@@ -146,8 +144,10 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
     {
       title: "Date Submitted",
       dataIndex: "dateSubmitted",
-      key: "date_submitted",
+      key: "dateSubmitted",
       width: "20%",
+      render: (text: string, record: HoursTableData) =>
+        new Date(record.dateSubmitted).toLocaleDateString("en-US"),
       ...getColumnSearchProps("dateSubmitted"),
     },
     {
@@ -159,7 +159,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
     },
     {
       title: "Approval",
-      dataIndex: "approval_status",
+      dataIndex: "approvalStatus",
       key: "approval",
       width: "37%",
     },

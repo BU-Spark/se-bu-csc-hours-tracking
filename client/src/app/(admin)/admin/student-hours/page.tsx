@@ -15,31 +15,19 @@ import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 const StudentHours: React.FC = () => {
   const { data: session, status } = useSession();
   const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [hoursTableData, setHoursTableData] = useState<HoursTableData[]>([]);
   const [pendingSubmissions, setPendingSubmissions] = useState<
-    HourSubmission[]
+    HoursTableData[]
   >([]);
   const [reviewedSubmissions, setReviewedSubmissions] = useState<
-    HourSubmission[]
+    HoursTableData[]
   >([]);
 
   const input: CustomTableParams = {
-    data: hoursTableData,
+    data: showHistory ? reviewedSubmissions : pendingSubmissions,
     dataType: "hoursTableData[]",
   };
 
   useEffect(() => {
-    const fetchPendingSubmissions = async () => {
-      const response = await getPendingSubmissions();
-      if (!response) {
-        console.log(response);
-        console.error("invalid response");
-        return;
-      }
-      console.log("Pending Submissions", response);
-      setPendingSubmissions(response);
-    };
-
     const fetchAllSubmissions = async () => {
       const response = await getHourSubmissionTableData();
       if (!response) {
@@ -48,8 +36,8 @@ const StudentHours: React.FC = () => {
         return;
       }
       console.log("All Submissions", response);
-      setPendingSubmissions(response.pendingSubmissions);
-      setReviewedSubmissions(response.reviewedSubmissions);
+      setPendingSubmissions(response.pendingHourRows);
+      setReviewedSubmissions(response.reviewHourRows);
     };
     fetchAllSubmissions();
   }, []);
