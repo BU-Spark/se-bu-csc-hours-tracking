@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Table } from "antd";
@@ -10,10 +10,16 @@ import { formatDate } from "@/app/_utils/DateFormatters";
 import "./CustomTable.css";
 
 const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
+  const [searchText, setSearchText] = useState<string>("");
+  const [searchedColumn, setSearchedColumn] = useState<string>("");
+  const [loading, setIsLoading] = useState<boolean>(true);
   const searchInput = useRef<InputRef>(null);
 
+  useEffect(() => {
+    if (data) {
+      setIsLoading(false);
+    }
+  }, [data]);
   let cols = [];
   type DataIndex = keyof HoursTableData;
 
@@ -170,8 +176,36 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       key: "approval",
       width: "37%",
       align: "center",
+      render: (record: number) => {
+        console.log("approval stat", record);
+
+        return record == 0 ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "80%",
+              margin: "0 auto",
+            }}
+          >
+            <button className="approve-buttons">Approve</button>
+            <button className="approve-buttons">Deny</button>
+          </div>
+        ) : record == 1 ? (
+          <p>Add in who reviewed here</p>
+        ) : record == 2 ? (
+          <p>Denied by ______</p>
+        ) : (
+          <p>Unidentified submission code</p>
+        );
+      },
     },
   ];
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return data ? (
     <Table

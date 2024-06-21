@@ -100,7 +100,6 @@ const StudentHours: React.FC = () => {
                   }, 0)
                 : 0}
             </h2>{" "}
-            {/* CHANGE TO HOURS APPROVED*/}
             <p>Approved Hours</p>
           </SummaryBox>
         </div>
