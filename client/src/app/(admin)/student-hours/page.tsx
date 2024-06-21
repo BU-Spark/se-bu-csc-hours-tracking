@@ -1,13 +1,14 @@
 "use client";
 import StyledButton from "@/components/StyledButton";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HeaderOffset,
   SummaryContainer,
   SummaryBox,
-} from "@/app/user/my-hours/page";
+} from "@/app/(user)/my-hours/page";
 import { HourSubmission } from "@prisma/client";
+import { getPendingSubmissions } from "./action";
 
 const StudentHours: React.FC = () => {
   const { data: session, status } = useSession();
@@ -18,6 +19,19 @@ const StudentHours: React.FC = () => {
   const [approvedSubmissions, setApprovedSubmissions] = useState<
     HourSubmission[]
   >([]);
+
+  useEffect( ()=>{
+    const fetchPendingSubmissions = async() =>{
+      const response = await getPendingSubmissions()
+      if(!response) {
+        console.error('invalid response')
+        return
+      }
+      console.log('Pending Submissions', pendingSubmissions)
+      setPendingSubmissions(response)
+    }
+    fetchPendingSubmissions()
+  },[])
   return (
     <HeaderOffset>
       <SummaryContainer
@@ -69,6 +83,8 @@ const StudentHours: React.FC = () => {
           </SummaryBox>
         </div>
       </SummaryContainer>
+
+
     </HeaderOffset>
   );
 };

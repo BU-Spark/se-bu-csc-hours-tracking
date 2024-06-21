@@ -11,7 +11,7 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
   getUserByEmail,
-} from "@/app/user/events/action";
+} from "@/app/(user)/events/action";
 import { Event } from "@/interfaces/interfaces";
 import { buRed } from "@/common/styles";
 import { getCategoryById } from "../EventCard/action";

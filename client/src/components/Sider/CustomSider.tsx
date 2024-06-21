@@ -23,22 +23,22 @@ const CustomSider: React.FC = () => {
           {
             key: "my_hours",
             label: "My Hours",
-            onClick: () => router.push("/user/my-hours"),
+            onClick: () => router.push("/my-hours"),
           },
           {
             key: "events",
             label: "Events",
-            onClick: () => router.push("/user/events"),
+            onClick: () => router.push("/events"),
           },
           {
             key: "forms",
             label: "Forms",
-            onClick: () => router.push("/user/forms"),
+            onClick: () => router.push("/forms"),
           },
           {
             key: "settings",
             label: "Settings",
-            onClick: () => router.push("/user/settings"),
+            onClick: () => router.push("/settings"),
           },
         ]
       : session?.user.role === "ADMIN"
@@ -46,18 +46,18 @@ const CustomSider: React.FC = () => {
           {
             key: "student_hours",
             label: "Student Hours",
-            onClick: () => router.push("/admin/student-hours"),
+            onClick: () => router.push("/student-hours"),
           },
           {
             key: "events",
             label: "Events",
-            onClick: () => router.push("/admin/events"),
+            onClick: () => router.push("/events"),
             disabled: true,
           },
           {
             key: "forms",
             label: "Forms",
-            onClick: () => router.push("/admin/forms"),
+            onClick: () => router.push("/forms"),
             disabled: true,
           },
         ]

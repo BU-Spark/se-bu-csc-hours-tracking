@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation'; 
-import { checkIfNewUser } from '@/app/user/settings/action';
+import { checkIfNewUser } from '@/app/(user)/settings/action';
 
 
 const Dashboard: React.FC = () => {
