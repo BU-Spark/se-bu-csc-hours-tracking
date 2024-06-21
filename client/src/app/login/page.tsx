@@ -38,7 +38,7 @@ function Login() {
     <Container>
       <div style={{marginLeft: "-15em"}}>
         <Title>Boston University Community Service Time Log</Title>
-        <SignInButton onClick={() => signIn()}>Sign in</SignInButton>
+        <SignInButton onClick={() => signIn(undefined, { callbackUrl: '/' })}>Sign in</SignInButton>
       </div>
     </Container>
   );
