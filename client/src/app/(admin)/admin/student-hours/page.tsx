@@ -6,13 +6,16 @@ import {
   HeaderOffset,
   SummaryContainer,
   SummaryBox,
-} from "@/app/(user)/my-hours/page";
+} from "@/app/(user)/user/my-hours/page";
 import { HourSubmission } from "@prisma/client";
-import { getPendingSubmissions } from "./action";
+import { getHourSubmissionTableData, getPendingSubmissions } from "./action";
+import CustomTable from "@/components/CustomTable";
+import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 
 const StudentHours: React.FC = () => {
   const { data: session, status } = useSession();
   const [showHistory, setShowHistory] = useState<boolean>(false);
+  const [hoursTableData, setHoursTableData] = useState<HoursTableData[]>([]);
   const [pendingSubmissions, setPendingSubmissions] = useState<
     HourSubmission[]
   >([]);
@@ -20,19 +23,28 @@ const StudentHours: React.FC = () => {
     HourSubmission[]
   >([]);
 
-  useEffect( ()=>{
-    const fetchPendingSubmissions = async() =>{
-      const response = await getPendingSubmissions()
-      if(!response) {
-        console.log(response)
-        console.error('invalid response')
-        return
+  const input: CustomTableParams = {
+    data: hoursTableData,
+    dataType: "hoursTableData[]",
+  };
+
+  useEffect(() => {
+    const fetchPendingSubmissions = async () => {
+      const response = await getPendingSubmissions();
+      if (!response) {
+        console.log(response);
+        console.error("invalid response");
+        return;
       }
-      console.log('Pending Submissions', response)
-      setPendingSubmissions(response)
-    }
-    fetchPendingSubmissions()
-  },[])
+      console.log("Pending Submissions", response);
+      setPendingSubmissions(response);
+    };
+
+    const fetchAllSubmissions = async () => {
+      const respsonse = await getHourSubmissionTableData();
+    };
+    fetchPendingSubmissions();
+  }, []);
   return (
     <HeaderOffset>
       <SummaryContainer
@@ -84,8 +96,7 @@ const StudentHours: React.FC = () => {
           </SummaryBox>
         </div>
       </SummaryContainer>
-
-
+      <CustomTable data={input.data} dataType={input.dataType} />
     </HeaderOffset>
   );
 };

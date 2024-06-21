@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
-import convertToBase64 from "../../utils/BufferToString";
+import convertToBase64 from "../../../utils/BufferToString";
 
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents } = props;

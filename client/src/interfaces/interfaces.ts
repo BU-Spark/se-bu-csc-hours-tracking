@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { HourSubmission, Role } from "@prisma/client";
 
 export interface FormRowParams {
   form: Form;
@@ -127,4 +127,20 @@ export interface CreateNewHourSubmissionParams {
   hours: number;
   feedback: string;
   description: string;
+}
+
+export interface HoursTableData {
+  key: React.Key;
+  submissionId: string;
+  studentName: string;
+  college: string;
+  category: string;
+  dateSubmitted: Date;
+  hours: number;
+  approval_status: number;
+}
+
+export interface CustomTableParams {
+  data: HoursTableData[] | null; //determine columns from this
+  dataType: string;
 }
