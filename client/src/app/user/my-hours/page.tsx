@@ -14,11 +14,11 @@ import { FaComment } from "react-icons/fa";
 import { EventHours } from "@/interfaces/interfaces";
 import StyledButton from "@/components/StyledButton";
 
-const HeaderOffset = styled.div`
+export const HeaderOffset = styled.div`
   margin-top: 70px;
 `;
 
-const SummaryContainer = styled.div`
+export const SummaryContainer = styled.div`
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
@@ -30,7 +30,7 @@ const SummaryContainer = styled.div`
   }
 `;
 
-const SummaryBox = styled.div`
+export const SummaryBox = styled.div`
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;

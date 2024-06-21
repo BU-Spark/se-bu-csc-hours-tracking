@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               style={{
                 marginLeft: "15rem",
                 marginTop: "2rem",
-                marginRight: "0.5rem",
+                marginRight: "2rem",
               }}
             >
               <BodyHeader />
