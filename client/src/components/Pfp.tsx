@@ -7,7 +7,7 @@ const Pfp: React.FC<any> = ({ dimension, sessionImage }) => {
   console.log("sessionImage", sessionImage);
   return (
     <img
-      src={sessionImage}
+      src={sessionImage || defaultImageUrl}
       alt="pfp"
       style={{
         height: dimension,
