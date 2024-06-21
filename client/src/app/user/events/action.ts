@@ -1,5 +1,5 @@
 "use server";
-import prisma from "../utils/prisma";
+import prisma from "../../utils/prisma";
 import { EventInput } from "@/interfaces/interfaces";
 import { Role, Person, Event } from "@prisma/client";
 import { randomInt } from "crypto";
@@ -35,7 +35,7 @@ export async function createDummyEvent(eventData: EventInput): Promise<void> {
     const imageBytes = await fs.readFile(imageFilePath);
 
     if (
-      !prisma.category.findUnique({
+      !await prisma.category.findUnique({
         where: {
           id: 1,
         },

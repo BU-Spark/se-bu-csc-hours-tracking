@@ -11,7 +11,7 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
   getUserByEmail,
-} from "@/app/events/action";
+} from "@/app/user/events/action";
 import { Event } from "@/interfaces/interfaces";
 import { buRed } from "@/common/styles";
 import { getCategoryById } from "../EventCard/action";
@@ -21,7 +21,7 @@ function EventSider() {
   //session and path vars
   const path = usePathname();
   const { data: session, status } = useSession();
-  const isDisplayed = path === "/events";
+  const isDisplayed = path === "/user/events";
 
   //useState variables
   const [user, setUser] = useState<Person>();

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Dashboard from "./dashboard/page";
+import Dashboard from "./user/dashboard/page";
 import Login from "./login/page";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

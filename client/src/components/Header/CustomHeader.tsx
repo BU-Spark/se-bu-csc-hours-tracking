@@ -12,6 +12,7 @@ const { Header } = Layout;
 
 const CustomHeader: React.FC = () => {
   const { data: session, status } = useSession();
+
   return (
     <Header
       className="fixedHeader"
@@ -38,11 +39,13 @@ const CustomHeader: React.FC = () => {
       <div className="header-right">
         {status === "authenticated" ? (
           <div style={{ marginRight: "1rem" }}>
+           
             <StyledButton
               onClick={() => signOut({ callbackUrl: "/login" })}
               text="Sign out"
               selected={false}
             />
+  
           </div>
         ) : (
           <></>

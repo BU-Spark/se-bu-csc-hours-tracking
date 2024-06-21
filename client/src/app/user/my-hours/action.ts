@@ -1,7 +1,7 @@
 "use server";
 
 import { Event, HourSubmission, Organization } from "@prisma/client";
-import prisma from "../../lib/prisma";
+import prisma from "@/lib/prisma";
 import { EventHours } from "@/interfaces/interfaces";
 
 export const getHourSubmissionsByUserEmail = async (
