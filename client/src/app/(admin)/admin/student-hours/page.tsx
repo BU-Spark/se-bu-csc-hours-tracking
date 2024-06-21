@@ -90,10 +90,18 @@ const StudentHours: React.FC = () => {
           </SummaryBox>
           <SummaryBox>
             <h2>
-              {reviewedSubmissions ? reviewedSubmissions.length.toString() : 0}
+              {reviewedSubmissions
+                ? reviewedSubmissions.reduce((accumulator, current) => {
+                    if (current.approvalStatus === 1) {
+                      return accumulator + current.hours;
+                    } else {
+                      return accumulator;
+                    }
+                  }, 0)
+                : 0}
             </h2>{" "}
             {/* CHANGE TO HOURS APPROVED*/}
-            <p>Approved Submissions</p>
+            <p>Approved Hours</p>
           </SummaryBox>
         </div>
       </SummaryContainer>
