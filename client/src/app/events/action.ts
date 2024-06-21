@@ -35,7 +35,7 @@ export async function createDummyEvent(eventData: EventInput): Promise<void> {
     const imageBytes = await fs.readFile(imageFilePath);
 
     if (
-      !prisma.category.findUnique({
+      !await prisma.category.findUnique({
         where: {
           id: 1,
         },
