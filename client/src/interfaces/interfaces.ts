@@ -138,6 +138,7 @@ export interface HoursTableData {
   dateSubmitted: Date;
   hours: number;
   approvalStatus: number;
+  updatedBy: string;
 }
 
 export interface CustomTableParams {

@@ -176,10 +176,10 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       key: "approval",
       width: "37%",
       align: "center",
-      render: (record: number) => {
+      render: (text: string, record: HoursTableData) => {
         console.log("approval stat", record);
 
-        return record == 0 ? (
+        return record.approvalStatus == 0 ? (
           <div
             style={{
               display: "flex",
@@ -192,10 +192,14 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
             <button className="approve-buttons">Approve</button>
             <button className="approve-buttons">Deny</button>
           </div>
-        ) : record == 1 ? (
-          <p>Add in who reviewed here</p>
-        ) : record == 2 ? (
-          <p>Denied by ______</p>
+        ) : record.approvalStatus == 1 ? (
+          <p>
+            Approved by <b>{record.updatedBy}</b>
+          </p>
+        ) : record.approvalStatus == 2 ? (
+          <p>
+            Denied by <b>{record.updatedBy}</b>
+          </p>
         ) : (
           <p>Unidentified submission code</p>
         );

@@ -29,6 +29,7 @@ export async function getHourSubmissionTableData(): Promise<
         date_submitted: true,
         approval_status: true,
         hours: true,
+        updated_by: true,
       },
     });
     const reviewedSubmissions: any[] = await prisma.hourSubmission.findMany({
@@ -42,6 +43,7 @@ export async function getHourSubmissionTableData(): Promise<
         date_submitted: true,
         approval_status: true,
         hours: true,
+        updated_by: true,
       },
     });
     if (!pendingSubmissions || reviewedSubmissions) {
@@ -61,6 +63,7 @@ export async function getHourSubmissionTableData(): Promise<
         dateSubmitted: submission.date_submitted,
         hours: submission.hours,
         approvalStatus: submission.approval_status,
+        updatedBy: submission.updated_by.name,
       })
     );
 
@@ -74,6 +77,7 @@ export async function getHourSubmissionTableData(): Promise<
         dateSubmitted: submission.date_submitted,
         hours: submission.hours,
         approvalStatus: submission.approval_status,
+        updatedBy: submission.updated_by.name,
       })
     );
 
