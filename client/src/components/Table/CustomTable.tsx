@@ -16,10 +16,18 @@ import "./CustomTable.css";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
 import { useSession } from "next-auth/react";
 
-const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
+const CustomTable: React.FC<CustomTableParams> = ({
+  data,
+  dataType,
+  set1,
+  val1,
+  set2,
+  val2,
+}) => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchedColumn, setSearchedColumn] = useState<string>("");
   const [loading, setIsLoading] = useState<boolean>(true);
+  const [editingKey, setEditingKey] = useState<number | null>(null);
   const searchInput = useRef<InputRef>(null);
   const { data: session, status } = useSession();
 
@@ -28,7 +36,6 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       setIsLoading(false);
     }
   }, [data]);
-  let cols = [];
   type DataIndex = keyof HoursTableData;
 
   const handleSearch = (
@@ -140,21 +147,55 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       console.log("session check failed");
       return;
     }
+
     console.log("choice", choice);
+
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),
       updaterId: Number(session?.user.id),
-      approvalStatus: choice == "approve" ? 1 : choice == "deny" ? 2 : 3,
+      approvalStatus:
+        choice === "approve"
+          ? 1
+          : choice === "deny"
+          ? 2
+          : choice === "pending"
+          ? 0
+          : 3,
     };
-    const choose = async () => {
-      const response = await reviewHourSubmission(body);
-      return response;
-    };
-    const worked = choose();
 
-    if (!worked) {
-      console.error("Response failed");
-      return;
+    try {
+      const response = await reviewHourSubmission(body);
+
+      if (!response) {
+        console.error("Response failed");
+        return;
+      }
+
+      setEditingKey(null);
+
+      if (set1 && val1 && set2 && val2) {
+        if (choice === "pending") {
+          // Update record approvalStatus and move to val1
+          const updatedRecord = { ...record, approvalStatus: 0 };
+          set1([updatedRecord, ...val1]);
+          set2(val2.filter((val) => val.submissionId !== record.submissionId));
+        } else if (choice === "approve" || choice === "deny") {
+          // Update record approvalStatus and move to val2
+          const updatedRecord = {
+            ...record,
+            approvalStatus: choice === "approve" ? 1 : 2,
+          };
+          set2([
+            updatedRecord,
+            ...val2.filter((val) => val.submissionId !== record.submissionId),
+          ]);
+          set1(val1.filter((val) => val.submissionId !== record.submissionId));
+        } else {
+          console.error("Invalid choice");
+        }
+      }
+    } catch (error) {
+      console.error("Error while reviewing submission:", error);
     }
   };
 
@@ -172,7 +213,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       title: "College",
       dataIndex: "college",
       key: "college",
-      width: "10%",
+      width: "5%",
       align: "center",
       ...getColumnSearchProps("college"),
     },
@@ -188,7 +229,7 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       title: "Date Submitted",
       dataIndex: "dateSubmitted",
       key: "dateSubmitted",
-      width: "20%",
+      width: "15%",
       align: "center",
       render: (text: string, record: HoursTableData) =>
         new Date(record.dateSubmitted).toLocaleDateString("en-US"),
@@ -206,9 +247,55 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       title: "Approval",
       dataIndex: "approvalStatus",
       key: "approval",
-      width: "37%",
+      width: "15rem%",
       align: "center",
       render: (text: string, record: HoursTableData) => {
+        if (editingKey == Number(record.submissionId)) {
+          return (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "80%",
+                margin: "0 auto",
+              }}
+            >
+              <button
+                className="approve-buttons"
+                onClick={() => handleReview(record, "pending")}
+              >
+                Pending
+              </button>
+              {record.approvalStatus == 1 ? (
+                <button
+                  className="approve-buttons"
+                  onClick={() => handleReview(record, "deny")}
+                >
+                  Deny
+                </button>
+              ) : (
+                <button
+                  className="approve-buttons"
+                  onClick={() => handleReview(record, "approve")}
+                >
+                  Approve
+                </button>
+              )}
+              <a
+                style={{
+                  textDecoration: "underline",
+                  color: "grey",
+                  marginLeft: "10px",
+                }}
+                onClick={() => setEditingKey(null)}
+              >
+                Cancel
+              </a>
+            </div>
+          );
+        }
+
         return record.approvalStatus == 0 ? (
           <div
             style={{
@@ -233,13 +320,67 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
             </button>
           </div>
         ) : record.approvalStatus == 1 ? (
-          <p>
-            Approved by <b>{record.updatedBy}</b>
-          </p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "center",
+            }}
+          >
+            <p style={{ marginBottom: 0 }}>Approved by</p>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <b>{record.updatedBy}</b>
+              <a
+                style={{
+                  textDecoration: "underline",
+                  color: "grey",
+                  marginLeft: "10px",
+                }}
+                onClick={() => setEditingKey(Number(record.submissionId))}
+              >
+                Change
+              </a>
+            </div>
+          </div>
         ) : record.approvalStatus == 2 ? (
-          <p>
-            Denied by <b>{record.updatedBy}</b>
-          </p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "center",
+            }}
+          >
+            <p style={{ marginBottom: 0 }}>Denied by</p>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <b>{record.updatedBy}</b>
+              <a
+                style={{
+                  textDecoration: "underline",
+                  color: "grey",
+                  marginLeft: "10px",
+                }}
+                onClick={() => setEditingKey(Number(record.submissionId))}
+              >
+                Change
+              </a>
+            </div>
+          </div>
         ) : (
           <p>Unidentified submission code</p>
         );

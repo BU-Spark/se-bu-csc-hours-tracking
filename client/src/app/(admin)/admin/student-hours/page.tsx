@@ -25,6 +25,10 @@ const StudentHours: React.FC = () => {
   const input: CustomTableParams = {
     data: showHistory ? reviewedSubmissions : pendingSubmissions,
     dataType: "hoursTableData[]",
+    set1: setPendingSubmissions,
+    val1: pendingSubmissions,
+    set2: setReviewedSubmissions,
+    val2: reviewedSubmissions,
   };
 
   useEffect(() => {
@@ -104,7 +108,14 @@ const StudentHours: React.FC = () => {
           </SummaryBox>
         </div>
       </SummaryContainer>
-      <CustomTable data={input.data} dataType={input.dataType} />
+      <CustomTable
+        data={input.data}
+        dataType={input.dataType}
+        set1={input.set1}
+        val1={input.val1}
+        set2={input.set2}
+        val2={input.val2}
+      />
     </HeaderOffset>
   );
 };

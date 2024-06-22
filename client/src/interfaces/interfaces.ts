@@ -1,4 +1,5 @@
 import { HourSubmission, Role } from "@prisma/client";
+import { Dispatch, SetStateAction } from "react";
 
 export interface FormRowParams {
   form: Form;
@@ -144,6 +145,10 @@ export interface HoursTableData {
 export interface CustomTableParams {
   data: HoursTableData[] | null; //determine columns from this
   dataType: string;
+  set1: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
+  val1: HoursTableData[] | undefined;
+  set2: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
+  val2: HoursTableData[] | undefined;
 }
 
 export interface ProcessSubmissionParams {
