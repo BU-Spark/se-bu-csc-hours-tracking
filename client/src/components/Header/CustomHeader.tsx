@@ -37,18 +37,19 @@ const CustomHeader: React.FC = () => {
       />
 
       <div className="header-right">
-        {status === "authenticated" ? (
-          <div style={{ marginRight: "1rem" }}>
-           
-            <StyledButton
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              text="Sign out"
-              selected={false}
-            />
-  
-          </div>
-        ) : (
-          <></>
+        {status === "authenticated" && (
+          <>
+            <div style={{ marginRight: "1rem" }}>
+              <StyledButton
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                text="Sign out"
+                selected={false}
+              />
+            </div>
+            {session?.user.role === "ADMIN" && (
+              <b style={{ marginRight: "1rem" }}>Administrator</b>
+            )}
+          </>
         )}
         <Pfp dimension={"2.5rem"} session={session} />
       </div>
