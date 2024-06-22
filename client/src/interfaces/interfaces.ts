@@ -145,3 +145,9 @@ export interface CustomTableParams {
   data: HoursTableData[] | null; //determine columns from this
   dataType: string;
 }
+
+export interface ProcessSubmissionParams {
+  submissionId: number;
+  updaterId: number;
+  approvalStatus: number;
+}

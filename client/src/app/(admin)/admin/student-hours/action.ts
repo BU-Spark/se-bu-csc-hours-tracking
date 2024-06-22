@@ -1,18 +1,26 @@
 'use server'
-import { HoursTableData } from "@/interfaces/interfaces";
+import {
+  HoursTableData,
+  ProcessSubmissionParams,
+} from "@/interfaces/interfaces";
 import prisma from "@/lib/prisma";
 import { HourSubmission } from "@prisma/client";
 
-export async function getPendingSubmissions(): Promise<HourSubmission[] | undefined> {
-    try {
-        const pendingSubmisions: HourSubmission[] = await prisma.hourSubmission.findMany({where: {approval_status: 0}})
-        if(!pendingSubmisions){console.error('Failure in retrieving')}
-        
-        console.log('pendingSubmisions', pendingSubmisions)
-        return pendingSubmisions
-    } catch (error) {
-        console.error(error)
+export async function getPendingSubmissions(): Promise<
+  HourSubmission[] | undefined
+> {
+  try {
+    const pendingSubmisions: HourSubmission[] =
+      await prisma.hourSubmission.findMany({ where: { approval_status: 0 } });
+    if (!pendingSubmisions) {
+      console.error("Failure in retrieving");
     }
+
+    console.log("pendingSubmisions", pendingSubmisions);
+    return pendingSubmisions;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export async function getHourSubmissionTableData(): Promise<
@@ -88,6 +96,26 @@ export async function getHourSubmissionTableData(): Promise<
       pendingHourRows: pendingHourRows,
       reviewHourRows: reviewHourRows,
     };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function reviewHourSubmission(
+  data: ProcessSubmissionParams
+): Promise<any> {
+  const { submissionId, updaterId, approvalStatus } = data;
+  try {
+    const response = prisma.hourSubmission.update({
+      where: { id: submissionId },
+      data: {
+        updated_by_id: updaterId,
+        approval_status: approvalStatus,
+        updated_at: new Date(),
+      },
+    });
+    console.log(response);
+    return response;
   } catch (error) {
     console.error(error);
   }

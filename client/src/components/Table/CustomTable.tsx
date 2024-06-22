@@ -1,19 +1,27 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
-import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
+import {
+  CustomTableParams,
+  HoursTableData,
+  ProcessSubmissionParams,
+} from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import "./CustomTable.css";
+import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
+import { useSession } from "next-auth/react";
 
 const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [searchedColumn, setSearchedColumn] = useState<string>("");
   const [loading, setIsLoading] = useState<boolean>(true);
   const searchInput = useRef<InputRef>(null);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     if (data) {
@@ -126,6 +134,30 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
     }),
   });
 
+  // FOR APPROVING / DENYING HOURS
+  const handleReview = async (record: HoursTableData, choice: string) => {
+    if (!session?.user) {
+      console.log("session check failed");
+      return;
+    }
+    console.log("choice", choice);
+    const body: ProcessSubmissionParams = {
+      submissionId: Number(record.submissionId),
+      updaterId: Number(session?.user.id),
+      approvalStatus: choice == "approve" ? 1 : choice == "deny" ? 2 : 3,
+    };
+    const choose = async () => {
+      const response = await reviewHourSubmission(body);
+      return response;
+    };
+    const worked = choose();
+
+    if (!worked) {
+      console.error("Response failed");
+      return;
+    }
+  };
+
   const hourSubmissionsTableCols: TableColumnType<HoursTableData>[] = [
     {
       title: "Student Name",
@@ -177,8 +209,6 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
       width: "37%",
       align: "center",
       render: (text: string, record: HoursTableData) => {
-        console.log("approval stat", record);
-
         return record.approvalStatus == 0 ? (
           <div
             style={{
@@ -189,8 +219,18 @@ const CustomTable: React.FC<CustomTableParams> = ({ data, dataType }) => {
               margin: "0 auto",
             }}
           >
-            <button className="approve-buttons">Approve</button>
-            <button className="approve-buttons">Deny</button>
+            <button
+              className="approve-buttons"
+              onClick={() => handleReview(record, "approve")}
+            >
+              Approve
+            </button>
+            <button
+              className="approve-buttons"
+              onClick={() => handleReview(record, "deny")}
+            >
+              Deny
+            </button>
           </div>
         ) : record.approvalStatus == 1 ? (
           <p>
