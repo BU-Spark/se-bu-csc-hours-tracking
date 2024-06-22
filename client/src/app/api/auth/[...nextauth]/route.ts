@@ -4,7 +4,7 @@ import { CustomPrismaAdapter } from "../../../../lib/CustomPrismaAdapter";
 import prisma from "../../../../lib/prisma";
 import { Role } from "@prisma/client";
 
-export const authOptions: NextAuthOptions = {
+export const options: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -99,4 +99,5 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export default NextAuth(authOptions);
+export const GET = NextAuth(options);
+export const POST = NextAuth(options);
