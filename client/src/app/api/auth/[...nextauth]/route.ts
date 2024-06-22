@@ -99,5 +99,6 @@ export const options: NextAuthOptions = {
   },
 };
 
+//DO NOT CHANGE THIS
 export const GET = NextAuth(options);
 export const POST = NextAuth(options);
