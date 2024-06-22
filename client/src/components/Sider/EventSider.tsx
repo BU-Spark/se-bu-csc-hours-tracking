@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
-import { formatDate } from "@/app/utils/DateFormatters";
+import { formatDate } from "@/app/_utils/DateFormatters";
 import { Application, Person } from "@prisma/client";
 import { GroupedEvents } from "@/interfaces/interfaces";
 import {
@@ -11,9 +11,9 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
   getUserByEmail,
-} from "@/app/user/events/action";
+} from "@/app/(user)/user/events/action";
 import { Event } from "@/interfaces/interfaces";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 import { getCategoryById } from "../EventCard/action";
 import { useSession } from "next-auth/react";
 

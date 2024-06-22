@@ -12,7 +12,7 @@ import {
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
 import { Button, InputNumber, AutoComplete } from "antd";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 
 const FormContainer = styled.div`
   max-width: 600px;

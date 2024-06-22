@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "antd";
-import { buRed } from "@/common/styles";
+import { buRed } from "@/_common/styles";
 import { EventCardProps } from "@/interfaces/interfaces";
 import { Person } from "@prisma/client";
 import Link from "next/link";

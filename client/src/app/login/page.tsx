@@ -2,7 +2,7 @@
 import React from 'react'
 import { signIn } from 'next-auth/react';
 import styled from 'styled-components';
-import { buRed } from '../../common/styles';
+import { buRed } from "../../_common/styles";
 
 const Container = styled.div`
   display: flex;
