@@ -6,7 +6,7 @@ import {
   HeaderOffset,
   SummaryContainer,
   SummaryBox,
-} from "@/app/(user)/user/my-hours/page";
+} from "@/_common/styledDivs";
 import { HourSubmission } from "@prisma/client";
 import { getHourSubmissionTableData, getPendingSubmissions } from "./action";
 import CustomTable from "@/components/Table/CustomTable";
