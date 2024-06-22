@@ -1,5 +1,6 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { NextApiRequest, NextApiResponse } from "next";
-import { getHourSubmissionsByUserEmail } from "../../my-hours/action";
+import { getHourSubmissionsByUserEmail } from "@/app/(user)/user/my-hours/action";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { email } = req.query;
