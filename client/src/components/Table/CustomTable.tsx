@@ -148,8 +148,6 @@ const CustomTable: React.FC<CustomTableParams> = ({
       return;
     }
 
-    console.log("choice", choice);
-
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),
       updaterId: Number(session?.user.id),
@@ -231,9 +229,15 @@ const CustomTable: React.FC<CustomTableParams> = ({
       key: "dateSubmitted",
       width: "15%",
       align: "center",
+      defaultSortOrder: "descend",
       render: (text: string, record: HoursTableData) =>
         new Date(record.dateSubmitted).toLocaleDateString("en-US"),
       ...getColumnSearchProps("dateSubmitted"),
+      // sorter: (a: HoursTableData, b: HoursTableData) => {
+      //   const dateA = new Date(a.dateSubmitted).getTime();
+      //   const dateB = new Date(b.dateSubmitted).getTime();
+      //   return dateA - dateB;
+      // },
     },
     {
       title: "Hours",
