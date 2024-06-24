@@ -158,19 +158,20 @@ export interface EventApplicationsTableData {
   estimatedParticipants: number;
 }
 
+export interface EventApplicationTableParams {
+  data: EventApplicationsTableData[] | null;
+  set1: Dispatch<SetStateAction<EventApplicationsTableData[]>> | undefined;
+  val1: EventApplicationsTableData[] | undefined;
+  set2: Dispatch<SetStateAction<EventApplicationsTableData[]>> | undefined;
+  val2: EventApplicationsTableData[] | undefined;
+}
+
 export interface CustomTableParams {
-  data: HoursTableData[] | EventApplicationsTableData[] | null; //determine columns from this
-  dataType: string;
-  set1:
-    | Dispatch<SetStateAction<HoursTableData[]>>
-    | Dispatch<SetStateAction<EventApplicationsTableData[]>>
-    | undefined;
-  val1: HoursTableData[] | EventApplicationsTableData[] | undefined;
-  set2:
-    | Dispatch<SetStateAction<HoursTableData[]>>
-    | Dispatch<SetStateAction<EventApplicationsTableData[]>>
-    | undefined;
-  val2: HoursTableData[] | EventApplicationsTableData[] | undefined;
+  data: HoursTableData[] | null;
+  set1: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
+  val1: HoursTableData[] | undefined;
+  set2: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
+  val2: HoursTableData[] | undefined;
 }
 
 export interface ProcessSubmissionParams {

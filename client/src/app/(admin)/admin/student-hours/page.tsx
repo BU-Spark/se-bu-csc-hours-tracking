@@ -22,7 +22,6 @@ const StudentHours: React.FC = () => {
 
   const input: CustomTableParams = {
     data: showHistory ? reviewedSubmissions : pendingSubmissions,
-    dataType: "hoursTableData[]",
     set1: setPendingSubmissions,
     val1: pendingSubmissions,
     set2: setReviewedSubmissions,
@@ -108,7 +107,6 @@ const StudentHours: React.FC = () => {
       </SummaryContainer>
       <CustomTable
         data={input.data}
-        dataType={input.dataType}
         set1={input.set1}
         val1={input.val1}
         set2={input.set2}
