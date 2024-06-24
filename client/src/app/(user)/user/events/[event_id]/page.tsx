@@ -6,7 +6,11 @@ import { useEffect, useState } from "react";
 import { checkIfApplied, getEvent } from "./action";
 import { Event } from "@prisma/client";
 import { Button, message, Typography } from "antd";
-import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import { buRed } from "@/_common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import { formatDate, formatTime } from "@/app/_utils/DateFormatters";
@@ -15,6 +19,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
+import { getEventSpotsLeft } from "@/app/(admin)/admin/student-applications/action";
 
 dayjs.extend(customParseFormat);
 
@@ -22,6 +27,7 @@ export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
   const [hasRegistered, setHasRegistered] = useState<boolean>(false);
+  const [capacity, setCapacity] = useState<number>();
   const event_id: number = Number(useParams().event_id);
   const session = useSession();
 
@@ -46,7 +52,15 @@ export default function Page() {
         setEvent(response);
       }
     };
+
+    const fetchCapacity = async () => {
+      const response = await getEventSpotsLeft(event_id);
+      if (response) {
+        setCapacity(response);
+      }
+    };
     fetchEvent();
+    fetchCapacity();
   }, [event_id]);
 
   return event ? (
@@ -145,6 +159,25 @@ export default function Page() {
             {formatTime(event.event_start)} - {formatTime(event.event_end)}
           </div>
           <div
+            className="capacity"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TeamOutlined
+              style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
+            />
+            {capacity ? (
+              <p>
+                {capacity} / {event.estimated_participants} spots
+              </p>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div
             className="location"
             style={{
               display: "flex",
@@ -165,7 +198,7 @@ export default function Page() {
           }}
         >
           {hasRegistered ? (
-            <p style={{ color: buRed }}>Registered!</p>
+            <p style={{ color: buRed }}>Applied!</p>
           ) : (
             <Button
               style={{
