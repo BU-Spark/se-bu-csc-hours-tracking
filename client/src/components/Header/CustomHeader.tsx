@@ -13,7 +13,7 @@ const { Header } = Layout;
 const CustomHeader: React.FC = () => {
   const { data: session, status } = useSession();
 
-  return (
+  return session?.user?.image ? (
     <Header
       className="fixedHeader"
       style={{
@@ -51,9 +51,11 @@ const CustomHeader: React.FC = () => {
             )}
           </>
         )}
-        <Pfp dimension={"2.5rem"} session={session} />
+        <Pfp dimension={"2.5rem"} sessionImage={session.user.image} />
       </div>
     </Header>
+  ) : (
+    <></>
   );
 };
 
