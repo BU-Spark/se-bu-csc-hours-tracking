@@ -147,7 +147,7 @@ export interface EventApplicationsTableData {
   applicationId: string;
   approvalStatus: number;
   dateApplied: Date;
-  updatedBy: Person;
+  updatedBy: string;
   reason: Reason;
   studentName: string;
   class: number;
