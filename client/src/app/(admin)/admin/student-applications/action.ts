@@ -1,5 +1,8 @@
 "use server";
-import { EventApplicationsTableData } from "@/interfaces/interfaces";
+import {
+  EventApplicationsTableData,
+  ProcessSubmissionParams,
+} from "@/interfaces/interfaces";
 import prisma from "@/lib/prisma";
 import { Application } from "@prisma/client";
 
@@ -108,6 +111,26 @@ export async function getEventApplicationsTableData(): Promise<
       pendingApplicationRows: pendingApplicationRows,
       reviewedApplicationRows: reviewedApplicationRows,
     };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function reviewEventApplication(
+  data: ProcessSubmissionParams
+): Promise<any> {
+  const { submissionId, updaterId, approvalStatus } = data;
+  try {
+    const response = prisma.application.update({
+      where: { id: submissionId },
+      data: {
+        updated_by_id: updaterId,
+        approval_status: approvalStatus,
+        updated_at: new Date(),
+      },
+    });
+    console.log(response);
+    return response;
   } catch (error) {
     console.error(error);
   }

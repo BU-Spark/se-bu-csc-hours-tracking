@@ -15,6 +15,7 @@ import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import "../../../../components/Table/CustomTable.css";
 import { useSession } from "next-auth/react";
+import { reviewEventApplication } from "./action";
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   data,
@@ -151,30 +152,55 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       return;
     }
 
-    // const body: ProcessSubmissionParams = {
-    //   submissionId: Number(record.submissionId),
-    //   updaterId: Number(session?.user.id),
-    //   approvalStatus:
-    //     choice === "approve"
-    //       ? 1
-    //       : choice === "deny"
-    //       ? 2
-    //       : choice === "pending"
-    //       ? 0
-    //       : 3,
-    // };
+    const body: ProcessSubmissionParams = {
+      submissionId: Number(record.applicationId),
+      updaterId: Number(session?.user.id),
+      approvalStatus:
+        choice === "approve"
+          ? 1
+          : choice === "deny"
+          ? 2
+          : choice === "pending"
+          ? 0
+          : 3,
+    };
 
     try {
-      //   const response = await reviewHourSubmission(body);
+      const response = await reviewEventApplication(body);
 
-      //   if (!response) {
-      //     console.error("Response failed");
-      //     return;
-      //   }
+      if (!response) {
+        console.error("Response failed");
+        return;
+      }
 
       setEditingKey(null);
 
-      console.log("DONE");
+      if (set1 && val1 && set2 && val2) {
+        if (choice === "pending") {
+          // Update record approvalStatus and move to val1
+          const updatedRecord = { ...record, approvalStatus: 0 };
+          set1([updatedRecord, ...val1]);
+          set2(
+            val2.filter((val) => val.applicationId !== record.applicationId)
+          );
+        } else if (choice === "approve" || choice === "deny") {
+          // Update record approvalStatus and move to val2
+          const updatedRecord = {
+            ...record,
+            approvalStatus: choice === "approve" ? 1 : 2,
+          };
+          set2([
+            updatedRecord,
+            ...val2.filter((val) => val.applicationId !== record.applicationId),
+          ]);
+          set1(
+            val1.filter((val) => val.applicationId !== record.applicationId)
+          );
+        } else {
+          console.error("Invalid choice");
+        }
+      }
+
       return;
     } catch (error) {
       console.error("Error while reviewing submission:", error);
@@ -200,6 +226,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         key: "event_title",
         width: "15%",
         align: "center",
+        ...getColumnSearchProps("eventTitle"),
       },
       {
         title: "Reason",
