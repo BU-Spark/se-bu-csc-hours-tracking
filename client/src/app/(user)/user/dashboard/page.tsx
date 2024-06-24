@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
       try {
         const response = await checkIfNewUser();
         if (response.isNewUser) {
-          router.push("/settings");
+          router.push("/user/onboarding");
         }
       } catch (error) {
         console.error("Error checking if new user:", error);

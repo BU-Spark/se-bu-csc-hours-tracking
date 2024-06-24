@@ -149,7 +149,7 @@ const Settings: React.FC = () => {
         class: Number(classYear),
         dietary_restrictions: dietaryRestrictions.join(","),
       });
-      router.push("/dashboard");
+      router.push("/user/my-hours");
     } catch (error) {
       console.error("Error updating user details:", error);
     }
@@ -161,9 +161,9 @@ const Settings: React.FC = () => {
 
   return (
     <FormContainer>
-      <BackButton onClick={() => router.push("/dashboard")}>
+      <BackButton onClick={() => router.push("/user/my-hours")}>
         <AiOutlineArrowLeft size={24} />
-        <span>Back to Dashboard</span>
+        <span>Return to My Hours</span>
       </BackButton>
       <h1>Settings</h1>
       <form onSubmit={handleSubmit}>

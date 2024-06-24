@@ -1,8 +1,8 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma from "../../../../lib/prisma";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../../../../lib/auth";
 
 export const checkIfNewUser = async () => {
   const session = await getServerSession(authOptions);

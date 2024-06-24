@@ -2,24 +2,20 @@
 import React from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import "./CustomSider.css"; 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from "next/navigation";
 const { Sider } = Layout;
 import Pfp from "../Pfp";
 import { useSession } from "next-auth/react";
 
 const CustomSider: React.FC = () => {
   const router = useRouter();
-  const {data: session, status} = useSession();
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] =
-    session?.user.role == "USER"
+    session?.user.role === "USER"
       ? [
-          // {
-          //   key: "dashboard",
-          //   label: "Dashboard",
-          //   onClick: () => router.push("/"),
-          // },
           {
             key: "my_hours",
             label: "My Hours",
@@ -63,6 +59,25 @@ const CustomSider: React.FC = () => {
         ]
       : [];
 
+  const getSelectedKey = () => {
+    if (pathname.startsWith("/user/my-hours")) {
+      return "my_hours";
+    }
+    if (pathname.startsWith("/user/events")) {
+      return "events";
+    }
+    if (pathname.startsWith("/user/forms")) {
+      return "forms";
+    }
+    if (pathname.startsWith("/user/settings")) {
+      return "settings";
+    }
+    if (pathname.startsWith("/admin/student-hours")) {
+      return "student_hours";
+    }
+    return "";
+  };
+
   return session?.user?.image ? (
     <Sider
       style={{
@@ -94,7 +109,7 @@ const CustomSider: React.FC = () => {
               width: "100%",
             }}
             items={items}
-            defaultSelectedKeys={["dashboard"]}
+            selectedKeys={[getSelectedKey()]}
             className="custom-menu"
             mode="inline"
           />
