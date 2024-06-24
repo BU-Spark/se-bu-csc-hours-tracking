@@ -15,7 +15,9 @@ import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import "../../../../components/Table/CustomTable.css";
 import { useSession } from "next-auth/react";
-import { reviewEventApplication } from "./action";
+import { getEventSpotsLeft, reviewEventApplication } from "./action";
+import { text } from "stream/consumers";
+import { buRed } from "@/_common/styles";
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   data,
@@ -36,6 +38,32 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       setIsLoading(false);
     }
   }, [data]);
+
+  interface SpotsLeftProps {
+    eventId: number;
+  }
+
+  // component used later for spots left column
+  const SpotsLeft: React.FC<SpotsLeftProps> = ({ eventId }) => {
+    const [spotsLeft, setSpotsLeft] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+      const fetchSpotsLeft = async () => {
+        const spots: number | undefined = await getEventSpotsLeft(eventId);
+        setSpotsLeft(spots);
+      };
+
+      fetchSpotsLeft();
+    }, [eventId]);
+
+    if (spotsLeft === undefined) {
+      return "Loading...";
+    }
+
+    return (
+      <p style={{ color: spotsLeft < 0 ? buRed : "black" }}>{spotsLeft}</p>
+    );
+  };
 
   type DataIndex = keyof EventApplicationsTableData;
 
@@ -237,10 +265,13 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       },
       {
         title: "Spots Left",
-        dataIndex: "estimatedParticipants", //render this so that it is estimatedParticipants - already accepted
+        dataIndex: "id", // We'll use the event id to fetch the spots left
         key: "spots_left",
         width: "5%",
         align: "center",
+        render: (eventId: number, record: EventApplicationsTableData) => {
+          return <SpotsLeft eventId={eventId} />;
+        },
       },
       {
         title: "Date Applied",

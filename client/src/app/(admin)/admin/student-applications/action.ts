@@ -135,3 +135,29 @@ export async function reviewEventApplication(
     console.error(error);
   }
 }
+
+export const getEventSpotsLeft = async (
+  eventId: number
+): Promise<number | undefined> => {
+  try {
+    const approvedApplicants = await prisma.application.findMany({
+      where: { event_id: eventId, approval_status: 1 },
+    });
+
+    const event = await prisma.event.findFirst({
+      where: { id: eventId },
+      select: {
+        estimated_participants: true,
+      },
+    });
+
+    if (!approvedApplicants || !event) {
+      console.error("error retrieving applications approved");
+      return;
+    }
+
+    return event.estimated_participants - approvedApplicants.length;
+  } catch (error) {
+    console.error(error);
+  }
+};
