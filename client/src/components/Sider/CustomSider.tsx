@@ -45,6 +45,11 @@ const CustomSider: React.FC = () => {
             onClick: () => router.push("/admin/student-hours"),
           },
           {
+            key: "student_applications",
+            label: "Student Applications",
+            onClick: () => router.push("/admin/student-applications"),
+          },
+          {
             key: "events",
             label: "Events",
             onClick: () => router.push("/admin/events"),
@@ -74,6 +79,15 @@ const CustomSider: React.FC = () => {
     }
     if (pathname.startsWith("/admin/student-hours")) {
       return "student_hours";
+    }
+    if (pathname.startsWith("/admin/student-applications")) {
+      return "student_applications";
+    }
+    if (pathname.startsWith("/admin/events")) {
+      return "events";
+    }
+    if (pathname.startsWith("/admin/forms")) {
+      return "forms";
     }
     return "";
   };

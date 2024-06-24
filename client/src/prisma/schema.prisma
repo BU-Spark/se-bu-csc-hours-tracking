@@ -8,26 +8,28 @@ datasource db {
 }
 
 model Person {
-  id                  Int              @id @default(autoincrement())
-  name                String
-  email               String           @unique
-  phone_number        String?          @unique
-  role                Role             @default(USER)
-  class               Int?
-  affiliation_id      Int?
-  image               String?
-  college             String?          @db.VarChar(255)
+  id                   Int              @id @default(autoincrement())
+  name                 String
+  email                String           @unique
+  phone_number         String?          @unique
+  role                 Role             @default(USER)
+  class                Int?
+  affiliation_id       Int?
+  image                String?
+  college              String?          @db.VarChar(255)
   dietary_restrictions String?
-  accounts            Account[]
-  applications        Application[]
-  comments            Comment[]
-  events              Event[]
-  forms               Form[]
-  deleted_submissions HourSubmission[] @relation("deleter")
-  updated_submissions HourSubmission[] @relation("updater")
-  hour_submissions    HourSubmission[]
-  affiliation         Organization?    @relation(fields: [affiliation_id], references: [id])
-  sessions            Session[]
+  accounts             Account[]
+  applications         Application[]    @relation("applicant")
+  comments             Comment[]
+  events               Event[]
+  forms                Form[]
+  deleted_submissions  HourSubmission[] @relation("HourSubmissionDeleter")
+  updated_submissions  HourSubmission[] @relation("HourSubmissionUpdater")
+  hour_submissions     HourSubmission[]
+  deleted_applications Application[]    @relation("ApplicationDeleter")
+  updated_applications Application[]    @relation("ApplicationUpdater")
+  affiliation          Organization?    @relation(fields: [affiliation_id], references: [id])
+  sessions             Session[]
 }
 
 model Event {
@@ -84,14 +86,27 @@ model Comment {
 }
 
 model Application {
-  id           Int      @id @default(autoincrement())
-  date_applied DateTime
-  summary      String
-  approved     Boolean
-  applicant_id Int
-  event_id     Int
-  applicant    Person   @relation(fields: [applicant_id], references: [id])
-  event        Event    @relation(fields: [event_id], references: [id])
+  id              Int       @id @default(autoincrement())
+  date_applied    DateTime
+  approval_status Int       @default(0)
+  reason_id       Int
+  applicant_id    Int
+  event_id        Int
+  updated_at      DateTime?
+  updated_by_id   Int
+  deleted_at      DateTime?
+  deleted_by_id   Int?
+  deleted_by      Person?   @relation("ApplicationDeleter", fields: [deleted_by_id], references: [id])
+  updated_by      Person    @relation("ApplicationUpdater", fields: [updated_by_id], references: [id])
+  applicant       Person    @relation("applicant", fields: [applicant_id], references: [id])
+  event           Event     @relation(fields: [event_id], references: [id])
+  reason          Reason    @relation(fields: [reason_id], references: [id])
+}
+
+model Reason {
+  id          Int           @id @default(autoincrement())
+  meaning     String
+  Application Application[]
 }
 
 model Category {
@@ -107,19 +122,19 @@ model HourSubmission {
   hours           Float
   note            String
   date_submitted  DateTime  @default(now())
-  approval_status Int
+  approval_status Int       @default(0)
   updated_at      DateTime?
   updated_by_id   Int
   deleted_at      DateTime?
   deleted_by_id   Int?
   description     String?
-  deleted_by      Person?   @relation("deleter", fields: [deleted_by_id], references: [id])
+  deleted_by      Person?   @relation("HourSubmissionDeleter", fields: [deleted_by_id], references: [id])
   event           Event     @relation(fields: [event_id], references: [id])
-  updated_by      Person    @relation("updater", fields: [updated_by_id], references: [id])
+  updated_by      Person    @relation("HourSubmissionUpdater", fields: [updated_by_id], references: [id])
   volunteer       Person    @relation(fields: [volunteer_id], references: [id])
 }
 
-model HourSubmissionCode {
+model ApprovalStatusCode {
   id      Int    @id @default(autoincrement())
   meaning String
 }

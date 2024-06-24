@@ -1,47 +1,60 @@
 "use client";
-import StyledButton from "@/components/StyledButton";
-import React, { useEffect, useState } from "react";
+import CustomTable from "@/components/Table/CustomTable";
 import {
   HeaderOffset,
   SummaryContainer,
   SummaryBox,
 } from "@/_common/styledDivs";
-import { HourSubmission } from "@prisma/client";
-import { getHourSubmissionTableData, getPendingSubmissions } from "./action";
-import CustomTable from "@/components/Table/CustomTable";
-import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
+import { useState, useEffect } from "react";
+import {
+  EventApplicationsTableData,
+  HoursTableData,
+} from "@/interfaces/interfaces";
+import { CustomTableParams } from "@/interfaces/interfaces";
+import StyledButton from "@/components/StyledButton";
+import {
+  getAllPendingApplications,
+  getEventApplicationsTableData,
+} from "./action";
+import { Application } from "@prisma/client";
 
 const StudentHours: React.FC = () => {
   const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [pendingSubmissions, setPendingSubmissions] = useState<
-    HoursTableData[]
+  const [pendingApplications, setPendingApplications] = useState<
+    EventApplicationsTableData[]
   >([]);
-  const [reviewedSubmissions, setReviewedSubmissions] = useState<
-    HoursTableData[]
+  const [reviewedApplications, setReviewedApplications] = useState<
+    EventApplicationsTableData[]
   >([]);
 
   const input: CustomTableParams = {
-    data: showHistory ? reviewedSubmissions : pendingSubmissions,
+    data: showHistory ? reviewedApplications : pendingApplications,
     dataType: "hoursTableData[]",
-    set1: setPendingSubmissions,
-    val1: pendingSubmissions,
-    set2: setReviewedSubmissions,
-    val2: reviewedSubmissions,
+    set1: setPendingApplications,
+    val1: pendingApplications,
+    set2: setReviewedApplications,
+    val2: reviewedApplications,
   };
 
   useEffect(() => {
-    const fetchAllSubmissions = async () => {
-      const response = await getHourSubmissionTableData();
+    const fetchAllApplications = async () => {
+      const response:
+        | {
+            pendingApplicationRows: EventApplicationsTableData[];
+            reviewedApplicationRows: EventApplicationsTableData[];
+          }
+        | undefined = await getEventApplicationsTableData();
       if (!response) {
-        console.log(response);
-        console.error("invalid response");
+        console.error("bad response");
         return;
       }
-      console.log("All Submissions", response);
-      setPendingSubmissions(response.pendingHourRows);
-      setReviewedSubmissions(response.reviewHourRows);
+
+      console.log("response:", response);
+      setPendingApplications(response.pendingApplicationRows);
+      setReviewedApplications(response.reviewedApplicationRows);
     };
-    fetchAllSubmissions();
+
+    fetchAllApplications();
   }, []);
   return (
     <HeaderOffset>
@@ -86,23 +99,9 @@ const StudentHours: React.FC = () => {
         >
           <SummaryBox>
             <h2>
-              {pendingSubmissions ? pendingSubmissions.length.toString() : 0}
+              {pendingApplications ? pendingApplications.length.toString() : 0}
             </h2>
-            <p>Pending Submissions</p>
-          </SummaryBox>
-          <SummaryBox>
-            <h2>
-              {reviewedSubmissions
-                ? reviewedSubmissions.reduce((accumulator, current) => {
-                    if (current.approvalStatus === 1) {
-                      return accumulator + current.hours;
-                    } else {
-                      return accumulator;
-                    }
-                  }, 0)
-                : 0}
-            </h2>{" "}
-            <p>Approved Hours</p>
+            <p>Pending Applications</p>
           </SummaryBox>
         </div>
       </SummaryContainer>

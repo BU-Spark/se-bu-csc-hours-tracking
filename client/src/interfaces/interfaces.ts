@@ -1,4 +1,4 @@
-import { HourSubmission, Role } from "@prisma/client";
+import { HourSubmission, Reason, Role } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 
 export interface FormRowParams {
@@ -142,13 +142,35 @@ export interface HoursTableData {
   updatedBy: string;
 }
 
+export interface EventApplicationsTableData {
+  key: React.Key;
+  applicationId: string;
+  approvalStatus: number;
+  dateApplied: Date;
+  updatedBy: Person;
+  reason: Reason;
+  studentName: string;
+  class: number;
+  //major?
+  college: string;
+  eventId: string;
+  eventTitle: string;
+  estimatedParticipants: number;
+}
+
 export interface CustomTableParams {
-  data: HoursTableData[] | null; //determine columns from this
+  data: HoursTableData[] | EventApplicationsTableData[] | null; //determine columns from this
   dataType: string;
-  set1: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
-  val1: HoursTableData[] | undefined;
-  set2: Dispatch<SetStateAction<HoursTableData[]>> | undefined;
-  val2: HoursTableData[] | undefined;
+  set1:
+    | Dispatch<SetStateAction<HoursTableData[]>>
+    | Dispatch<SetStateAction<EventApplicationsTableData[]>>
+    | undefined;
+  val1: HoursTableData[] | EventApplicationsTableData[] | undefined;
+  set2:
+    | Dispatch<SetStateAction<HoursTableData[]>>
+    | Dispatch<SetStateAction<EventApplicationsTableData[]>>
+    | undefined;
+  val2: HoursTableData[] | EventApplicationsTableData[] | undefined;
 }
 
 export interface ProcessSubmissionParams {
