@@ -258,7 +258,7 @@ function EventSider() {
           Upcoming Events
         </p>
         {loading ? (
-          <p>...</p>
+          <p style={{ fontWeight: 200 }}>loading...</p>
         ) : (
           eventGroups &&
           Object.entries(eventGroups).map(([date, events], index) => (
