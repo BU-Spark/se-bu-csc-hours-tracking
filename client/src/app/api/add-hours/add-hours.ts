@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const newHourSubmission = await prisma.hourSubmission.create({
         data: {
           hours: parseFloat(hours),
-          note: feedback,
+          feedback: feedback,
           description: description,
           event: {
             connect: { id: eventData.id },

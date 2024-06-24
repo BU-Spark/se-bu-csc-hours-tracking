@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
+import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
@@ -10,6 +10,7 @@ import {
   EventApplicationsTableData,
   HoursTableData,
   ProcessSubmissionParams,
+  SpotsLeftProps,
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
@@ -18,6 +19,7 @@ import { useSession } from "next-auth/react";
 import { getEventSpotsLeft, reviewEventApplication } from "./action";
 import { text } from "stream/consumers";
 import { buRed } from "@/_common/styles";
+import "./EventApplicationTable.css";
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   data,
@@ -38,10 +40,6 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       setIsLoading(false);
     }
   }, [data]);
-
-  interface SpotsLeftProps {
-    eventId: number;
-  }
 
   // component used later for spots left column
   const SpotsLeft: React.FC<SpotsLeftProps> = ({ eventId }) => {
@@ -255,6 +253,11 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         width: "15%",
         align: "center",
         ...getColumnSearchProps("eventTitle"),
+        render: (text: string, record: EventApplicationsTableData) => {
+          return (
+            <a href={`/admin/event/${record.eventId}`}>{record.eventTitle}</a>
+          );
+        },
       },
       {
         title: "Reason",

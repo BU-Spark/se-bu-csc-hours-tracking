@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
+import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
@@ -9,12 +9,14 @@ import {
   EventApplicationsTableData,
   HoursTableData,
   ProcessSubmissionParams,
+  StudentDropdown,
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import "./CustomTable.css";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
 import { useSession } from "next-auth/react";
+import { buRed } from "@/_common/styles";
 
 const CustomTable: React.FC<CustomTableParams> = ({
   data,
@@ -118,7 +120,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      <SearchOutlined style={{ color: filtered ? "white" : "white" }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex]
@@ -196,6 +198,58 @@ const CustomTable: React.FC<CustomTableParams> = ({
     }
   };
 
+  const StudentDropdown: React.FC<StudentDropdown> = ({ record }) => {
+    const [toggled, setToggled] = useState<boolean>(false);
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <div>
+          <strong>{record.studentName}</strong>
+          <button
+            onClick={() => setToggled(!toggled)}
+            style={{
+              borderRadius: "15px",
+              backgroundColor: !toggled ? "white" : buRed,
+              margin: "0 1rem",
+              color: !toggled ? "black" : "white",
+            }}
+          >
+            {" "}
+            {!toggled ? (
+              <DownOutlined style={{ fontSize: "1rem" }} />
+            ) : (
+              <UpOutlined
+                color="white !important"
+                style={{ fontSize: "1rem" }}
+              />
+            )}
+          </button>
+        </div>
+
+        {toggled ? (
+          <div
+            style={{
+              fontSize: "0.75rem",
+              width: "90%",
+              wordWrap: "break-word",
+              whiteSpace: "normal",
+              margin: "1rem 0",
+            }}
+          >
+            {record.description}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  };
+
   const hourSubmissionsTableCols: TableColumnType<HoursTableData>[] = [
     {
       title: "Student Name",
@@ -203,7 +257,10 @@ const CustomTable: React.FC<CustomTableParams> = ({
       key: "student_name",
       width: "25%",
       align: "center",
-      render: (text: string, record: HoursTableData) => <strong>{text}</strong>,
+
+      render: (text: string, record: HoursTableData) => {
+        return <StudentDropdown record={record} />;
+      },
       ...getColumnSearchProps("studentName"),
     },
     {
@@ -244,7 +301,6 @@ const CustomTable: React.FC<CustomTableParams> = ({
       key: "hours",
       width: "8%",
       align: "center",
-      ...getColumnSearchProps("hours"),
     },
     {
       title: "Approval",

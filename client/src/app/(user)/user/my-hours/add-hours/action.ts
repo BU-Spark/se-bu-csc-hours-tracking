@@ -57,7 +57,7 @@ export async function createNewHourSubmission({
       await prisma.hourSubmission.create({
         data: {
           hours: hours,
-          note: feedback,
+          feedback: feedback,
           description: description,
           event: {
             connect: { id: eventData.id },

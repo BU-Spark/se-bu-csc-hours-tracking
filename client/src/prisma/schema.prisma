@@ -92,7 +92,7 @@ model Application {
   reason_id       Int
   applicant_id    Int
   event_id        Int
-  updated_at      DateTime?
+  updated_at      DateTime? @default(now())
   updated_by_id   Int
   deleted_at      DateTime?
   deleted_by_id   Int?
@@ -120,14 +120,14 @@ model HourSubmission {
   volunteer_id    Int
   event_id        Int
   hours           Float
-  note            String
+  feedback        String?
   date_submitted  DateTime  @default(now())
   approval_status Int       @default(0)
-  updated_at      DateTime?
+  updated_at      DateTime? @default(now())
   updated_by_id   Int
   deleted_at      DateTime?
   deleted_by_id   Int?
-  description     String?
+  description     String
   deleted_by      Person?   @relation("HourSubmissionDeleter", fields: [deleted_by_id], references: [id])
   event           Event     @relation(fields: [event_id], references: [id])
   updated_by      Person    @relation("HourSubmissionUpdater", fields: [updated_by_id], references: [id])
