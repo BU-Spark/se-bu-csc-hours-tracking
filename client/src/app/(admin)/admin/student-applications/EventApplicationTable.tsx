@@ -35,6 +35,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       setIsLoading(false);
     }
   }, [data]);
+
   type DataIndex = keyof EventApplicationsTableData;
 
   const handleSearch = (
@@ -217,9 +218,13 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       {
         title: "Date Applied",
         dataIndex: "dateApplied",
-        key: "date_app;ied",
+        key: "date_applied",
         width: "8%",
         align: "center",
+        defaultSortOrder: "descend",
+        render: (text: string, record: EventApplicationsTableData) =>
+          new Date(record.dateApplied).toLocaleDateString("en-US"),
+        ...getColumnSearchProps("dateApplied"),
       },
       {
         title: "Approval",
