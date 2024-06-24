@@ -95,6 +95,46 @@ const SubmitButton = styled.button`
   }
 `;
 
+const ErrorMessageContainer = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+`;
+
+const ErrorButton = styled.button`
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+const ChangeMessageContainer = styled.div`
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+  border-radius: 8px;
+  text-align: center;
+`;
+
 const dietaryOptions = [
   { value: "none", label: "None" },
   { value: "vegetarian", label: "Vegetarian" },
@@ -106,6 +146,18 @@ const dietaryOptions = [
   { value: "kosher", label: "Kosher" },
 ];
 
+const generateClassYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i < 4; i++) {
+    years.push({
+      value: (currentYear + i).toString(),
+      label: (currentYear + i).toString(),
+    });
+  }
+  return years;
+};
+
 const Settings: React.FC = () => {
   const { status } = useSession();
   const router = useRouter();
@@ -114,6 +166,9 @@ const Settings: React.FC = () => {
   const [college, setCollege] = useState<string>("");
   const [classYear, setClassYear] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [formChanged, setFormChanged] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -140,8 +195,28 @@ const Settings: React.FC = () => {
     }
   }, [status]);
 
+  const validateForm = () => {
+    return (
+      phoneNumber && college && classYear && dietaryRestrictions.length > 0
+    );
+  };
+
+  const handleBackButtonClick = () => {
+    setFormSubmitted(true);
+    if (validateForm()) {
+      router.push("/user/my-hours");
+    } else {
+      setShowError(true);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormSubmitted(true);
+    if (!validateForm()) {
+      setShowError(true);
+      return;
+    }
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
@@ -155,17 +230,26 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleInputChange = () => {
+    setFormChanged(true);
+  };
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
 
   return (
     <FormContainer>
-      <BackButton onClick={() => router.push("/user/my-hours")}>
+      <BackButton onClick={handleBackButtonClick}>
         <AiOutlineArrowLeft size={24} />
         <span>Return to My Hours</span>
       </BackButton>
       <h1>Settings</h1>
+      {formChanged && (
+        <ChangeMessageContainer>
+          Please press the submit button to save your changes.
+        </ChangeMessageContainer>
+      )}
       <form onSubmit={handleSubmit}>
         <Label>
           Phone Number<Asterisk>*</Asterisk>
@@ -173,7 +257,10 @@ const Settings: React.FC = () => {
         <StyledPhoneInput
           country={"us"}
           value={phoneNumber}
-          onChange={(phone) => setPhoneNumber(phone)}
+          onChange={(phone) => {
+            setPhoneNumber(phone);
+            handleInputChange();
+          }}
           inputStyle={{
             padding: "10px",
             borderRadius: "8px",
@@ -181,34 +268,33 @@ const Settings: React.FC = () => {
           }}
           containerStyle={{ marginBottom: "20px" }}
         />
+        {formSubmitted && !phoneNumber && (
+          <span style={{ color: "red" }}>Phone number is required</span>
+        )}
         <Label>
           College<Asterisk>*</Asterisk>
         </Label>
         <Input
           type="text"
           value={college}
-          onChange={(e) => setCollege(e.target.value)}
+          onChange={(e) => {
+            setCollege(e.target.value);
+            handleInputChange();
+          }}
+          required
         />
         <Label>
           Class Year<Asterisk>*</Asterisk>
         </Label>
-        <Input
-          type="text"
-          value={classYear}
-          onChange={(e) => setClassYear(e.target.value)}
-        />
-        <Label>
-          Dietary Restrictions<Asterisk>*</Asterisk>
-        </Label>
         <Select
-          isMulti
-          options={dietaryOptions}
-          value={dietaryOptions.filter((option) =>
-            dietaryRestrictions.includes(option.value)
+          options={generateClassYearOptions()}
+          value={generateClassYearOptions().find(
+            (option) => option.value === classYear
           )}
-          onChange={(selected) =>
-            setDietaryRestrictions(selected.map((option) => option.value))
-          }
+          onChange={(selected) => {
+            setClassYear(selected ? selected.value : "");
+            handleInputChange();
+          }}
           styles={{
             container: (provided) => ({
               ...provided,
@@ -226,8 +312,52 @@ const Settings: React.FC = () => {
             }),
           }}
         />
+        {formSubmitted && !classYear && (
+          <span style={{ color: "red" }}>Class year is required</span>
+        )}
+        <Label>
+          Dietary Restrictions<Asterisk>*</Asterisk>
+        </Label>
+        <Select
+          isMulti
+          options={dietaryOptions}
+          value={dietaryOptions.filter((option) =>
+            dietaryRestrictions.includes(option.value)
+          )}
+          onChange={(selected) => {
+            setDietaryRestrictions(selected.map((option) => option.value));
+            handleInputChange();
+          }}
+          styles={{
+            container: (provided) => ({
+              ...provided,
+              marginBottom: "20px",
+            }),
+            control: (provided) => ({
+              ...provided,
+              padding: "10px",
+              borderRadius: "8px",
+              fontSize: "1rem",
+              width: "100%",
+              boxSizing: "border-box",
+              border: "1px solid #ccc",
+              fontFamily: "inherit",
+            }),
+          }}
+        />
+        {formSubmitted && dietaryRestrictions.length === 0 && (
+          <span style={{ color: "red" }}>
+            Dietary restrictions are required
+          </span>
+        )}
         <SubmitButton type="submit">Submit</SubmitButton>
       </form>
+      {showError && (
+        <ErrorMessageContainer>
+          <p>All fields are required before you can proceed.</p>
+          <ErrorButton onClick={() => setShowError(false)}>Close</ErrorButton>
+        </ErrorMessageContainer>
+      )}
     </FormContainer>
   );
 };
