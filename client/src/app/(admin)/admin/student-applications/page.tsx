@@ -52,6 +52,7 @@ const StudentHours: React.FC = () => {
 
       setPendingApplications(response.pendingApplicationRows);
       setReviewedApplications(response.reviewedApplicationRows);
+      console.log(response.pendingApplicationRows);
     };
 
     fetchAllApplications();

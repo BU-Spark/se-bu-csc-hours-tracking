@@ -260,8 +260,11 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         title: "Reason",
         dataIndex: "reason",
         key: "reason",
-        width: "10%",
+        width: "15%",
         align: "center",
+        render: (eventId: number, record: EventApplicationsTableData) => {
+          return <p>{record.reason.meaning}</p>;
+        },
       },
       {
         title: "Spots Left",
