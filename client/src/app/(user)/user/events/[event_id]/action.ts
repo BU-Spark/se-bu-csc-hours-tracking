@@ -27,7 +27,6 @@ export async function checkIfApplied(
   userId: number
 ): Promise<boolean> {
   try {
-    console.log("EVENT", eventId, "APPLICANT", userId);
     const applied = await prisma.application.findFirst({
       where: {
         event_id: eventId,
@@ -52,13 +51,14 @@ export async function createApplication(
     const application = await prisma.application.create({
       data: {
         date_applied: new Date(),
-        summary: "",
-        approved: false,
+        reason_id: 1, //FIX REASON
+        approval_status: 0,
         applicant_id: userId,
         event_id: event_id,
+        updated_by_id: userId,
+        updated_at: new Date(),
       },
     });
-    console.log("Application Successful", application);
 
     if (application) return application;
   } catch (error) {

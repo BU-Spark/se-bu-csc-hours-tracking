@@ -110,7 +110,6 @@ const AddHours: React.FC = () => {
       if (!session?.user.id) return;
       const validEvents: Event[] | undefined =
         await getAllApprovedEventsByUserId(Number(session?.user.id));
-        console.log(validEvents);
         if (!validEvents) return;
 
       setEventOptions(validEvents);

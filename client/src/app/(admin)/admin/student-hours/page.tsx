@@ -32,11 +32,9 @@ const StudentHours: React.FC = () => {
     const fetchAllSubmissions = async () => {
       const response = await getHourSubmissionTableData();
       if (!response) {
-        console.log(response);
         console.error("invalid response");
         return;
       }
-      console.log("All Submissions", response);
       setPendingSubmissions(response.pendingHourRows);
       setReviewedSubmissions(response.reviewHourRows);
     };

@@ -16,7 +16,6 @@ export async function getPendingSubmissions(): Promise<
       console.error("Failure in retrieving");
     }
 
-    console.log("pendingSubmisions", pendingSubmisions);
     return pendingSubmisions;
   } catch (error) {
     console.error(error);
@@ -58,9 +57,6 @@ export async function getHourSubmissionTableData(): Promise<
       console.error("Failure in retrieving");
     }
 
-    console.log("pendingSubmisions", pendingSubmissions);
-    console.log("reviewedSubmissions", reviewedSubmissions);
-
     const pendingHourRows: HoursTableData[] = pendingSubmissions.map(
       (submission) => ({
         key: submission.id.toString(),
@@ -89,9 +85,6 @@ export async function getHourSubmissionTableData(): Promise<
       })
     );
 
-    console.log("pendingHourRows", pendingHourRows);
-    console.log("reviewHourRows", reviewHourRows);
-
     return {
       pendingHourRows: pendingHourRows,
       reviewHourRows: reviewHourRows,
@@ -114,7 +107,6 @@ export async function reviewHourSubmission(
         updated_at: new Date(),
       },
     });
-    console.log(response);
     return response;
   } catch (error) {
     console.error(error);

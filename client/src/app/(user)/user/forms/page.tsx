@@ -183,7 +183,7 @@ function Forms() {
 
     const fetchCodes = async () => {
       const codes = await getCodes();
-      console.log("codes:", codes);
+      // console.log("codes:", codes);
       setCodes(codes);
     };
     fetchCodes();

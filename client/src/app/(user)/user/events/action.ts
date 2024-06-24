@@ -77,7 +77,7 @@ export async function createDummyEvent(eventData: EventInput): Promise<void> {
       },
     });
 
-    console.log("Event with image created successfully.", newEvent);
+    // console.log("Event with image created successfully.", newEvent);
   } catch (error) {
     console.error("Error creating event with image:", error);
   }

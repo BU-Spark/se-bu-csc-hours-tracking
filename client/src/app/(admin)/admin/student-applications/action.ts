@@ -69,8 +69,8 @@ export async function getEventApplicationsTableData(): Promise<
       console.error("Failure in retrieving");
     }
 
-    console.log("pendingSubmisions", pendingApplications);
-    console.log("reviewedApplications", reviewedApplications);
+    // console.log("pendingSubmisions", pendingApplications);
+    // console.log("reviewedApplications", reviewedApplications);
 
     const pendingApplicationRows: EventApplicationsTableData[] =
       pendingApplications.map((application) => ({
@@ -104,8 +104,8 @@ export async function getEventApplicationsTableData(): Promise<
         estimatedParticipants: application.event.estimated_participants,
       }));
 
-    console.log("pendingApplicationRows", pendingApplicationRows);
-    console.log("reviewedApplicationRows", reviewedApplicationRows);
+    // console.log("pendingApplicationRows", pendingApplicationRows);
+    // console.log("reviewedApplicationRows", reviewedApplicationRows);
 
     return {
       pendingApplicationRows: pendingApplicationRows,
@@ -129,7 +129,6 @@ export async function reviewEventApplication(
         updated_at: new Date(),
       },
     });
-    console.log(response);
     return response;
   } catch (error) {
     console.error(error);
