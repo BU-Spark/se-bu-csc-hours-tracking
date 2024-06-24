@@ -92,7 +92,7 @@ export const getAllApprovedEventsByUserId = async (
     const approvedApplications = await prisma.application.findMany({
       where: {
         applicant_id: userId,
-        approved: true,
+        approval_status: 1,
       },
       include: {
         event: true,

@@ -129,11 +129,11 @@ const AddHours: React.FC = () => {
     try {
       const response = await createNewHourSubmission(body);
       if (response) {
-        router.push("/my-hours");
+        router.push("/user/my-hours");
         console.log("Success");
       } else {
         console.log("Failed to log hours");
-        router.push("/my-hours");
+        router.push("/user/my-hours");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -148,7 +148,7 @@ const AddHours: React.FC = () => {
 
   return (
     <FormContainer>
-      <BackButton onClick={() => router.push("/my-hours")}>
+      <BackButton onClick={() => router.push("/user/my-hours")}>
         <AiOutlineArrowLeft size={24} />
         <span>Back to Hours</span>
       </BackButton>

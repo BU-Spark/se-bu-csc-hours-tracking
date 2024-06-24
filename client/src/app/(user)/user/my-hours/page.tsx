@@ -193,7 +193,7 @@ const MyHours: React.FC = () => {
         </>
       )}
       <AddHoursButtonContainer>
-        <AddHoursButton onClick={() => router.push("/my-hours/add-hours")}>
+        <AddHoursButton onClick={() => router.push("/user/my-hours/add-hours")}>
           <PlusCircle>
             <AiOutlinePlus />
           </PlusCircle>
