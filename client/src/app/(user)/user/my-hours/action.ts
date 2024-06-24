@@ -24,7 +24,7 @@ export const getHourSubmissionsByUserEmail = async (
     return [];
   }
 
-  console.log("user:", user);
+  // console.log("user:", user);
 
   const hourSubmissionsWithEventDetails = await Promise.all(
     user.hour_submissions.map(async (submission: HourSubmission) => {

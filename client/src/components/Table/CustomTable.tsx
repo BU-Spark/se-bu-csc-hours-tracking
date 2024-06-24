@@ -4,9 +4,9 @@ import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
-import Highlighter from "react-highlight-words";
 import {
   CustomTableParams,
+  EventApplicationsTableData,
   HoursTableData,
   ProcessSubmissionParams,
 } from "@/interfaces/interfaces";
@@ -18,7 +18,6 @@ import { useSession } from "next-auth/react";
 
 const CustomTable: React.FC<CustomTableParams> = ({
   data,
-  dataType,
   set1,
   val1,
   set2,

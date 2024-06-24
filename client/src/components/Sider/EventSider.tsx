@@ -110,9 +110,9 @@ function EventSider() {
         if (userEvents) {
           setMyEvents(userEvents);
         }
-        console.log("userEvents:", userEvents);
+        // console.log("userEvents:", userEvents);
       }
-      console.log("userApplications:", userApplications);
+      // console.log("userApplications:", userApplications);
     };
     fetchMyApplications();
   }, [user]);
@@ -169,7 +169,9 @@ function EventSider() {
             const application = myApplications?.find(
               (app) => app.event_id === event.id
             );
-            const approved = application ? application.approved : false;
+            const approved = application
+              ? application.approval_status == 1
+              : false;
 
             return (
               <div
@@ -256,7 +258,7 @@ function EventSider() {
           Upcoming Events
         </p>
         {loading ? (
-          <p>...</p>
+          <p style={{ fontWeight: 200 }}>loading...</p>
         ) : (
           eventGroups &&
           Object.entries(eventGroups).map(([date, events], index) => (

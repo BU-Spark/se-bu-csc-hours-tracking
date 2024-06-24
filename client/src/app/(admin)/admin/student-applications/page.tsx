@@ -7,6 +7,7 @@ import {
 } from "@/_common/styledDivs";
 import { useState, useEffect } from "react";
 import {
+  EventApplicationTableParams,
   EventApplicationsTableData,
   HoursTableData,
 } from "@/interfaces/interfaces";
@@ -17,6 +18,7 @@ import {
   getEventApplicationsTableData,
 } from "./action";
 import { Application } from "@prisma/client";
+import EventApplicationTable from "./EventApplicationTable";
 
 const StudentHours: React.FC = () => {
   const [showHistory, setShowHistory] = useState<boolean>(false);
@@ -27,9 +29,8 @@ const StudentHours: React.FC = () => {
     EventApplicationsTableData[]
   >([]);
 
-  const input: CustomTableParams = {
+  const input: EventApplicationTableParams = {
     data: showHistory ? reviewedApplications : pendingApplications,
-    dataType: "hoursTableData[]",
     set1: setPendingApplications,
     val1: pendingApplications,
     set2: setReviewedApplications,
@@ -49,7 +50,6 @@ const StudentHours: React.FC = () => {
         return;
       }
 
-      console.log("response:", response);
       setPendingApplications(response.pendingApplicationRows);
       setReviewedApplications(response.reviewedApplicationRows);
     };
@@ -105,9 +105,8 @@ const StudentHours: React.FC = () => {
           </SummaryBox>
         </div>
       </SummaryContainer>
-      <CustomTable
+      <EventApplicationTable
         data={input.data}
-        dataType={input.dataType}
         set1={input.set1}
         val1={input.val1}
         set2={input.set2}

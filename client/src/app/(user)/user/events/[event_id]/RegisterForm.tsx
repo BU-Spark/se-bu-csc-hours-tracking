@@ -34,7 +34,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         setHasRegistered(true);
       }, 1000);
     } else {
-      console.log(false, event?.event_start);
+      // console.log(false, event?.event_start);
       error();
     }
   };

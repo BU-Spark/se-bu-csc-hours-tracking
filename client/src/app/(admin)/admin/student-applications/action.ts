@@ -1,5 +1,8 @@
 "use server";
-import { EventApplicationsTableData } from "@/interfaces/interfaces";
+import {
+  EventApplicationsTableData,
+  ProcessSubmissionParams,
+} from "@/interfaces/interfaces";
 import prisma from "@/lib/prisma";
 import { Application } from "@prisma/client";
 
@@ -66,8 +69,8 @@ export async function getEventApplicationsTableData(): Promise<
       console.error("Failure in retrieving");
     }
 
-    console.log("pendingSubmisions", pendingApplications);
-    console.log("reviewedApplications", reviewedApplications);
+    // console.log("pendingSubmisions", pendingApplications);
+    // console.log("reviewedApplications", reviewedApplications);
 
     const pendingApplicationRows: EventApplicationsTableData[] =
       pendingApplications.map((application) => ({
@@ -101,8 +104,8 @@ export async function getEventApplicationsTableData(): Promise<
         estimatedParticipants: application.event.estimated_participants,
       }));
 
-    console.log("pendingApplicationRows", pendingApplicationRows);
-    console.log("reviewedApplicationRows", reviewedApplicationRows);
+    // console.log("pendingApplicationRows", pendingApplicationRows);
+    // console.log("reviewedApplicationRows", reviewedApplicationRows);
 
     return {
       pendingApplicationRows: pendingApplicationRows,
@@ -112,3 +115,48 @@ export async function getEventApplicationsTableData(): Promise<
     console.error(error);
   }
 }
+
+export async function reviewEventApplication(
+  data: ProcessSubmissionParams
+): Promise<any> {
+  const { submissionId, updaterId, approvalStatus } = data;
+  try {
+    const response = prisma.application.update({
+      where: { id: submissionId },
+      data: {
+        updated_by_id: updaterId,
+        approval_status: approvalStatus,
+        updated_at: new Date(),
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const getEventSpotsLeft = async (
+  eventId: number
+): Promise<number | undefined> => {
+  try {
+    const approvedApplicants = await prisma.application.findMany({
+      where: { event_id: eventId, approval_status: 1 },
+    });
+
+    const event = await prisma.event.findFirst({
+      where: { id: eventId },
+      select: {
+        estimated_participants: true,
+      },
+    });
+
+    if (!approvedApplicants || !event) {
+      console.error("error retrieving applications approved");
+      return;
+    }
+
+    return event.estimated_participants - approvedApplicants.length;
+  } catch (error) {
+    console.error(error);
+  }
+};
