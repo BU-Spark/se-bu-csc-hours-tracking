@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/app/_utils/prisma";
 import { Event } from "@/interfaces/interfaces";
-import { Application } from "@prisma/client";
+import { Application, Reason } from "@prisma/client";
 
 export async function getEvent(eventId: number): Promise<any> {
   try {
@@ -45,13 +45,14 @@ export async function checkIfApplied(
 
 export async function createApplication(
   event_id: number,
-  userId: number
+  userId: number,
+  reason: number
 ): Promise<Application | undefined> {
   try {
     const application = await prisma.application.create({
       data: {
         date_applied: new Date(),
-        reason_id: 1, //FIX REASON
+        reason_id: reason, //FIX REASON
         approval_status: 0,
         applicant_id: userId,
         event_id: event_id,
@@ -65,3 +66,16 @@ export async function createApplication(
     console.log(error);
   }
 }
+
+export const getReasons = async (): Promise<Reason[] | undefined> => {
+  try {
+    const reasons = await prisma.reason.findMany();
+    if (!reasons) {
+      console.error("erroring retrieving reasons");
+      return;
+    }
+    return reasons;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -85,7 +85,7 @@ const StudentHours: React.FC = () => {
             <h2>
               {pendingSubmissions ? pendingSubmissions.length.toString() : 0}
             </h2>
-            <p>Pending Submissions</p>
+            <p>Pending Approvals</p>
           </SummaryBox>
           <SummaryBox>
             <h2>

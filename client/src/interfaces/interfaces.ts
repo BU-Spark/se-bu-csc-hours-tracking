@@ -137,6 +137,7 @@ export interface HoursTableData {
   college: string;
   category: string;
   dateSubmitted: Date;
+  description: string;
   hours: number;
   approvalStatus: number;
   updatedBy: string;
@@ -178,4 +179,12 @@ export interface ProcessSubmissionParams {
   submissionId: number;
   updaterId: number;
   approvalStatus: number;
+}
+
+export interface SpotsLeftProps {
+  eventId: number;
+}
+
+export interface StudentDropdown {
+  record: HoursTableData;
 }

@@ -53,9 +53,9 @@ export const getHourSubmissionsByUserEmail = async (
             ? submission.updated_by_id
             : "N/A",
         hours: submission.hours,
-        description: submission.description ? submission.description : "",
+        description: submission.description,
         organization: organization.name,
-        feedback: submission.note,
+        feedback: submission.feedback ? submission.feedback : "",
         approval_status: submission.approval_status,
       };
       return fullEvent;

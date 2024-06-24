@@ -103,20 +103,21 @@ const LogHours: React.FC = () => {
             onChange={(e) => setHours(e.target.value)}
           />
         </Label>
-        <Label>
-          Feedback
-          <TextArea
-            rows={5}
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-          />
-        </Label>
+
         <Label>
           Description of work done
           <TextArea
             rows={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+        </Label>
+        <Label>
+          Feedback
+          <TextArea
+            rows={5}
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
           />
         </Label>
         <SubmitButton type="submit">Submit</SubmitButton>

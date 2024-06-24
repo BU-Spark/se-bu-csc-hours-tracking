@@ -1,9 +1,19 @@
-import { Event } from "@prisma/client";
-import { message, Checkbox, DatePicker, Form, Typography, Button } from "antd";
+import { Event, Reason } from "@prisma/client";
+import {
+  message,
+  Checkbox,
+  DatePicker,
+  Form,
+  Typography,
+  Button,
+  Dropdown,
+  Select,
+} from "antd";
 import dayjs from "dayjs";
 import { buRed } from "@/_common/styles";
-import { createApplication } from "./action";
-import { useState } from "react";
+import { createApplication, getReasons } from "./action";
+import { useEffect, useState } from "react";
+import { MenuProps } from "react-select";
 
 interface RegisterFormProps {
   event: Event | undefined;
@@ -21,6 +31,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [isFormValid, setIsFormValid] = useState(false);
+  const [reasonsDropdown, setReasonsDropdown] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchReasons = async () => {
+      const response = await getReasons();
+      if (!response) {
+        console.error("FetchReasons failed");
+        return;
+      }
+      const items = response.map((reason: Reason) => ({
+        key: reason.id,
+        label: reason.meaning,
+      }));
+      setReasonsDropdown(items);
+    };
+    fetchReasons();
+  }, []);
 
   const onFinish = (values: any) => {
     if (
@@ -28,7 +55,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
     ) {
       success();
-      if (event?.id) createApplication(event?.id, userId);
+      if (event?.id) createApplication(event?.id, userId, values.reason);
       setTimeout(() => {
         setRegistering(false);
         setHasRegistered(true);
@@ -122,6 +149,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             showTime={{ format: "hh:mm A" }}
             width="10rem"
           />
+        </Form.Item>
+        <Form.Item
+          name="reason"
+          label="Select a Reason"
+          rules={[
+            { required: true, message: "Please input the day of the event" },
+          ]}
+        >
+          <Select placeholder="">
+            {reasonsDropdown.map((item: any) => (
+              <Select.Option key={item.key} value={item.key}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           name="agreeTerms"
