@@ -51,12 +51,6 @@ export const getHourSubmissionsByUserEmail = async (
         image: event.image.toString("base64"),
         eventName: event.title,
         location: event.location,
-        status:
-          submission.approval_status === 1
-            ? "approved"
-            : submission.approval_status === 0
-            ? "pending"
-            : "denied",
         date: submission.date_submitted.toString(),
         reviewer:
           submission.updated_by_id !== user.id ? reviewerPerson.name : "N/A",
