@@ -55,7 +55,7 @@ const Forms: React.FC = () => {
           console.error("bad frontend response");
           return;
         }
-        console.log("success", newObjects);
+        // console.log("success", newObjects);
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -69,9 +69,7 @@ const Forms: React.FC = () => {
       message.error("Please upload a file.");
       return;
     }
-
     setLoading(true);
-    console.log("Submitting!");
     return;
   };
 
