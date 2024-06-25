@@ -17,6 +17,8 @@ import {
   TextArea,
 } from "@/_common/styledDivs";
 import CustomUpload from "@/components/Upload/CustomUpload";
+import { CreateFormResponse, NewForm } from "@/interfaces/interfaces";
+import { createForm } from "./action";
 
 const Forms: React.FC = () => {
   const router = useRouter();
@@ -25,7 +27,6 @@ const Forms: React.FC = () => {
   const [destination, setDestination] = useState<string>("");
   const [fileLink, setFileLink] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   useEffect(() => {
@@ -37,6 +38,32 @@ const Forms: React.FC = () => {
     }
   }, [title, description, destination, fileLink]);
 
+  useEffect(() => {
+    if (!loading) return;
+
+    const fetchCreateForm = async () => {
+      const body: NewForm = {
+        title: title,
+        description: description,
+        fileLink: fileLink,
+        uploadLink: destination,
+      };
+
+      try {
+        const newObjects = await createForm(body);
+        if (!newObjects) {
+          console.error("bad frontend response");
+          return;
+        }
+        console.log("success", newObjects);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCreateForm();
+  }, [loading]);
+
   const handleSubmit = async () => {
     if (!fileLink) {
       message.error("Please upload a file.");
@@ -45,7 +72,6 @@ const Forms: React.FC = () => {
 
     setLoading(true);
     console.log("Submitting!");
-    setLoading(false);
     return;
   };
 
