@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import StyledButton from "@/components/StyledButton";
 import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { Button, Col, Form, Row, Typography, Upload, message } from "antd";
 
@@ -57,6 +57,7 @@ const Forms: React.FC = () => {
         }
         // console.log("success", newObjects);
         setLoading(false);
+        router.push("/admin/forms");
       } catch (error) {
         console.error(error);
       }
@@ -72,6 +73,8 @@ const Forms: React.FC = () => {
     setLoading(true);
     return;
   };
+
+  
 
   return (
     <div>
@@ -113,7 +116,7 @@ const Forms: React.FC = () => {
               <Asterisk>*</Asterisk>
             </LabelTitle>
             <TextArea
-              placeholder="link"
+              placeholder="https://example.com/"
               rows={1}
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
@@ -125,7 +128,7 @@ const Forms: React.FC = () => {
               <Asterisk>*</Asterisk>
             </LabelTitle>
             <TextArea
-              placeholder="link"
+              placeholder="https://example.com/"
               rows={1}
               value={fileLink}
               onChange={(e) => setFileLink(e.target.value)}

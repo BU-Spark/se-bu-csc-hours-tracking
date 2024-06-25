@@ -43,7 +43,7 @@ export async function createDummyForms(): Promise<any> {
           title: "Dummy Form",
           description: "This is a fake form",
           downloadable: true,
-          upload_link: "https://www.bu.edu/csc/protection-of-minors/",
+          upload_link: "https://google.com",
         },
       ],
     });
@@ -53,9 +53,9 @@ export async function createDummyForms(): Promise<any> {
           file: "/example_CORI.pdf",
           type: 1,
         },
-        { file: "./example_CORI.pdf", type: 2 },
-        { file: "./example_CORI.pdf", type: 2 },
-        { file: "./example_CORI.pdf", type: 2 },
+        { file: "https://example.com", type: 2 },
+        { file: "https://example.com", type: 2 },
+        { file: "https://example.com", type: 2 },
       ],
     });
 

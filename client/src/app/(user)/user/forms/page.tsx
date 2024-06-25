@@ -84,6 +84,17 @@ const Forms = () => {
       );
     };
 
+    const handleDownload = () => {
+      // check if its a redirect form (goes to a seperate page)
+      if (completeForm.file.startsWith("REDIRECT-")) {
+        alert(completeForm.file.toString().substring(9));
+        window.open(completeForm.file.toString().substring(9), "_blank");
+      } else {
+        console.log(`Downloading ${completeForm.title}`);
+        download(`/forms/${completeForm.file}`, completeForm.title.toString());
+      }
+    };
+
     //if uploadable file render these buttons
     const UploadableFileButtons = () => {
       return (
@@ -103,11 +114,7 @@ const Forms = () => {
               />
             }
             onClick={() => {
-              console.log(`Downloading ${completeForm.title}`);
-              download(
-                `/forms/${completeForm.file}`,
-                completeForm.title.toString()
-              );
+              handleDownload();
             }}
           ></Button>
           <button

@@ -187,6 +187,17 @@ const Forms: React.FC = () => {
       );
     };
 
+    const handleDownload = () => {
+      // check if its a redirect form (goes to a seperate page)
+      console.log(completeForm.file);
+      if (completeForm.file.startsWith("REDIRECT-")) {
+        window.open(completeForm.file.toString().substring(9), "_blank");
+      } else {
+        console.log(`Downloading ${completeForm.title}`);
+        download(`/forms/${completeForm.file}`, completeForm.title.toString());
+      }
+    };
+
     //if uploadable file render these buttons
     const UploadableFileButtons = () => {
       return (
@@ -206,11 +217,7 @@ const Forms: React.FC = () => {
               />
             }
             onClick={() => {
-              console.log(`Downloading ${completeForm.title}`);
-              download(
-                `/forms/${completeForm.file}`,
-                completeForm.title.toString()
-              );
+              handleDownload();
             }}
           ></Button>
           <button
