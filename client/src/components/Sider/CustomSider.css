@@ -34,7 +34,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;  /* Ensure the menu takes full width */
+  width: 100% !important;  /* Ensure the menu takes full width */
 }
 
 .custom-menu .ant-menu-item {
@@ -43,6 +43,7 @@
   width: 100%;  /* Ensure each menu item takes full width */
   padding: 1em 0;  /* Add padding for better spacing */
   font-family: 'Inter', sans-serif !important;
+  font-size: medium !important;
 }
 
 .ant-menu-item:hover {

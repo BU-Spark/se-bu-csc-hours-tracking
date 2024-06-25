@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
-import { getEventSpotsLeft } from "@/app/(admin)/admin/student-applications/action";
+import { getEventSpotsLeft } from "@/app/(admin)/admin/student-signups/action";
 
 dayjs.extend(customParseFormat);
 
