@@ -16,6 +16,8 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
   action,
   onFileChange,
 }) => {
+  const maxSize = 10 * 1024 * 1024; // max of 10 mb upload
+  const allowedTypes = ["application/pdf"]; //only allows pdfs
   const props: UploadProps = {
     name: "file",
     multiple: false,
@@ -31,6 +33,18 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
       } else if (status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
+    },
+    beforeUpload(file) {
+      const fileType = file.type;
+      if (file.size > maxSize) {
+        message.error("File must be smaller than 10MB!");
+        return Upload.LIST_IGNORE;
+      }
+      if (!allowedTypes.includes(fileType)) {
+        message.error("Only PDF files are allowed!");
+        return Upload.LIST_IGNORE;
+      }
+      return true;
     },
     onRemove() {
       onFileChange(null);
