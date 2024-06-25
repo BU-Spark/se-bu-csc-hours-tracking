@@ -14,7 +14,7 @@ import {
   CompleteFormParams,
 } from "@/interfaces/interfaces";
 
-function Forms() {
+const Forms = () => {
   const [forms, setForms] = useState<Form[]>([]);
   const [codes, setCodes] = useState<Code[]>([]);
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
@@ -84,6 +84,17 @@ function Forms() {
       );
     };
 
+    const handleDownload = () => {
+      // check if its a redirect form (goes to a seperate page)
+      if (completeForm.file.startsWith("REDIRECT-")) {
+        alert(completeForm.file.toString().substring(9));
+        window.open(completeForm.file.toString().substring(9), "_blank");
+      } else {
+        console.log(`Downloading ${completeForm.title}`);
+        download(`/forms/${completeForm.file}`, completeForm.title.toString());
+      }
+    };
+
     //if uploadable file render these buttons
     const UploadableFileButtons = () => {
       return (
@@ -103,11 +114,7 @@ function Forms() {
               />
             }
             onClick={() => {
-              console.log(`Downloading ${completeForm.title}`);
-              download(
-                `/forms/${completeForm.file}`,
-                completeForm.title.toString()
-              );
+              handleDownload();
             }}
           ></Button>
           <button
@@ -216,7 +223,7 @@ function Forms() {
       </button>
     </>
   );
-}
+};
 
 export default Forms;
 

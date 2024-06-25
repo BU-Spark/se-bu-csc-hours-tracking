@@ -59,7 +59,6 @@ const CustomSider: React.FC = () => {
             key: "forms",
             label: "Forms",
             onClick: () => router.push("/admin/forms"),
-            disabled: true,
           },
         ]
       : [];

@@ -11,90 +11,18 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { Button, InputNumber, AutoComplete } from "antd";
+import { AutoComplete } from "antd";
 import { buRed } from "@/_common/styles";
-
-const FormContainer = styled.div`
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
-const BackButton = styled.div`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-bottom: 20px;
-  color: #cc0000;
-
-  &:hover {
-    color: #ff0000;
-  }
-
-  svg {
-    margin-right: 8px;
-  }
-`;
-
-const Label = styled.label`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 1rem;
-  margin-bottom: 20px;
-`;
-
-const LabelTitle = styled.span`
-  display: flex;
-  align-items: center;
-`;
-
-const Asterisk = styled.span`
-  color: red;
-  margin-left: 5px;
-`;
-
-const CommonInputStyle = `
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 8px;
-  border: 1px solid #ccc;
-  font-family: inherit;
-`;
-
-const StyledInputNumber = styled(InputNumber)`
-  ${CommonInputStyle}
-`;
-
-const Input = styled.input`
-  ${CommonInputStyle}
-`;
-
-const TextArea = styled.textarea`
-  ${CommonInputStyle}
-  resize: none;
-`;
-
-const SubmitButton = styled.button`
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background-color: rgba(204, 0, 0, 1);
-  color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  &:hover {
-    background-color: rgba(153, 0, 0, 1);
-  }
-`;
+import {
+  Asterisk,
+  BackButton,
+  FormContainer,
+  Label,
+  LabelTitle,
+  StyledInputNumber,
+  SubmitButton,
+  TextArea,
+} from "@/_common/styledDivs";
 
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);

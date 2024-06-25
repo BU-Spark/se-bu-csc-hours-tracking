@@ -1,4 +1,4 @@
-import { HourSubmission, Reason, Role } from "@prisma/client";
+import { FormCode, HourSubmission, Reason, Role } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 
 export interface FormRowParams {
@@ -187,4 +187,16 @@ export interface SpotsLeftProps {
 
 export interface StudentDropdown {
   record: HoursTableData;
+}
+
+export interface NewForm {
+  title: string;
+  description: string;
+  uploadLink: string;
+  fileLink: string;
+}
+
+export interface CreateFormResponse {
+  newForm: Form;
+  newFormCode: FormCode;
 }
