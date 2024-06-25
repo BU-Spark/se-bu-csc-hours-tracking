@@ -1,3 +1,4 @@
+import { InputNumber, Upload } from "antd";
 import styled from "styled-components";
 
 export const HeaderOffset = styled.div`
@@ -276,4 +277,86 @@ export const PopupContainer = styled.div`
       background-color: rgba(153, 0, 0, 1);
     }
   }
+`;
+
+export const FormContainer = styled.div`
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+export const BackButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+  color: #cc0000;
+
+  &:hover {
+    color: #ff0000;
+  }
+
+  svg {
+    margin-right: 8px;
+  }
+`;
+
+export const Label = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 1rem;
+  margin-bottom: 20px;
+`;
+
+export const LabelTitle = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
+export const Asterisk = styled.span`
+  color: red;
+  margin-left: 5px;
+`;
+
+export const CommonInputStyle = `
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+`;
+
+export const StyledInputNumber = styled(InputNumber)`
+  ${CommonInputStyle}
+`;
+
+export const TextArea = styled.textarea`
+  ${CommonInputStyle}
+  resize: none;
+`;
+
+export const SubmitButton = styled.button`
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(204, 0, 0, 1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    background-color: rgba(153, 0, 0, 1);
+  }
+`;
+
+export const FileUpload = styled(Upload)`
+  ${CommonInputStyle}
 `;
