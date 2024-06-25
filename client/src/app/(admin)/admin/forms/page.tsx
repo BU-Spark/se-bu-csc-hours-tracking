@@ -15,6 +15,7 @@ import { buRed } from "@/_common/styles";
 import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
 import useDownloader from "react-use-downloader";
 import { getCodes, getForms } from "@/app/(user)/user/forms/action";
+import { deleteForm } from "./action";
 
 const Forms: React.FC = () => {
   const router = useRouter();
@@ -23,6 +24,29 @@ const Forms: React.FC = () => {
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [formDeleted, setFormDeleted] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (formDeleted == null) return;
+    const fetchDelete = async () => {
+      try {
+        const response = await deleteForm(formDeleted);
+        if (response) {
+          setForms((prevForms) =>
+            prevForms.filter((f) => f.id !== formDeleted)
+          );
+          console.log("Form deleted successfully");
+        } else {
+          console.error("Failed to delete form");
+        }
+      } catch (error) {
+        console.error("Error deleting form:", error);
+      } finally {
+        setFormDeleted(null);
+      }
+    };
+    fetchDelete();
+  }, [formDeleted]);
 
   const FormRow = ({ form, codes, isFirst }: FormRowParams) => {
     const getFormCode = (form: Form, codes: Code[]): CompleteFormParams => {
@@ -89,12 +113,78 @@ const Forms: React.FC = () => {
 
     const handleFormDelete = (form: any) => {
       if (deleteConfirm == form.id) {
-        console.log("deleting", form.id);
-        setForms((prevForms) => prevForms.filter((f) => f.id !== form.id));
+        setFormDeleted(form.id);
         setDeleteConfirm(null);
       } else {
         setDeleteConfirm(form.id);
       }
+    };
+
+    const DeleteButton = () => {
+      return (
+        <Button
+          style={{
+            backgroundColor: "transparent",
+            color: buRed,
+            border: "none",
+            boxShadow: "none",
+            position: "relative",
+            padding: "10px",
+            fontWeight: "800",
+            fontSize: "large",
+            marginLeft: "0.5rem",
+          }}
+          onClick={() => handleFormDelete(form)}
+        >
+          {deleteConfirm == form.id ? (
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span
+                style={{
+                  background: buRed,
+                  width: "5em",
+                  height: "2em",
+                  color: "white",
+                  border: "0px",
+                  cursor: "pointer",
+                  display: "inline-block",
+                  textAlign: "center",
+                  lineHeight: "2em",
+                  fontWeight: "400",
+                  fontSize: "small",
+                  padding: "0.05rem",
+                  marginRight: "1rem",
+                }}
+              >
+                Confirm
+              </span>
+              <span
+                style={{
+                  background: "white",
+                  width: "5em",
+                  height: "2em",
+                  color: buRed,
+                  border: "0px",
+                  cursor: "pointer",
+                  display: "inline-block",
+                  textAlign: "center",
+                  lineHeight: "2em",
+                  fontWeight: "400",
+                  fontSize: "small",
+                  padding: "0.05rem",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteConfirm(null);
+                }}
+              >
+                Cancel
+              </span>
+            </div>
+          ) : (
+            <DeleteOutlined style={{ fontSize: "xx-large" }} />
+          )}
+        </Button>
+      );
     };
 
     //if uploadable file render these buttons
@@ -184,43 +274,7 @@ const Forms: React.FC = () => {
             ) : (
               <SingleButton />
             )}
-            <Button
-              style={{
-                backgroundColor: "transparent",
-                color: buRed,
-                border: "none",
-                boxShadow: "none",
-                position: "relative",
-                padding: "10px",
-                fontWeight: "800",
-                fontSize: "large",
-                marginLeft: "0.5rem",
-              }}
-              onClick={() => handleFormDelete(form)}
-            >
-              {deleteConfirm == form.id ? (
-                <span
-                  style={{
-                    background: buRed,
-                    width: "5em",
-                    height: "2em",
-                    color: "white",
-                    border: "0px",
-                    cursor: "pointer",
-                    display: "inline-block",
-                    textAlign: "center",
-                    lineHeight: "2em",
-                    fontWeight: "400",
-                    fontSize: "small",
-                    padding: "0.05rem",
-                  }}
-                >
-                  Confirm
-                </span>
-              ) : (
-                <DeleteOutlined style={{ fontSize: "xx-large" }} />
-              )}
-            </Button>
+            <DeleteButton />
           </div>
         </div>
       </Col>
