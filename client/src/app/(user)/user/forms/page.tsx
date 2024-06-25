@@ -14,7 +14,7 @@ import {
   CompleteFormParams,
 } from "@/interfaces/interfaces";
 
-function Forms() {
+const Forms = () => {
   const [forms, setForms] = useState<Form[]>([]);
   const [codes, setCodes] = useState<Code[]>([]);
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
@@ -216,7 +216,7 @@ function Forms() {
       </button>
     </>
   );
-}
+};
 
 export default Forms;
 
