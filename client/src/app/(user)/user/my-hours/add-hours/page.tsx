@@ -11,7 +11,7 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { AutoComplete } from "antd";
+import { AutoComplete, Select } from "antd";
 import { buRed } from "@/_common/styles";
 import {
   Asterisk,
@@ -23,6 +23,7 @@ import {
   SubmitButton,
   TextArea,
 } from "@/_common/styledDivs";
+const { Option } = Select;
 
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
@@ -38,7 +39,7 @@ const AddHours: React.FC = () => {
       if (!session?.user.id) return;
       const validEvents: Event[] | undefined =
         await getAllApprovedEventsByUserId(Number(session?.user.id));
-        if (!validEvents) return;
+      if (!validEvents) return;
 
       setEventOptions(validEvents);
     };
@@ -88,6 +89,23 @@ const AddHours: React.FC = () => {
             Event
             <Asterisk>*</Asterisk>
           </LabelTitle>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Choose Event"
+            onChange={(value) => setEvent(value)}
+          >
+            {options.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+        </Label>
+        {/* <Label>
+          <LabelTitle>
+            Event
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
           <AutoComplete
             options={options}
             style={{ width: "100%" }}
@@ -97,7 +115,7 @@ const AddHours: React.FC = () => {
               option!.value.toUpperCase().includes(inputValue.toUpperCase())
             }
           />
-        </Label>
+        </Label> */}
         <Label>
           <LabelTitle>
             Hours
