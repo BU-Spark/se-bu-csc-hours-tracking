@@ -168,7 +168,7 @@ export const SubText = styled.p`
 `;
 
 export const AddHoursButtonContainer = styled.div`
-  position: fixed;
+  position: absolute;
   top: 100px;
   right: 20px;
   display: flex;
