@@ -164,7 +164,7 @@ const MyHours: React.FC = () => {
                 </BoldText>
                 <SubText>
                   {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
-                  Reviewed By: {"N/A"}
+                  Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}
                 </SubText>
               </div>
               <div className="section">

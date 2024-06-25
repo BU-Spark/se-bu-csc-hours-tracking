@@ -4,7 +4,7 @@ import StyledButton from "@/components/StyledButton";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Button, Col, Row, Typography, Upload } from "antd";
+import { Button, Col, Form, Row, Typography, Upload, message } from "antd";
 
 import {
   Asterisk,
@@ -23,22 +23,30 @@ const Forms: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
-  const [file, setFile] = useState<File>();
-  const action = "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload";
+  const [fileLink, setFileLink] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   useEffect(() => {
     // Check if all fields are filled
-    if (title && description && destination && file) {
+    if (title && description && destination && fileLink) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
     }
-  }, [title, description, destination, file]);
+  }, [title, description, destination, fileLink]);
 
-  const handleFileChange = (file: File) => {
-    setFile(file);
+  const handleSubmit = async () => {
+    if (!fileLink) {
+      message.error("Please upload a file.");
+      return;
+    }
+
+    setLoading(true);
+    console.log("Submitting!");
+    setLoading(false);
+    return;
   };
 
   return (
@@ -49,13 +57,14 @@ const Forms: React.FC = () => {
           <span>Back to Forms</span>
         </BackButton>
         <h1>Add Form</h1>
-        <form onSubmit={() => console.log("submitted")}>
+        <Form onFinish={handleSubmit}>
           <Label>
             <LabelTitle>
               Form Title
               <Asterisk>*</Asterisk>
             </LabelTitle>
             <TextArea
+              placeholder="Waiver Form"
               rows={1}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -67,6 +76,7 @@ const Forms: React.FC = () => {
               <Asterisk>*</Asterisk>
             </LabelTitle>
             <TextArea
+              placeholder="A legal document relinquishing specified rights or privileges"
               rows={1}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -79,6 +89,7 @@ const Forms: React.FC = () => {
               <Asterisk>*</Asterisk>
             </LabelTitle>
             <TextArea
+              placeholder="link"
               rows={1}
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
@@ -89,7 +100,12 @@ const Forms: React.FC = () => {
               File
               <Asterisk>*</Asterisk>
             </LabelTitle>
-            <CustomUpload action={action} onFileChange={handleFileChange} />
+            <TextArea
+              placeholder="link"
+              rows={1}
+              value={fileLink}
+              onChange={(e) => setFileLink(e.target.value)}
+            />
           </Label>
           <SubmitButton
             type="submit"
@@ -98,7 +114,7 @@ const Forms: React.FC = () => {
           >
             Submit
           </SubmitButton>
-        </form>
+        </Form>
       </FormContainer>
     </div>
   );

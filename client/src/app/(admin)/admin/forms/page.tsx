@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import StyledButton from "@/components/StyledButton";
 import { useRouter } from "next/navigation";
-import { Button, Col, InputNumber, Row, Upload } from "antd";
+import { Button, Col, InputNumber, Popover, Row, Upload } from "antd";
 import {
   Code,
   CompleteForm,
@@ -12,7 +12,7 @@ import {
 } from "@/interfaces/interfaces";
 import Link from "next/link";
 import { buRed } from "@/_common/styles";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
 import useDownloader from "react-use-downloader";
 import { getCodes, getForms } from "@/app/(user)/user/forms/action";
 
@@ -22,6 +22,7 @@ const Forms: React.FC = () => {
   const [codes, setCodes] = useState<Code[]>([]);
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   const FormRow = ({ form, codes, isFirst }: FormRowParams) => {
     const getFormCode = (form: Form, codes: Code[]): CompleteFormParams => {
@@ -86,6 +87,16 @@ const Forms: React.FC = () => {
       );
     };
 
+    const handleFormDelete = (form: any) => {
+      if (deleteConfirm == form.id) {
+        console.log("deleting", form.id);
+        setForms((prevForms) => prevForms.filter((f) => f.id !== form.id));
+        setDeleteConfirm(null);
+      } else {
+        setDeleteConfirm(form.id);
+      }
+    };
+
     //if uploadable file render these buttons
     const UploadableFileButtons = () => {
       return (
@@ -146,6 +157,7 @@ const Forms: React.FC = () => {
       >
         <div
           style={{
+            // marginLeft: "0.5rem",
             padding: "0em 2em",
             display: "flex",
             alignItems: "center",
@@ -161,11 +173,55 @@ const Forms: React.FC = () => {
             </h3>
             <p style={{ marginTop: "0.5em" }}>{completeForm.description}</p>
           </div>
-          {completeForm.downloadable ? (
-            <UploadableFileButtons />
-          ) : (
-            <SingleButton />
-          )}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+            }}
+          >
+            {completeForm.downloadable ? (
+              <UploadableFileButtons />
+            ) : (
+              <SingleButton />
+            )}
+            <Button
+              style={{
+                backgroundColor: "transparent",
+                color: buRed,
+                border: "none",
+                boxShadow: "none",
+                position: "relative",
+                padding: "10px",
+                fontWeight: "800",
+                fontSize: "large",
+                marginLeft: "0.5rem",
+              }}
+              onClick={() => handleFormDelete(form)}
+            >
+              {deleteConfirm == form.id ? (
+                <span
+                  style={{
+                    background: buRed,
+                    width: "5em",
+                    height: "2em",
+                    color: "white",
+                    border: "0px",
+                    cursor: "pointer",
+                    display: "inline-block",
+                    textAlign: "center",
+                    lineHeight: "2em",
+                    fontWeight: "400",
+                    fontSize: "small",
+                    padding: "0.05rem",
+                  }}
+                >
+                  Confirm
+                </span>
+              ) : (
+                <DeleteOutlined style={{ fontSize: "xx-large" }} />
+              )}
+            </Button>
+          </div>
         </div>
       </Col>
     ) : (

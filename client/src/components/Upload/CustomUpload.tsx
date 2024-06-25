@@ -1,15 +1,13 @@
 import React from "react";
 import { InboxOutlined } from "@ant-design/icons";
-import type { UploadProps } from "antd";
 import { message, Upload } from "antd";
-import { buRed } from "@/_common/styles";
 import "./CustomUpload.css";
 
 const { Dragger } = Upload;
 
 interface CustomUploadProps {
-  action: any;
-  onFileChange: any;
+  action: string;
+  onFileChange: (file: File | null) => void;
 }
 
 const CustomUpload: React.FC<CustomUploadProps> = ({
@@ -17,24 +15,28 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
   onFileChange,
 }) => {
   const maxSize = 10 * 1024 * 1024; // max of 10 mb upload
-  const allowedTypes = ["application/pdf"]; //only allows pdfs
-  const props: UploadProps = {
+  const allowedTypes = ["application/pdf"]; // only allows pdfs
+
+  const handleFileUpload = async (file: File) => {
+    console.log("file upload...");
+  };
+
+  const props = {
     name: "file",
     multiple: false,
     action: action,
-    onChange(info) {
+    onChange(info: any) {
       const { status, originFileObj } = info.file;
       if (status !== "uploading") {
-        console.log(info.file, info.fileList);
+        console.log("uploading...", info.file, info.fileList);
       }
       if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-        onFileChange(originFileObj);
+        handleFileUpload(originFileObj);
       } else if (status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    beforeUpload(file) {
+    beforeUpload(file: File) {
       const fileType = file.type;
       if (file.size > maxSize) {
         message.error("File must be smaller than 10MB!");
@@ -52,16 +54,15 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
   };
 
   return (
-    <Dragger {...props}>
+    <Dragger {...props} style={{ width: "155%" }}>
       <p className="ant-upload-drag-icon">
-        <InboxOutlined color={`${buRed} !important`} />
+        <InboxOutlined />
       </p>
       <p className="ant-upload-text">
         Click or drag file to this area to upload
       </p>
       <p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibited from uploading
-        company data or other banned files.
+        Please upload a PDF of a maximum size of 10MB.
       </p>
     </Dragger>
   );

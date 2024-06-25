@@ -188,3 +188,10 @@ export interface SpotsLeftProps {
 export interface StudentDropdown {
   record: HoursTableData;
 }
+
+export interface NewForm {
+  title: string;
+  description: string;
+  uploadLink: string;
+  file: File;
+}
