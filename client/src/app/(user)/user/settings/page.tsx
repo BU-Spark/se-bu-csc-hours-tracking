@@ -49,6 +49,15 @@ const Asterisk = styled.span`
   margin-left: 5px;
 `;
 
+<<<<<<< HEAD
+=======
+const ErrorMessage = styled.span`
+  color: red;
+  margin-left: 10px;
+  font-size: 0.875rem;
+`;
+
+>>>>>>> settings
 const CommonInputStyle = `
   padding: 10px;
   border-radius: 8px;
@@ -146,6 +155,22 @@ const dietaryOptions = [
   { value: "kosher", label: "Kosher" },
 ];
 
+<<<<<<< HEAD
+=======
+const collegeOptions = [
+  { value: "cas", label: "CAS" },
+  { value: "cds", label: "CDS" },
+  { value: "cfa", label: "CFA" },
+  { value: "cgs", label: "CGS" },
+  { value: "com", label: "COM" },
+  { value: "eng", label: "ENG" },
+  { value: "khc", label: "KHC" },
+  { value: "questrom", label: "Questrom" },
+  { value: "sha", label: "SHA" },
+  { value: "wheelock", label: "Wheelock" },
+];
+
+>>>>>>> settings
 const generateClassYearOptions = () => {
   const currentYear = new Date().getFullYear();
   const years = [];
@@ -163,7 +188,12 @@ const Settings: React.FC = () => {
   const router = useRouter();
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+<<<<<<< HEAD
   const [college, setCollege] = useState<string>("");
+=======
+  const [buId, setBuId] = useState<string>("");
+  const [college, setCollege] = useState<string[]>([]);
+>>>>>>> settings
   const [classYear, setClassYear] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -180,7 +210,12 @@ const Settings: React.FC = () => {
           const user = await getUserDetails();
           if (user) {
             setPhoneNumber(user.phone_number || "");
+<<<<<<< HEAD
             setCollege(user.college || "");
+=======
+            setBuId(user.bu_id || "");
+            setCollege(user.college ? user.college.split(",") : []);
+>>>>>>> settings
             setClassYear(user.class?.toString() || "");
             setDietaryRestrictions(
               user.dietary_restrictions
@@ -197,7 +232,15 @@ const Settings: React.FC = () => {
 
   const validateForm = () => {
     return (
+<<<<<<< HEAD
       phoneNumber && college && classYear && dietaryRestrictions.length > 0
+=======
+      phoneNumber &&
+      buId &&
+      college.length > 0 &&
+      classYear &&
+      dietaryRestrictions.length > 0
+>>>>>>> settings
     );
   };
 
@@ -220,7 +263,12 @@ const Settings: React.FC = () => {
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
+<<<<<<< HEAD
         college,
+=======
+        bu_id: buId,
+        college: college.join(","),
+>>>>>>> settings
         class: Number(classYear),
         dietary_restrictions: dietaryRestrictions.join(","),
       });
@@ -253,6 +301,12 @@ const Settings: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Label>
           Phone Number<Asterisk>*</Asterisk>
+<<<<<<< HEAD
+=======
+          {formSubmitted && !phoneNumber && (
+            <ErrorMessage>Phone number is required</ErrorMessage>
+          )}
+>>>>>>> settings
         </Label>
         <StyledPhoneInput
           country={"us"}
@@ -268,6 +322,7 @@ const Settings: React.FC = () => {
           }}
           containerStyle={{ marginBottom: "20px" }}
         />
+<<<<<<< HEAD
         {formSubmitted && !phoneNumber && (
           <span style={{ color: "red" }}>Phone number is required</span>
         )}
@@ -279,12 +334,66 @@ const Settings: React.FC = () => {
           value={college}
           onChange={(e) => {
             setCollege(e.target.value);
+=======
+        <Label>
+          BU ID<Asterisk>*</Asterisk>
+          {formSubmitted && !buId && (
+            <ErrorMessage>BU ID is required</ErrorMessage>
+          )}
+        </Label>
+        <Input
+          type="text"
+          placeholder="UXXXXXXXX"
+          value={buId}
+          onChange={(e) => {
+            setBuId(e.target.value);
+>>>>>>> settings
             handleInputChange();
           }}
           required
         />
         <Label>
+<<<<<<< HEAD
           Class Year<Asterisk>*</Asterisk>
+=======
+          College<Asterisk>*</Asterisk>
+          {formSubmitted && college.length === 0 && (
+            <ErrorMessage>College is required</ErrorMessage>
+          )}
+        </Label>
+        <Select
+          isMulti
+          options={collegeOptions}
+          value={collegeOptions.filter((option) =>
+            college.includes(option.value)
+          )}
+          onChange={(selected) => {
+            setCollege(selected.map((option) => option.value));
+            handleInputChange();
+          }}
+          styles={{
+            container: (provided) => ({
+              ...provided,
+              marginBottom: "20px",
+            }),
+            control: (provided) => ({
+              ...provided,
+              padding: "10px",
+              borderRadius: "8px",
+              fontSize: "1rem",
+              width: "100%",
+              boxSizing: "border-box",
+              border: "1px solid #ccc",
+              fontFamily: "inherit",
+            }),
+          }}
+        />
+        <Label>
+          Class Year<Asterisk>*</Asterisk>
+          {formSubmitted && !classYear && (
+            <ErrorMessage>Class year is required</ErrorMessage>
+          )}
+>>>>>>> settings
         </Label>
         <Select
           options={generateClassYearOptions()}
@@ -312,11 +421,19 @@ const Settings: React.FC = () => {
             }),
           }}
         />
+<<<<<<< HEAD
         {formSubmitted && !classYear && (
           <span style={{ color: "red" }}>Class year is required</span>
         )}
         <Label>
           Dietary Restrictions<Asterisk>*</Asterisk>
+=======
+        <Label>
+          Dietary Restrictions<Asterisk>*</Asterisk>
+          {formSubmitted && dietaryRestrictions.length === 0 && (
+            <ErrorMessage>Dietary restrictions are required</ErrorMessage>
+          )}
+>>>>>>> settings
         </Label>
         <Select
           isMulti
@@ -345,11 +462,14 @@ const Settings: React.FC = () => {
             }),
           }}
         />
+<<<<<<< HEAD
         {formSubmitted && dietaryRestrictions.length === 0 && (
           <span style={{ color: "red" }}>
             Dietary restrictions are required
           </span>
         )}
+=======
+>>>>>>> settings
         <SubmitButton type="submit">Submit</SubmitButton>
       </form>
       {showError && (
@@ -362,4 +482,8 @@ const Settings: React.FC = () => {
   );
 };
 
+<<<<<<< HEAD
 export default Settings;
+=======
+export default Settings;
+>>>>>>> settings

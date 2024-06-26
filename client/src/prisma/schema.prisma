@@ -12,6 +12,7 @@ model Person {
   name                 String
   email                String           @unique
   phone_number         String?          @unique
+  bu_id                String?          @unique
   role                 Role             @default(USER)
   class                Int?
   affiliation_id       Int?
