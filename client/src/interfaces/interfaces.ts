@@ -47,7 +47,6 @@ export interface EventCardProps {
   image: string;
   event_start: Date;
   hasPassword: boolean;
-  onClick?: () => void;
   isAdmin?: boolean;
 }
 

@@ -1,54 +1,74 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
+import { EventInput } from "@/interfaces/interfaces";
+import { Event } from "@prisma/client";
 import { Layout } from "antd";
-import { useRouter } from "next/navigation";
-import { getEvents } from "./[events_id]/action";
-import { Event } from "../../../../interfaces/interfaces";
-import EventCard from "../../../../components/EventCard/EventCard";
-import { AiOutlinePlus } from "react-icons/ai";
+import { Content } from "antd/es/layout/layout";
+import StyledButton from "@/components/StyledButton";
+import { useSession } from "next-auth/react";
 import {
-  AddHoursButtonContainer,
+  createDummyEvent,
+  getApplicationsByUserId,
+  getEvents,
+  getEventsByApplicationEventIds,
+} from "@/app/(user)/user/events/action";
+import CardGrid from "@/app/(user)/user/events/CardGrid";
+import {
   AddHoursButton,
+  AddHoursButtonContainer,
   PlusCircle,
   Rectangle,
-} from "../../../../_common/styledDivs";
-import { Buffer } from "buffer";
+} from "@/_common/styledDivs";
+import { AiOutlinePlus } from "react-icons/ai";
+import { useRouter } from "next/navigation";
 
-const { Content } = Layout;
-
-const AdminEvents: React.FC = () => {
+function Events() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [filter, setFilter] = useState<number>(0);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     const fetchEvents = async () => {
-      try {
-        const fetchedEvents = await getEvents();
-        const transformedEvents = fetchedEvents.map((event) => ({
-          ...event,
-          image: Buffer.from(event.image, "base64"),
-        }));
-        setEvents(transformedEvents);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-        setLoading(false);
-      }
+      const eventResult = await getEvents();
+      setEvents(eventResult);
     };
-
     fetchEvents();
   }, []);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  useEffect(() => {
+    const fetchMyApplications = async () => {
+      if (!session?.user.id) return;
+
+      const userApplications = await getApplicationsByUserId(
+        Number(session.user.id)
+      ); //get all user applications
+      if (userApplications) {
+        const eventIds = userApplications.map(
+          (application) => application.event_id
+        );
+        const userEvents = await getEventsByApplicationEventIds(eventIds); //get all events those applications were related to
+        if (userEvents) {
+          setMyEvents(userEvents);
+        }
+      }
+    };
+    fetchMyApplications();
+  }, [filter]);
 
   return (
-    <Layout>
-      <Content style={{ padding: "2rem" }}>
-        <AddHoursButtonContainer>
+    <Layout
+      style={{
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "60vw",
+      }}
+    >
+      <Content style={{ width: "100%" }}>
+          <AddHoursButtonContainer>
           <AddHoursButton onClick={() => router.push("/admin/events/new")}>
             <PlusCircle>
               <AiOutlinePlus />
@@ -56,24 +76,14 @@ const AdminEvents: React.FC = () => {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </AddHoursButtonContainer>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          {events.map((event) => (
-            <EventCard
-              key={event.id}
-              event_id={event.id}
-              title={event.title}
-              category_id={event.category_id}
-              coordinator_id={event.coordinator_id}
-              location={event.location}
-              image={`data:image/jpeg;base64,${event.image.toString("base64")}`}
-              event_start={event.event_start}
-              onClick={() => router.push(`/admin/events/${event.id}`)}
-            />
-          ))}
-        </div>
+        {events ? (
+          <CardGrid events={events} filter={filter} myEvents={myEvents} />
+        ) : (
+          <p>loading</p>
+        )}
       </Content>
     </Layout>
   );
-};
+}
 
-export default AdminEvents;
+export default Events;
