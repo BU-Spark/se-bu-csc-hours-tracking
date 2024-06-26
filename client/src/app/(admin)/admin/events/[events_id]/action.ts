@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "../../../../../lib/prisma";
-import { Event } from "@prisma/client";
+import { Category, Event, Organization } from "@prisma/client";
 import { Buffer } from "buffer";
 
 interface ExtendedEvent extends Partial<Omit<Event, "id" | "coordinator_id">> {
@@ -128,3 +128,31 @@ export async function getEvents() {
     throw error;
   }
 }
+
+export const getOrganizations = async (): Promise<
+  Organization[] | undefined
+> => {
+  try {
+    const organization = await prisma.organization.findMany();
+    if (!organization) {
+      console.error("erroring retrieving organization");
+      return;
+    }
+    return organization;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getCategories = async (): Promise<Category[] | undefined> => {
+  try {
+    const category = await prisma.category.findMany();
+    if (!category) {
+      console.error("erroring retrieving organization");
+      return;
+    }
+    return category;
+  } catch (error) {
+    console.error(error);
+  }
+};

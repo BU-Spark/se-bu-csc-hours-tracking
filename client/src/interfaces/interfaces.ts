@@ -66,7 +66,7 @@ export interface EventInput {
 
 export interface CardGridProps {
   events: Event[];
-  filter: number;
+  filter: number | Date;
   myEvents: Event[] | undefined;
 }
 

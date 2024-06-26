@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getEvent, updateEvent } from "./action";
-import { Event } from "../../../../../interfaces/interfaces";
+import { Event } from "@prisma/client";
 import { Button, message, Typography } from "antd";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { buRed } from "../../../../../_common/styles";

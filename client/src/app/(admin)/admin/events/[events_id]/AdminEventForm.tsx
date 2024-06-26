@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -10,13 +10,15 @@ import {
   Modal,
   Select,
   message,
+  Dropdown,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
-import { Event } from "@prisma/client";
+import { Category, Event, Organization } from "@prisma/client";
+import { getCategories, getOrganizations } from "./action";
 
 dayjs.extend(customParseFormat);
 
@@ -80,6 +82,52 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
   const router = useRouter();
   const [previewData, setPreviewData] = useState<any | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [organizationsDropdown, setOrganizationsDropdown] = useState<any>([]);
+  const [organization, setOrganization] = useState<Organization>();
+  const [categoryDropdown, setCategoryDropdown] = useState<any>([]);
+  const [category, setCategory] = useState<Category>();
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const response: Organization[] | undefined = await getOrganizations();
+        if (!response) {
+          console.error("bad response getting errors");
+          return;
+        }
+
+        const items = response.map((org: Organization) => ({
+          key: org.id,
+          label: org.name,
+        }));
+
+        setOrganizationsDropdown(items);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const response: Category[] | undefined = await getCategories();
+        if (!response) {
+          console.error("bad response getting errors");
+          return;
+        }
+
+        const items = response.map((cat: Category) => ({
+          key: cat.id,
+          label: cat.name,
+        }));
+
+        setCategoryDropdown(items);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchOrganizations();
+    fetchCategories();
+  }, []);
 
   const handleFinish = async (values: any, isDraft = false) => {
     const formattedValues = {
@@ -91,13 +139,13 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
       image: values.image
         ? await convertFileToBase64(values.image[0].originFileObj)
         : event?.image?.toString("base64"),
-      category_id: parseInt(values.category_id, 10),
+      category_id: category ? category : 1,
       coordinator_name: values.coordinator_name,
       coordinator_email: values.coordinator_email,
-      organization_id: values.organization_id
+      organization_id: organization?.id
         ? parseInt(values.organization_id, 10)
-        : undefined,
-      organization_name: values.organization_name,
+        : 1,
+      organization_name: organization?.name,
       estimated_participants: parseInt(values.estimated_participants, 10), // Ensure this is an integer
     };
     onUpdate(formattedValues, isDraft);
@@ -113,6 +161,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
     }
   };
 
+  // fix
   const convertFileToBase64 = (file: File) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
@@ -179,26 +228,35 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
           label="Category"
           rules={[{ required: true, message: "Please select a category" }]}
         >
-          <Select placeholder="Select a category">
-            <Option value="1">Environmental</Option>
-            <Option value="2">Social</Option>
-            <Option value="3">Educational</Option>
+          <Select
+            placeholder="Select a category"
+            onChange={(value) => setCategory(value)}
+          >
+            {categoryDropdown.map((item: any) => (
+              <Select.Option key={item.key} value={item.key}>
+                {item.label}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
-        {/* <Form.Item
-          name="organization_id"
-          label="Organization ID"
-        >
-          <Input placeholder="Enter the organization ID" />
-        </Form.Item> */}
+
         <Form.Item
-          name="organization_name"
-          label="Organization Name"
+          name="organization"
+          label="Organization "
           rules={[
             { required: true, message: "Please enter the organization name" },
           ]}
         >
-          <Input placeholder="Enter the organization name" />
+          <Select
+            placeholder="Select an organization"
+            onChange={(value) => setOrganization(value)}
+          >
+            {organizationsDropdown.map((item: any) => (
+              <Select.Option key={item.key} value={item.key}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           name="event_start"
@@ -319,7 +377,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
       </Form>
       <Modal
         title="Event Preview"
-        visible={previewVisible}
+        open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         footer={[
           <Button key="close" onClick={() => setPreviewVisible(false)}>
