@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { checkIfApplied, getEvent } from "./action";
 import { Event } from "@prisma/client";
-import { Button, message, Typography } from "antd";
+import { Button, Typography } from "antd";
 import {
   CalendarOutlined,
   ClockCircleOutlined,
@@ -20,6 +20,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
 import { getEventSpotsLeft } from "@/app/(admin)/admin/student-signups/action";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 dayjs.extend(customParseFormat);
 
@@ -45,6 +46,7 @@ export default function Page() {
     if (session.status != "loading") fetchCheckApplied();
   }, [session.status]);
 
+  // GET EVENT DETAILS
   useEffect(() => {
     const fetchEvent = async () => {
       const response = await getEvent(Number(event_id));
@@ -62,6 +64,8 @@ export default function Page() {
     fetchEvent();
     fetchCapacity();
   }, [event_id]);
+
+  console.log(event);
 
   return event ? (
     <div
@@ -95,6 +99,27 @@ export default function Page() {
             borderTopLeftRadius: "1rem",
           }}
         />
+        {event.application_password ? (
+          <div
+            className="password"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              top: "0",
+              right: "10px",
+              margin: "1rem 1rem",
+              color: "white",
+              textShadow: "1px 1px 2px black",
+              zIndex: "2",
+            }}
+          >
+            <LockOutlinedIcon style={{ fontSize: "2.2rem", color: buRed }} />
+          </div>
+        ) : (
+          <></>
+        )}
         <h1
           style={{
             position: "absolute",
@@ -120,6 +145,7 @@ export default function Page() {
           <Typography.Title style={{ fontSize: "1.5rem", marginLeft: "1rem" }}>
             At a Glance
           </Typography.Title>
+
           <Typography.Text style={{ fontSize: "1.2rem" }}>
             Apply by {formatDate(event.reg_end, true)}{" "}
           </Typography.Text>
@@ -189,6 +215,7 @@ export default function Page() {
             {event.location}
           </div>
         </div>
+
         <div
           className="signup"
           style={{

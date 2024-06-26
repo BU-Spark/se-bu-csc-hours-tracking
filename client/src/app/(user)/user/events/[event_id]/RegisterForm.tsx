@@ -8,12 +8,12 @@ import {
   Button,
   Dropdown,
   Select,
+  Input,
 } from "antd";
 import dayjs from "dayjs";
 import { buRed } from "@/_common/styles";
 import { createApplication, getReasons } from "./action";
 import { useEffect, useState } from "react";
-import { MenuProps } from "react-select";
 
 interface RegisterFormProps {
   event: Event | undefined;
@@ -50,19 +50,29 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   }, []);
 
   const onFinish = (values: any) => {
+    let errorReason = "date";
     if (
       dayjs(values.eventDate).format("YYYY-MM-DD HH:mm") ===
       dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
     ) {
-      success();
-      if (event?.id) createApplication(event?.id, userId, values.reason);
-      setTimeout(() => {
-        setRegistering(false);
-        setHasRegistered(true);
-      }, 1000);
+      if (values.password === event?.application_password) {
+        success();
+        if (event?.id) createApplication(event?.id, userId, values.reason);
+        setTimeout(() => {
+          setRegistering(false);
+          setHasRegistered(true);
+        }, 1000);
+      } else {
+        errorReason = "password";
+        error(errorReason);
+      }
     } else {
+      console.log(
+        values.password === event?.application_password,
+        values.password
+      );
       // console.log(false, event?.event_start);
-      error();
+      error(errorReason);
     }
   };
 
@@ -73,10 +83,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     });
   };
 
-  const error = () => {
+  const error = (mistake: string) => {
     messageApi.open({
       type: "error",
-      content: "Please input the correct event date/time",
+      content:
+        mistake == "date"
+          ? "Please input the correct event date/time"
+          : mistake == "password"
+          ? "Incorrect event password"
+          : `Unknown error: ${mistake}`,
     });
   };
 
@@ -154,7 +169,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           name="reason"
           label="Select a Reason"
           rules={[
-            { required: true, message: "Please input the day of the event" },
+            {
+              required: true,
+              message: "Select the reason you want to attend",
+            },
           ]}
         >
           <Select placeholder="">
@@ -165,6 +183,24 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             ))}
           </Select>
         </Form.Item>
+        {event?.application_password ? (
+          <Form.Item
+            name={"password"}
+            label={"Event Password"}
+            rules={[
+              {
+                required:
+                  event?.application_password != undefined &&
+                  event?.application_password != null,
+                message: "Please input the event password",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        ) : (
+          ""
+        )}
         <Form.Item
           name="agreeTerms"
           valuePropName="checked"
@@ -184,6 +220,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             I agree to attend this event if application accepted
           </Checkbox>
         </Form.Item>
+
         <Form.Item
           style={{
             display: "flex",
