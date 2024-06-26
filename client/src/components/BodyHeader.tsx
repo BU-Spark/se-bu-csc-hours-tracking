@@ -18,7 +18,7 @@ const BodyHeader: React.FC = () => {
         const formatted = pre[1].toUpperCase() + pre.substring(2);
         return formatted;
       } else {
-        return "Dashboard";
+        return "Welcome";
       }
     }
   };

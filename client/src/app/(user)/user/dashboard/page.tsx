@@ -38,7 +38,7 @@ const Dashboard: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  return <div>Dashboard Content</div>;
+  return <div></div>;
 };
 
 export default Dashboard;
