@@ -19,6 +19,7 @@ function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
+  const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -26,7 +27,9 @@ function Events() {
     const fetchEvents = async () => {
       const eventResult = await getEvents();
       setEvents(eventResult);
+      setLoading(false);
     };
+    setLoading(true);
     fetchEvents();
   }, [dateFilter]); // Fetch events whenever dateFilter changes
 
@@ -54,7 +57,9 @@ function Events() {
           </AddHoursButton>
         </div>
         <DateFilter setDateFilter={handleSetDateFilter} />
-        {events ? (
+        {loading ? (
+          <>Loading events...</>
+        ) : events ? (
           <CardGrid events={events} filter={dateFilter} myEvents={myEvents} />
         ) : (
           <p>loading</p>
