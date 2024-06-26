@@ -115,8 +115,8 @@ export async function createEvent(eventData: ExtendedEvent) {
     });
     return newEvent;
   } catch (error) {
-    console.error("Error creating event:", error);
-    throw error;
+    console.log("Error creating event:", error);
+    return;
   }
 }
 
