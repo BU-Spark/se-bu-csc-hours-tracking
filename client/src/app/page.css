@@ -6,7 +6,8 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Whitney SSm A", "Whitney SSm B", "Benton", Helvetica, sans-serif;
+  /* font-family: 'Inter', sans-serif; */
 }
 
 .loading-image{

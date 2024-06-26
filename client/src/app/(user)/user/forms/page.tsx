@@ -15,7 +15,7 @@ import {
 } from "@/interfaces/interfaces";
 
 const Forms = () => {
-  const [forms, setForms] = useState<Form[]>([]);
+  const [forms, setForms] = useState<Form[]>();
   const [codes, setCodes] = useState<Code[]>([]);
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
@@ -138,7 +138,7 @@ const Forms = () => {
       );
     };
 
-    return completeForm ? (
+    return completeForm && completeForm.downloadable ? (
       <Col
         span={24}
         style={{
@@ -215,12 +215,13 @@ const Forms = () => {
           </div>
         )}
       </Row>
-      <button
+      {/* UNCOMMENT TO MAKE DUMMY DATA */}
+      {/* <button
         style={{ position: "fixed", bottom: 0 }}
         onClick={() => createDummyForms()}
       >
         Create Forms
-      </button>
+      </button> */}
     </>
   );
 };

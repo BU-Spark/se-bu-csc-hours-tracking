@@ -444,6 +444,10 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
       columns={eventApplicationTableCols}
       dataSource={data}
       rowKey={(record) => record.key}
+      locale={{
+        emptyText: "No records found",
+        filterEmptyText: "No records found that match this filter",
+      }}
     />
   ) : (
     <>Error</>

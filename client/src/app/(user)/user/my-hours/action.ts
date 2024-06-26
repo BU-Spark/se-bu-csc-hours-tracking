@@ -1,6 +1,6 @@
 "use server";
 
-import { Event, HourSubmission, Organization } from "@prisma/client";
+import { Event, HourSubmission, Organization, Person } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { EventHours } from "@/interfaces/interfaces";
 
@@ -24,8 +24,9 @@ export const getHourSubmissionsByUserEmail = async (
     return [];
   }
 
-  // console.log("user:", user);
+  console.log("user:", user);
 
+  user.hour_submissions;
   const hourSubmissionsWithEventDetails = await Promise.all(
     user.hour_submissions.map(async (submission: HourSubmission) => {
       const event: Event | null = await prisma.event.findUnique({
@@ -37,7 +38,11 @@ export const getHourSubmissionsByUserEmail = async (
           where: { id: event?.organization_id },
         });
 
-      if (!event || !organization) {
+      const reviewerPerson: Person | null = await prisma.person.findUnique({
+        where: { id: submission.updated_by_id },
+      });
+
+      if (!event || !organization || !reviewerPerson) {
         return null;
       }
 
@@ -46,12 +51,9 @@ export const getHourSubmissionsByUserEmail = async (
         image: event.image.toString("base64"),
         eventName: event.title,
         location: event.location,
-        status: submission.approval_status === 1 ? "approved" : "pending",
         date: submission.date_submitted.toString(),
         reviewer:
-          submission.updated_by_id !== user.id
-            ? submission.updated_by_id
-            : "N/A",
+          submission.updated_by_id !== user.id ? reviewerPerson.name : "N/A",
         hours: submission.hours,
         description: submission.description,
         organization: organization.name,

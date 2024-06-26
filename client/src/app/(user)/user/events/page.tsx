@@ -72,7 +72,7 @@ function Events() {
         width: "60vw",
       }}
     >
-      <Content style={{width: '100%'}}>
+      <Content style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -98,14 +98,14 @@ function Events() {
           <p>loading</p>
         )}
         {/* UNCOMMENT TO MAKE DUMMY DATA */}
-        <button
+        {/* <button
           onClick={() => {
             createDummyEvent(dummyEvent);
           }}
           style={{ position: "fixed", bottom: 0 }}
         >
           Make new Event
-        </button>
+        </button> */}
       </Content>
     </Layout>
   );

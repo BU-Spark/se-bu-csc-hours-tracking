@@ -136,7 +136,7 @@ export const HoursItem = styled.div<{ status: number }>`
   .status {
     font-weight: bold;
     color: ${(props) =>
-      props.status === 1 ? "green" : props.status === 0 ? "red" : "orange"};
+      props.status === 1 ? "green" : props.status === 2 ? "red" : "orange"};
     text-transform: capitalize;
   }
 
@@ -168,7 +168,7 @@ export const SubText = styled.p`
 `;
 
 export const AddHoursButtonContainer = styled.div`
-  position: fixed;
+  position: absolute;
   top: 100px;
   right: 20px;
   display: flex;

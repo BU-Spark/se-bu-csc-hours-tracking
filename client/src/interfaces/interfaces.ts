@@ -113,7 +113,6 @@ export interface EventHours {
   eventName: string;
   organization: string;
   location: string;
-  status: string;
   date: string;
   reviewer: string | number;
   hours: number;
