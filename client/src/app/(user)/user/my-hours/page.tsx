@@ -30,13 +30,14 @@ import {
   Overlay,
   PopupContainer,
 } from "@/_common/styledDivs";
-
+import hours from "@/app/api/add-hours/hours";
 
 const MyHours: React.FC = () => {
   const [eventHours, setEventHours] = useState<EventHours[]>([]);
   const [expandedHour, setExpandedHour] = useState<EventHours | null>(null);
   const [approvedHours, setApprovedHours] = useState<Number>(0);
   const [submittedHours, setSubmittedHours] = useState<Number>(0);
+  const [deniedHours, setDeniedHours] = useState<Number>(0);
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); // you can't submit hours for it yet, projected amount
   const [filter, setFilter] = useState<number>(0); // 0 is pending, 1 is approved, 2 is denied, 3 is all
   const router = useRouter();
@@ -52,17 +53,28 @@ const MyHours: React.FC = () => {
             (hour: EventHours) => hour.approval_status === 1
           );
 
+          const denied = data.filter(
+            (hour: EventHours) => hour.approval_status === 2
+          );
+
           const approvedTotal = approved.reduce(
             (acc: number, hour: EventHours) => acc + hour.hours,
             0
           );
+
+          const deniedTotal = denied.reduce(
+            (acc: number, hour: EventHours) => acc + hour.hours,
+            0
+          );
+
           const submittedTotal = data.reduce(
             (acc: number, hour: EventHours) => acc + hour.hours,
             0
           );
 
           setApprovedHours(approvedTotal);
-          setSubmittedHours(submittedTotal - approvedTotal);
+          setDeniedHours(deniedTotal);
+          setSubmittedHours(submittedTotal - approvedTotal - deniedTotal);
 
           const upcoming = await getUpcomingHoursByUser(
             Number(session.user.id)
@@ -142,43 +154,63 @@ const MyHours: React.FC = () => {
         />
       </div>
       <HoursGrid>
-        {filteredHours.map((hour: EventHours) => (
-          <HoursItem key={hour.id} status={hour.approval_status}>
-            <img
-              src={`data:image/png;base64,${hour.image}`}
-              alt={hour.eventName}
-            />
-            <div className="divider"></div>
-            <div className="details">
-              <div className="section">
-                <BoldText>{hour.eventName}</BoldText>
-                <SubText>{hour.organization}</SubText>
+        {filteredHours.map((hour: EventHours) => {
+          return (
+            <HoursItem key={hour.id} status={hour.approval_status}>
+              <img
+                src={`data:image/png;base64,${hour.image}`}
+                alt={hour.eventName}
+              />
+              <div className="divider"></div>
+              <div className="details">
+                <div className="section">
+                  <BoldText>{hour.eventName}</BoldText>
+                  <SubText>{hour.organization}</SubText>
+                </div>
+                <div className="section">
+                  <BoldText>{hour.hours} Hours</BoldText>
+                  <SubText>{hour.location}</SubText>
+                </div>
+                <div className="section">
+                  <BoldText className="status">
+                    {hour.approval_status === 1
+                      ? "Approved"
+                      : hour.approval_status === 0
+                      ? "Pending"
+                      : "Denied"}
+                  </BoldText>
+                  {hour.approval_status != 0 ? (
+                    <SubText>
+                      {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
+                      <div
+                        style={{
+                          textDecoration: "underline",
+                          marginTop: "0.5rem",
+                        }}
+                      >
+                        Reviewed By:
+                      </div>{" "}
+                      {hour.reviewer ? hour.reviewer : "N/A"}
+                    </SubText>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+                <div className="section">
+                  <BoldText>
+                    {new Date(hour.date).toLocaleDateString()}
+                  </BoldText>
+                </div>
+                <div className="section">
+                  <FaComment
+                    onClick={() => toggleExpand(hour)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </div>
               </div>
-              <div className="section">
-                <BoldText>{hour.hours} Hours</BoldText>
-                <SubText>{hour.location}</SubText>
-              </div>
-              <div className="section">
-                <BoldText className="status">
-                  {hour.approval_status === 1 ? "Approved" : "Pending"}
-                </BoldText>
-                <SubText>
-                  {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
-                  Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}
-                </SubText>
-              </div>
-              <div className="section">
-                <BoldText>{new Date(hour.date).toLocaleDateString()}</BoldText>
-              </div>
-              <div className="section">
-                <FaComment
-                  onClick={() => toggleExpand(hour)}
-                  style={{ cursor: "pointer" }}
-                />
-              </div>
-            </div>
-          </HoursItem>
-        ))}
+            </HoursItem>
+          );
+        })}
       </HoursGrid>
       {expandedHour && (
         <>

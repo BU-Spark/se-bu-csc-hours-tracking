@@ -11,7 +11,7 @@ export async function getEvents(): Promise<Event[]> {
     return events;
   } catch (error) {
     console.error("Error fetching forms:", error);
-    throw error;
+    return [];
   } finally {
     await prisma.$disconnect();
   }

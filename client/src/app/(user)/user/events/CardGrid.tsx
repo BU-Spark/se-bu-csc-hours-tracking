@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { Row, Col } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
-import { CardGridProps, Event, EventImage } from "@/interfaces/interfaces";
+import { CardGridProps, EventImage } from "@/interfaces/interfaces";
+import { Event } from "@prisma/client";
 import convertToBase64 from "../../../_utils/BufferToString";
 
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents } = props;
 
-  let filteredEvents = events;
+  let filteredEvents: Event[] = events;
 
   if (myEvents && filter == 1) {
     filteredEvents = myEvents;
@@ -42,6 +43,10 @@ function CardGrid(props: CardGridProps) {
                 image={base64Image}
                 event_start={event.event_start}
                 category_id={event.category_id}
+                hasPassword={
+                  event.application_password != undefined &&
+                  event.application_password.length > 0
+                }
               />
             </Col>
           );

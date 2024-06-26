@@ -1,15 +1,34 @@
 "use server";
 import prisma from "@/app/_utils/prisma";
-import { Event } from "@/interfaces/interfaces";
+import { Event } from "@prisma/client";
 import { Application, Reason } from "@prisma/client";
 
 export async function getEvent(eventId: number): Promise<any> {
   try {
-    const event = await prisma.event.findUnique({
+    const event: Event | null = await prisma.event.findUnique({
       where: {
         id: eventId,
       },
+      select: {
+        id: true,
+        title: true,
+        event_start: true,
+        event_end: true,
+        reg_start: true,
+        reg_end: true,
+        estimated_participants: true,
+        location: true,
+        transit: true,
+        description: true,
+        category_id: true,
+        coordinator_id: true,
+        form_id: true,
+        organization_id: true,
+        image: true,
+        application_password: true, // Ensure this field is included
+      },
     });
+    console.log("event", event?.application_password);
     if (event) return event;
     else {
       console.error("No event found");

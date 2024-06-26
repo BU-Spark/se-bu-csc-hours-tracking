@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Event, EventInput } from "@/interfaces/interfaces";
+import { EventInput } from "@/interfaces/interfaces";
+import { Event } from "@prisma/client";
 import {
   createDummyEvent,
   getApplicationsByUserId,
@@ -72,7 +73,7 @@ function Events() {
         width: "60vw",
       }}
     >
-      <Content style={{width: '100%'}}>
+      <Content style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",

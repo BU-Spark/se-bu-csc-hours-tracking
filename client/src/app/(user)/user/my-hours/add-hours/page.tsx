@@ -11,7 +11,7 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { AutoComplete } from "antd";
+import { AutoComplete, Select } from "antd";
 import { buRed } from "@/_common/styles";
 import {
   Asterisk,
@@ -23,22 +23,32 @@ import {
   SubmitButton,
   TextArea,
 } from "@/_common/styledDivs";
+const { Option } = Select;
 
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
-  const [hours, setHours] = useState<number | string>(0);
+  const [hours, setHours] = useState<number | string>();
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (event && hours && feedback && description) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [event, hours, feedback, description]);
 
   useEffect(() => {
     const fetchValidEvents = async () => {
       if (!session?.user.id) return;
       const validEvents: Event[] | undefined =
         await getAllApprovedEventsByUserId(Number(session?.user.id));
-        if (!validEvents) return;
+      if (!validEvents) return;
 
       setEventOptions(validEvents);
     };
@@ -88,6 +98,23 @@ const AddHours: React.FC = () => {
             Event
             <Asterisk>*</Asterisk>
           </LabelTitle>
+          <Select
+            style={{ width: "100%" }}
+            placeholder="Choose Event"
+            onChange={(value) => setEvent(value)}
+          >
+            {options.map((option) => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
+              </Option>
+            ))}
+          </Select>
+        </Label>
+        {/* <Label>
+          <LabelTitle>
+            Event
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
           <AutoComplete
             options={options}
             style={{ width: "100%" }}
@@ -97,7 +124,7 @@ const AddHours: React.FC = () => {
               option!.value.toUpperCase().includes(inputValue.toUpperCase())
             }
           />
-        </Label>
+        </Label> */}
         <Label>
           <LabelTitle>
             Hours
@@ -134,7 +161,16 @@ const AddHours: React.FC = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Label>
-        <SubmitButton type="submit">Submit</SubmitButton>
+        <div
+          style={{
+            opacity: isFormValid ? "100%" : "40%",
+          }}
+        >
+          {" "}
+          <SubmitButton type="submit" disabled={isFormValid ? false : true}>
+            Submit
+          </SubmitButton>
+        </div>
       </form>
     </FormContainer>
   );

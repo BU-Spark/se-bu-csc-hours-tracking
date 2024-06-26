@@ -15,6 +15,14 @@ const Dashboard: React.FC = () => {
         const response = await checkIfNewUser();
         if (response.isNewUser) {
           router.push("/user/onboarding");
+        } else {
+          if(session?.user.role == 'USER'){
+            router.push("/user/my-hours");
+          }
+          if(session?.user.role == 'ADMIN'){
+            router.push("/admin/student-hours");
+          }
+          
         }
       } catch (error) {
         console.error("Error checking if new user:", error);
@@ -30,7 +38,7 @@ const Dashboard: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  return <div>Dashboard Content</div>;
+  return <div></div>;
 };
 
 export default Dashboard;

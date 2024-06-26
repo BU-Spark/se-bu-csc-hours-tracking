@@ -1,3 +1,11 @@
 .anticon{
     color: 'black !important'
 }
+
+.ant-table-column-sorter-inner{
+    color: white !important;
+  }
+
+.anticon-search{
+    color: white !important
+  }

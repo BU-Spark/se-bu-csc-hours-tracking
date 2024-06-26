@@ -1,4 +1,4 @@
-import { FormCode, HourSubmission, Reason, Role } from "@prisma/client";
+import { FormCode, HourSubmission, Reason, Role, Event } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import { Buffer } from "buffer";
 
@@ -38,24 +38,6 @@ export interface CompleteForm {
   upload_link?: string | null;
 }
 
-export interface Event {
-  id: number;
-  title: string;
-  event_start: Date;
-  event_end: Date;
-  reg_start: Date;
-  reg_end: Date;
-  estimated_participants: number;
-  location: string;
-  transit: string;
-  description: string;
-  category_id: number;
-  coordinator_id: number;
-  form_id: number | null;
-  organization_id: number | null;
-  image: Buffer;
-}
-
 export interface EventCardProps {
   event_id: number;
   title: string;
@@ -64,6 +46,7 @@ export interface EventCardProps {
   location: string;
   image: string;
   event_start: Date;
+  hasPassword: boolean;
   onClick?: () => void;
   isAdmin?: boolean;
 }
@@ -112,7 +95,6 @@ export interface EventHours {
   eventName: string;
   organization: string;
   location: string;
-  status: string;
   date: string;
   reviewer: string | number;
   hours: number;

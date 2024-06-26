@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { buRed } from "@/_common/styles";
 
 const CustomTable: React.FC<CustomTableParams> = ({
-  data,
+  data: dataInput,
   set1,
   val1,
   set2,
@@ -33,10 +33,10 @@ const CustomTable: React.FC<CustomTableParams> = ({
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (data) {
+    if (dataInput) {
       setIsLoading(false);
     }
-  }, [data]);
+  }, [dataInput]);
   type DataIndex = keyof HoursTableData;
 
   const handleSearch = (
@@ -285,15 +285,16 @@ const CustomTable: React.FC<CustomTableParams> = ({
       key: "dateSubmitted",
       width: "15%",
       align: "center",
-      defaultSortOrder: "descend",
+
       render: (text: string, record: HoursTableData) =>
         new Date(record.dateSubmitted).toLocaleDateString("en-US"),
       ...getColumnSearchProps("dateSubmitted"),
-      // sorter: (a: HoursTableData, b: HoursTableData) => {
-      //   const dateA = new Date(a.dateSubmitted).getTime();
-      //   const dateB = new Date(b.dateSubmitted).getTime();
-      //   return dateA - dateB;
-      // },
+      sorter: (a: HoursTableData, b: HoursTableData) => {
+        const dateA = new Date(a.dateSubmitted).getTime();
+        const dateB = new Date(b.dateSubmitted).getTime();
+        return dateA - dateB;
+      },
+      defaultSortOrder: "ascend",
     },
     {
       title: "Hours",
@@ -451,11 +452,15 @@ const CustomTable: React.FC<CustomTableParams> = ({
     return <p>Loading...</p>;
   }
 
-  return data ? (
+  return dataInput ? (
     <Table
       columns={hourSubmissionsTableCols}
-      dataSource={data}
+      dataSource={dataInput}
       rowKey={(record) => record.key}
+      locale={{
+        emptyText: "No records found",
+        filterEmptyText: "No records found that match this filter",
+      }}
     />
   ) : (
     <>No data</>

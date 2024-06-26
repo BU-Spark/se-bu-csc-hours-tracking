@@ -7,6 +7,8 @@ import Link from "next/link";
 import { getCategoryById, getCoordinatorById } from "./action";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import { Category } from "@prisma/client";
+import LockOutlined from "@mui/icons-material/LockOutlined";
+import LockIcon from "@mui/icons-material/Lock";
 
 const EventCard: React.FC<EventCardProps> = ({
   event_id,
@@ -16,6 +18,7 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   image,
   event_start,
+  hasPassword,
   onClick,
   isAdmin,
 }) => {
@@ -98,7 +101,6 @@ const EventCard: React.FC<EventCardProps> = ({
                 textOverflow: "ellipsis",
               }}
             >
-              {/* this is not title for some reason */}
               {title}
               {/* {category.name} */}
             </h3>
@@ -125,6 +127,25 @@ const EventCard: React.FC<EventCardProps> = ({
             </div>
           </div>
         </div>
+        {hasPassword ? (
+          <div style={{ color: buRed }} className="lock-body">
+            <LockIcon
+              style={{
+                // filter: `drop-shadow(.2px .2px .2px ${buRed})`,
+                backgroundColor: "white",
+                borderRadius: "15px",
+                fontSize: "xx-large",
+                padding: "1px",
+                border: "none",
+                position: "fixed",
+                marginLeft: "140px",
+                marginTop: "-10px",
+              }}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </Card>
     </Link>
   ) : (

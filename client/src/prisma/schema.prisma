@@ -49,7 +49,7 @@ model Event {
   organization_id        Int?
   organization_name      String?
   image                  Bytes
-  published              Boolean          @default(false)
+  application_password   String?
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])

@@ -70,3 +70,7 @@ table.ant-table {
       transform: scale(1);
   }
 }
+
+.ant-table-column-sorter-inner{
+  color: white !important;
+}
