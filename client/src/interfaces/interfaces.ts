@@ -1,5 +1,6 @@
 import { FormCode, HourSubmission, Reason, Role } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
+import { Buffer } from "buffer";
 
 export interface FormRowParams {
   form: Form;
@@ -9,60 +10,62 @@ export interface FormRowParams {
 export interface Form {
   id: number;
   type: number;
-  file: String;
+  file: string;
   student_id?: number | null;
 }
 export interface Code {
   id: number;
-  title: String;
-  description: String;
+  title: string;
+  description: string;
   downloadable: boolean;
-  upload_link?: String | null;
+  upload_link?: string | null;
 }
 
 export interface CompleteFormParams {
-  title: String;
-  description: String;
+  title: string;
+  description: string;
   downloadable: boolean;
-  upload_link?: String | null;
+  upload_link?: string | null;
 }
 
 export interface CompleteForm {
   id: number;
-  title: String;
-  description: String;
-  file: String;
+  title: string;
+  description: string;
+  file: string;
   student_id?: number | null;
   downloadable: boolean;
-  upload_link?: String | null;
+  upload_link?: string | null;
 }
 
 export interface Event {
   id: number;
-  title: String;
+  title: string;
   event_start: Date;
   event_end: Date;
   reg_start: Date;
   reg_end: Date;
   estimated_participants: number;
-  location: String;
-  transit: String;
-  description: String;
+  location: string;
+  transit: string;
+  description: string;
   category_id: number;
   coordinator_id: number;
   form_id: number | null;
-  organization_id: number;
+  organization_id: number | null;
   image: Buffer;
 }
 
 export interface EventCardProps {
   event_id: number;
-  title: String;
+  title: string;
   coordinator_id: number;
   category_id: number;
-  location: String;
+  location: string;
   image: string;
   event_start: Date;
+  onClick?: () => void;
+  isAdmin?: boolean;
 }
 
 export interface EventInput {
@@ -95,10 +98,6 @@ export interface Person {
   affiliation_id?: number;
   image?: string;
 }
-// export enum Role {
-//   USER,
-//   ORGANIZER,
-// }
 
 export interface GroupedEvents {
   [date: string]: Event[];
@@ -152,7 +151,6 @@ export interface EventApplicationsTableData {
   reason: Reason;
   studentName: string;
   class: number;
-  //major?
   college: string;
   eventId: string;
   eventTitle: string;

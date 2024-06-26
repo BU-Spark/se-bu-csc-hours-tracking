@@ -16,6 +16,8 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   image,
   event_start,
+  onClick,
+  isAdmin,
 }) => {
   const [coordinator, setCoordinator] = useState<Person>();
   const [category, setCategory] = useState<Category>();
@@ -41,7 +43,9 @@ const EventCard: React.FC<EventCardProps> = ({
     fetchCategory();
   }, [category_id, coordinator_id]);
   return category ? (
-    <Link href={`events/${eventPath}`}>
+    <Link
+      href={isAdmin ? `/admin/events/${eventPath}` : `/events/${eventPath}`}
+    >
       <Card
         style={{
           backgroundImage: `url(${image})`,

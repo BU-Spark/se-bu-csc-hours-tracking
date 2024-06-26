@@ -21,11 +21,17 @@ const FormContainer = styled.div`
   gap: 20px;
 `;
 
+const TopBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
 const BackButton = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-bottom: 20px;
   color: #cc0000;
 
   &:hover {
@@ -37,11 +43,29 @@ const BackButton = styled.div`
   }
 `;
 
+const InquiryButton = styled.button`
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(204, 0, 0, 1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    background-color: rgba(153, 0, 0, 1);
+  }
+`;
+
 const Label = styled.label`
   display: flex;
   align-items: center;
   font-size: 1rem;
   margin-bottom: 5px;
+`;
+
+const ErrorLabel = styled(Label)`
+  color: red;
+  margin-left: 10px;
 `;
 
 const Asterisk = styled.span`
@@ -169,6 +193,7 @@ const Settings: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [showError, setShowError] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -189,11 +214,26 @@ const Settings: React.FC = () => {
             );
           }
         }
+        setInitialLoadComplete(true);
       };
 
       fetchUserStatus();
     }
   }, [status]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!formSubmitted && initialLoadComplete && isNewUser) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [formSubmitted, initialLoadComplete, isNewUser]);
 
   const validateForm = () => {
     return (
@@ -234,16 +274,25 @@ const Settings: React.FC = () => {
     setFormChanged(true);
   };
 
+  const handleInquiryClick = () => {
+    router.push("/user/onboarding");
+  };
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
 
   return (
     <FormContainer>
-      <BackButton onClick={handleBackButtonClick}>
-        <AiOutlineArrowLeft size={24} />
-        <span>Return to My Hours</span>
-      </BackButton>
+      <TopBar>
+        <BackButton onClick={handleBackButtonClick}>
+          <AiOutlineArrowLeft size={24} />
+          <span>Return to My Hours</span>
+        </BackButton>
+        <InquiryButton onClick={handleInquiryClick}>
+          Rewatch Onboarding
+        </InquiryButton>
+      </TopBar>
       <h1>Settings</h1>
       {formChanged && (
         <ChangeMessageContainer>
@@ -253,6 +302,9 @@ const Settings: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Label>
           Phone Number<Asterisk>*</Asterisk>
+          {formSubmitted && !phoneNumber && (
+            <ErrorLabel>Phone number is required</ErrorLabel>
+          )}
         </Label>
         <StyledPhoneInput
           country={"us"}
@@ -268,11 +320,11 @@ const Settings: React.FC = () => {
           }}
           containerStyle={{ marginBottom: "20px" }}
         />
-        {formSubmitted && !phoneNumber && (
-          <span style={{ color: "red" }}>Phone number is required</span>
-        )}
         <Label>
           College<Asterisk>*</Asterisk>
+          {formSubmitted && !college && (
+            <ErrorLabel>College is required</ErrorLabel>
+          )}
         </Label>
         <Input
           type="text"
@@ -285,6 +337,9 @@ const Settings: React.FC = () => {
         />
         <Label>
           Class Year<Asterisk>*</Asterisk>
+          {formSubmitted && !classYear && (
+            <ErrorLabel>Class year is required</ErrorLabel>
+          )}
         </Label>
         <Select
           options={generateClassYearOptions()}
@@ -312,11 +367,11 @@ const Settings: React.FC = () => {
             }),
           }}
         />
-        {formSubmitted && !classYear && (
-          <span style={{ color: "red" }}>Class year is required</span>
-        )}
         <Label>
           Dietary Restrictions<Asterisk>*</Asterisk>
+          {formSubmitted && dietaryRestrictions.length === 0 && (
+            <ErrorLabel>Dietary restrictions are required</ErrorLabel>
+          )}
         </Label>
         <Select
           isMulti
@@ -345,11 +400,6 @@ const Settings: React.FC = () => {
             }),
           }}
         />
-        {formSubmitted && dietaryRestrictions.length === 0 && (
-          <span style={{ color: "red" }}>
-            Dietary restrictions are required
-          </span>
-        )}
         <SubmitButton type="submit">Submit</SubmitButton>
       </form>
       {showError && (
