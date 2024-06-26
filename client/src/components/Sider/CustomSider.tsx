@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import "./CustomSider.css"; 
+import "./CustomSider.css";
 import { useRouter, usePathname } from "next/navigation";
 const { Sider } = Layout;
 import Pfp from "../Pfp";
@@ -50,9 +50,9 @@ const CustomSider: React.FC = () => {
             onClick: () => router.push("/admin/student-signups"),
           },
           {
-            key: "event_management",
-            label: "Event Management",
-            onClick: () => router.push("/admin/event-management"),
+            key: "events",
+            label: "Events",
+            onClick: () => router.push("/admin/events"),
           },
           {
             key: "forms",

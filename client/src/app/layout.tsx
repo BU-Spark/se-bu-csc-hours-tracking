@@ -6,10 +6,12 @@ import { Content } from 'antd/es/layout/layout';
 import './page.css'
 import BodyHeader from '@/components/BodyHeader';
 import EventSider from "@/components/Sider/EventSider";
+import AdminEventSider from "@/components/Sider/AdminEventSider";
 
 const LayoutWithSider = ({ children }: { children: ReactNode }) => {
   return (
     <>
+      <AdminEventSider />
       <CustomSider />
       {children}
     </>

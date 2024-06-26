@@ -17,11 +17,11 @@ import { buRed } from "@/_common/styles";
 import { getCategoryById } from "../EventCard/action";
 import { useSession } from "next-auth/react";
 
-function EventSider() {
+function AdminEventSider() {
   //session and path vars
   const path = usePathname();
   const { data: session, status } = useSession();
-  const isDisplayed = path === "/user/events";
+  const isDisplayed = path === "/admin/events";
 
   //useState variables
   const [user, setUser] = useState<Person>();
@@ -254,10 +254,8 @@ function EventSider() {
           flexDirection: "column",
         }}
       >
-        <p style={{ marginBottom: "0rem", fontSize: "large" }}>
-          Upcoming Events
-        </p>
-        {loading ? (
+        <p style={{ marginBottom: "0rem", fontSize: "large" }}>Feedback</p>
+        {/* {loading ? (
           <p style={{ fontWeight: 200 }}>loading...</p>
         ) : (
           eventGroups &&
@@ -266,7 +264,7 @@ function EventSider() {
               <DateGroup events={events} date={date} />
             </div>
           ))
-        )}
+        )} */}
       </div>
     </Sider>
   ) : (
@@ -274,4 +272,4 @@ function EventSider() {
   );
 }
 
-export default EventSider;
+export default AdminEventSider;

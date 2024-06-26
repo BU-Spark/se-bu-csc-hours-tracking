@@ -19,6 +19,7 @@ const EventCard: React.FC<EventCardProps> = ({
   image,
   event_start,
   hasPassword,
+  isAdmin,
 }) => {
   const [coordinator, setCoordinator] = useState<Person>();
   const [category, setCategory] = useState<Category>();
@@ -44,7 +45,11 @@ const EventCard: React.FC<EventCardProps> = ({
     fetchCategory();
   }, [category_id, coordinator_id]);
   return category ? (
-    <Link href={`events/${eventPath}`}>
+    <Link
+      href={
+        isAdmin ? `/admin/events/${eventPath}` : `/user/events/${eventPath}`
+      }
+    >
       <Card
         style={{
           backgroundImage: `url(${image})`,
@@ -133,7 +138,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 fontSize: "xx-large",
                 padding: "1px",
                 border: "none",
-                position: "fixed",
+                position: "absolute",
                 marginLeft: "140px",
                 marginTop: "-10px",
               }}

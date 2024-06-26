@@ -47,7 +47,8 @@ model Event {
   category_id            Int
   coordinator_id         Int
   form_id                Int?
-  organization_id        Int
+  organization_id        Int?
+  organization_name      String?
   image                  Bytes
   application_password   String?
   applications           Application[]
@@ -55,7 +56,7 @@ model Event {
   category               Category         @relation(fields: [category_id], references: [id])
   coordinator            Person           @relation(fields: [coordinator_id], references: [id])
   form                   Form?            @relation(fields: [form_id], references: [id])
-  organization           Organization     @relation(fields: [organization_id], references: [id])
+  organization           Organization?     @relation(fields: [organization_id], references: [id])
   hour_submissions       HourSubmission[]
 }
 
