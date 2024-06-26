@@ -18,6 +18,7 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   image,
   event_start,
+  hasPassword,
 }) => {
   const [coordinator, setCoordinator] = useState<Person>();
   const [category, setCategory] = useState<Category>();
@@ -122,24 +123,25 @@ const EventCard: React.FC<EventCardProps> = ({
             </div>
           </div>
         </div>
-        <div
-          style={{ color: buRed, backgroundColor: "green" }}
-          className="lock-body"
-        >
-          <LockIcon
-            style={{
-              // filter: `drop-shadow(.2px .2px .2px ${buRed})`,
-              backgroundColor: "white",
-              borderRadius: "15px",
-              fontSize: "xx-large",
-              padding: "1px",
-              border: "none",
-              position: "fixed",
-              marginLeft: "140px",
-              marginTop: "-10px",
-            }}
-          />
-        </div>
+        {hasPassword ? (
+          <div style={{ color: buRed }} className="lock-body">
+            <LockIcon
+              style={{
+                // filter: `drop-shadow(.2px .2px .2px ${buRed})`,
+                backgroundColor: "white",
+                borderRadius: "15px",
+                fontSize: "xx-large",
+                padding: "1px",
+                border: "none",
+                position: "fixed",
+                marginLeft: "140px",
+                marginTop: "-10px",
+              }}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </Card>
     </Link>
   ) : (

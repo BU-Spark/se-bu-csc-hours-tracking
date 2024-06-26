@@ -171,9 +171,6 @@ const Forms = () => {
           ) : (
             <SingleButton />
           )}
-          {/* <div style={{ width: "10%" }}>
-            <FileUploader />
-          </div> */}
         </div>
       </Col>
     ) : (
