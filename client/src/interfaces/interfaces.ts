@@ -86,7 +86,8 @@ export interface Person {
   id: number;
   name: string;
   email: string;
-  phone_number?: string | null;
+  phone_number: string | null;
+  bu_id: string;
   role: Role;
   class?: number;
   affiliation_id?: number;

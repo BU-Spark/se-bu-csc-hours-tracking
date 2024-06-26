@@ -221,7 +221,7 @@ function Forms() {
 export default Forms;
 
 
-// Dummy data
+// // Dummy data
 // const getAllForms = () => {
 //   const forms = [
 //     { id: 1, type: 1, file: "file1.pdf", student_id: 1 },
@@ -230,7 +230,7 @@ export default Forms;
 //   return forms;
 // };
 
-//dummy data
+// // dummy data
 // const getAllCodes = () => {
 //   const codes = [
 //     {
@@ -244,6 +244,6 @@ export default Forms;
 //   return codes;
 // };
 
-// replace with DB calls
+// // replace with DB calls
 // const forms = getAllForms();
 // const codes = getAllCodes();

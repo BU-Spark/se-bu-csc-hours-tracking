@@ -8,6 +8,7 @@ datasource db {
 }
 
 model Person {
+<<<<<<< Updated upstream
   id                  Int              @id @default(autoincrement())
   name                String
   email               String           @unique
@@ -17,6 +18,18 @@ model Person {
   affiliation_id      Int?
   image               String?
   college             String?
+=======
+  id                   Int              @id @default(autoincrement())
+  name                 String
+  email                String           @unique
+  phone_number         String?          @unique
+  bu_id                String?          @unique
+  role                 Role             @default(USER)
+  class                Int?
+  affiliation_id       Int?
+  image                String?
+  college              String?          @db.VarChar(255)
+>>>>>>> Stashed changes
   dietary_restrictions String?
   applications        Application[]
   comments            Comment[]
