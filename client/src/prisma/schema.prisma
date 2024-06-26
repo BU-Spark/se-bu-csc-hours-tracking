@@ -48,6 +48,7 @@ model Event {
   form_id                Int?
   organization_id        Int
   image                  Bytes
+  application_password   String?
   applications           Application[]
   comments               Comment[]
   category               Category         @relation(fields: [category_id], references: [id])
