@@ -19,7 +19,7 @@ import { deleteForm } from "./action";
 
 const Forms: React.FC = () => {
   const router = useRouter();
-  const [forms, setForms] = useState<Form[]>([]);
+  const [forms, setForms] = useState<Form[]>();
   const [codes, setCodes] = useState<Code[]>([]);
   const { size, elapsed, percentage, download, cancel, error, isInProgress } =
     useDownloader();
@@ -32,10 +32,12 @@ const Forms: React.FC = () => {
       try {
         const response = await deleteForm(formDeleted);
         if (response) {
-          setForms((prevForms) =>
-            prevForms.filter((f) => f.id !== formDeleted)
-          );
-          console.log("Form deleted successfully");
+          if (forms?.length != undefined && forms?.length > 0) {
+            setForms((prevForms) =>
+              prevForms?.filter((f) => f.id !== formDeleted)
+            );
+            console.log("Form deleted successfully");
+          }
         } else {
           console.error("Failed to delete form");
         }
@@ -241,7 +243,7 @@ const Forms: React.FC = () => {
       );
     };
 
-    return completeForm ? (
+    return completeForm && completeForm.downloadable ? (
       <Col
         span={24}
         style={{
