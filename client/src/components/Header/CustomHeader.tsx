@@ -28,13 +28,10 @@ const CustomHeader: React.FC = () => {
         justifyContent: "space-between",
       }}
     >
-      <Image
-        src="/photos/full_logo.png"
-        alt="logo"
-        width={100}
-        height={40}
-        className="header-logo"
-      />
+      <span className="header-logo">
+        {/* <Image src="/photos/icon.png" alt="logo" width={60} height={50} /> */}
+        Community Service Center
+      </span>
 
       <div className="header-right">
         {status === "authenticated" && (
