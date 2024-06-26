@@ -131,6 +131,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
 
   const handleFinish = async (values: any, isDraft = false) => {
     const formattedValues = {
+      title: values.title,
       ...values,
       event_start: values.event_start.toISOString(),
       event_end: values.event_end.toISOString(),
