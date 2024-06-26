@@ -28,11 +28,20 @@ const { Option } = Select;
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
-  const [hours, setHours] = useState<number | string>(0);
+  const [hours, setHours] = useState<number | string>();
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (event && hours && feedback && description) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [event, hours, feedback, description]);
 
   useEffect(() => {
     const fetchValidEvents = async () => {
@@ -152,7 +161,16 @@ const AddHours: React.FC = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Label>
-        <SubmitButton type="submit">Submit</SubmitButton>
+        <div
+          style={{
+            opacity: isFormValid ? "100%" : "40%",
+          }}
+        >
+          {" "}
+          <SubmitButton type="submit" disabled={isFormValid ? false : true}>
+            Submit
+          </SubmitButton>
+        </div>
       </form>
     </FormContainer>
   );
