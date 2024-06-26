@@ -285,7 +285,15 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         key: "date_applied",
         width: "8%",
         align: "center",
-        defaultSortOrder: "descend",
+        sorter: (
+          a: EventApplicationsTableData,
+          b: EventApplicationsTableData
+        ) => {
+          const dateA = new Date(a.dateApplied).getTime();
+          const dateB = new Date(b.dateApplied).getTime();
+          return dateA - dateB;
+        },
+        defaultSortOrder: "ascend",
         render: (text: string, record: EventApplicationsTableData) =>
           new Date(record.dateApplied).toLocaleDateString("en-US"),
         ...getColumnSearchProps("dateApplied"),
