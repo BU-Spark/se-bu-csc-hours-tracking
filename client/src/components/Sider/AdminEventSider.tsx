@@ -85,7 +85,6 @@ function AdminEventSider() {
           return;
         }
         setUser(user);
-        console.log("user", user);
       } catch (error) {
         console.error("Error fetching user:", error);
       }
