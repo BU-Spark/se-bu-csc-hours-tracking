@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "../../../../../lib/prisma";
-import { Category, Event, Organization } from "@prisma/client";
+import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
 
 interface ExtendedEvent extends Partial<Omit<Event, "id" | "coordinator_id">> {
@@ -82,11 +82,14 @@ export async function createEvent(eventData: ExtendedEvent) {
       organization_id,
       ...data
     } = eventData;
-    const coordinator = await prisma.person.findUnique({
-      where: { email: coordinator_email },
+    // const coordinator = await prisma.person.findUnique({
+    //   where: { email: coordinator_email },
+    // });
+    const dummyCoordinator = await prisma.person.findFirst({
+      where: { id: 1 },
     });
 
-    if (!coordinator) {
+    if (!dummyCoordinator) {
       throw new Error(
         `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
       );
@@ -99,12 +102,13 @@ export async function createEvent(eventData: ExtendedEvent) {
     const createData: any = {
       ...data,
       category: { connect: { id: category_id } },
-      coordinator: { connect: { id: coordinator.id } },
+      coordinator: { connect: { id: dummyCoordinator.id } },
     };
 
     if (organization_id) {
       createData.organization = { connect: { id: organization_id } };
     }
+    console.log("DATA:", createData);
 
     const newEvent = await prisma.event.create({
       data: createData,
