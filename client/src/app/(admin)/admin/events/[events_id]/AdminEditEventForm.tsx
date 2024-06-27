@@ -8,6 +8,7 @@ import {
   Modal,
   Select,
   message,
+  UploadFile,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -77,6 +78,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
       ...event,
       dates: [dayjs(event.event_start), dayjs(event.event_end)],
       registrationDates: [dayjs(event.reg_start), dayjs(event.reg_end)],
+      image: event.image,
     });
   }, [event, form, coordinator]);
 
@@ -128,6 +130,23 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
     }
   };
 
+  interface RcFile extends File {
+    uid: string;
+    lastModifiedDate: Date;
+  }
+
+  const bufferToUploadFile = (buffer: Buffer): UploadFile => {
+    const file = new File([buffer], "image.png", { type: "image/png" });
+    return {
+      uid: "-1", // Unique identifier for the file
+      lastModifiedDate: new Date(),
+      name: "image.png",
+      status: "done", // Status of the upload, 'done' indicates uploaded successfully
+      url: URL.createObjectURL(file), // URL to display the image
+      originFileObj: file as RcFile, // Assigning RcFile to originFileObj
+    };
+  };
+
   const handleFinish = (values: any) => {
     const updatedEvent: Event = {
       ...event,
@@ -157,6 +176,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
 
           dates: [dayjs(event.event_start), dayjs(event.event_end)],
           registrationDates: [dayjs(event.reg_start), dayjs(event.reg_end)],
+          image: event.image,
         }}
       >
         <Form.Item
@@ -263,9 +283,21 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
         >
           <Input.TextArea rows={4} />
         </Form.Item>
-        <Form.Item name="image" label="Image Upload">
-          <Upload>
-            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        <Form.Item
+          name="image"
+          label="Image Upload"
+          valuePropName="fileList2"
+          getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+          rules={[{ required: true, message: "Please upload an image" }]}
+        >
+          <Upload
+            listType="picture"
+            beforeUpload={() => false}
+            defaultFileList={[bufferToUploadFile(event.image)]}
+          >
+            <StyledButton icon={<UploadOutlined />}>
+              Click to upload
+            </StyledButton>
           </Upload>
         </Form.Item>
         <Form.Item>
