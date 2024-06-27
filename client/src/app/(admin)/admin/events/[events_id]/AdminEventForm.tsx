@@ -92,14 +92,21 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
       try {
         const response: Organization[] | undefined = await getOrganizations();
         if (!response) {
-          console.error("bad response getting errors");
+          console.error("bad response getting organizations");
           return;
         }
 
         const items = response.map((org: Organization) => ({
-          key: org.id,
+          key: `org-${org.id}${100 * Math.random()}`, // Ensure unique key
           label: org.name,
         }));
+
+        const dummyItems: any[] = [
+          {
+            id: 1,
+            name: "Dum",
+          },
+        ];
 
         setOrganizationsDropdown(items);
       } catch (error) {
@@ -111,20 +118,23 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
       try {
         const response: Category[] | undefined = await getCategories();
         if (!response) {
-          console.error("bad response getting errors");
+          console.error("bad response getting categories");
           return;
         }
 
         const items = response.map((cat: Category) => ({
-          key: cat.id,
+          key: `cat-${cat.id}-${100 * Math.random()}`, // Ensure unique key
           label: cat.name,
         }));
+
+        const dummyCategories: any[] = [{ id: 2, name: "thing" }];
 
         setCategoryDropdown(items);
       } catch (error) {
         console.error(error);
       }
     };
+
     fetchOrganizations();
     fetchCategories();
   }, []);
@@ -234,7 +244,10 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
             onChange={(value) => setCategory(value)}
           >
             {categoryDropdown.map((item: any) => (
-              <Select.Option key={item.key} value={item.key}>
+              <Select.Option
+                key={`${item.key}-${100 * Math.random()}`}
+                value={item.key}
+              >
                 {item.label}
               </Select.Option>
             ))}
@@ -253,7 +266,10 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
             onChange={(value) => setOrganization(value)}
           >
             {organizationsDropdown.map((item: any) => (
-              <Select.Option key={item.key} value={item.key}>
+              <Select.Option
+                key={`${item.key}-${100 * Math.random()}`}
+                value={item.key}
+              >
                 {item.label}
               </Select.Option>
             ))}
