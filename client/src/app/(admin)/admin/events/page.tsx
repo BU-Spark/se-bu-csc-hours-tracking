@@ -8,9 +8,13 @@ import {
   getApplicationsByUserId,
   getEvents,
   getEventsByApplicationEventIds,
-} from "@/app/(user)/user/events/action";
-import CardGrid from "@/app/(user)/user/events/CardGrid";
-import { AddHoursButton, PlusCircle, Rectangle } from "@/_common/styledDivs";
+} from "../../../../app/(user)/user/events/action";
+import CardGrid from "../../../../app/(user)/user/events/CardGrid";
+import {
+  AddHoursButton,
+  PlusCircle,
+  Rectangle,
+} from "../../../../_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import DateFilter from "./DataFilter";
