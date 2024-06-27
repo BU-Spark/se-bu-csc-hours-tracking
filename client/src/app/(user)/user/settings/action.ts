@@ -3,6 +3,7 @@
 import prisma from "../../../../lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../../lib/auth";
+import { Person } from "@prisma/client";
 
 export const checkIfNewUser = async () => {
   const session = await getServerSession(authOptions);
@@ -31,16 +32,21 @@ export const checkIfNewUser = async () => {
   return { isNewUser };
 };
 
-export const getUserDetails = async () => {
+export const getUserDetails = async (): Promise<Person | undefined> => {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.email) {
     throw new Error("Not authenticated");
   }
 
-  const user = await prisma.person.findUnique({
+  const user: Person | null = await prisma.person.findUnique({
     where: { email: session.user.email },
   });
+
+  if (!user) {
+    console.error("user not found");
+    return;
+  }
 
   return user;
 };

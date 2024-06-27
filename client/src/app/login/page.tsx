@@ -36,9 +36,13 @@ const SignInButton = styled.button`
 function Login() {
   return (
     <Container>
-      <div style={{marginLeft: "-15em"}}>
+      <div style={{ marginLeft: "-15em" }}>
         <Title>Boston University Community Service Time Log</Title>
-        <SignInButton onClick={() => signIn(undefined, { callbackUrl: '/' })}>Sign in</SignInButton>
+        <SignInButton
+          onClick={() => signIn(undefined, { callbackUrl: "/welcome" })}
+        >
+          Sign in
+        </SignInButton>
       </div>
     </Container>
   );

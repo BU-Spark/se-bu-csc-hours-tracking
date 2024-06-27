@@ -9,6 +9,7 @@ import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
 import "react-phone-input-2/lib/style.css";
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import { Person } from "@prisma/client";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -222,7 +223,7 @@ const Settings: React.FC = () => {
         if (status.isNewUser) {
           setIsNewUser(true);
         } else {
-          const user = await getUserDetails();
+          const user: Person | undefined = await getUserDetails();
           if (user) {
             setPhoneNumber(user.phone_number || "");
             setBuId(user.bu_id || "");
@@ -246,7 +247,6 @@ const Settings: React.FC = () => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!formSubmitted && initialLoadComplete && isNewUser) {
         e.preventDefault();
-        e.returnValue = "";
       }
     };
 
@@ -354,7 +354,7 @@ const Settings: React.FC = () => {
         </Label>
         <Input
           type="text"
-          placeholder="UXXXXXXXX"
+          placeholder="U12345678"
           value={buId}
           onChange={(e) => {
             setBuId(e.target.value);
