@@ -1,10 +1,11 @@
 "use server";
 
+import { Feedback } from "@/interfaces/interfaces";
 import prisma from "../../../../../lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
 
-interface ExtendedEvent extends Partial<Omit<Event, "id" | "coordinator_id">> {
+interface ExtendedEvent extends Partial<Event> {
   coordinator_name: string;
   coordinator_email: string;
 }
@@ -29,16 +30,20 @@ export async function getEvent(eventId: number) {
   }
 }
 
-export async function updateEvent(eventId: number, eventData: ExtendedEvent) {
+export async function updateEvent(eventId: number, eventData: any) {
   try {
     const {
       category_id,
       coordinator_name,
       coordinator_email,
       organization_id,
+      coordinator_id,
+      "coordinator.name": coordinatorName,
+      "coordinator.email": coordinatorEmail,
+      form_id,
       ...data
     } = eventData;
-    const coordinator = await prisma.person.findUnique({
+    const coordinator = await prisma.person.findFirst({
       where: { email: coordinator_email },
     });
 
@@ -62,18 +67,21 @@ export async function updateEvent(eventId: number, eventData: ExtendedEvent) {
       updateData.organization = { connect: { id: organization_id } };
     }
 
+    const { id, ...dataWithoutEventId } = updateData;
+
     const updatedEvent = await prisma.event.update({
-      where: { id: eventId },
-      data: updateData,
+      where: { title: eventData.title },
+      data: dataWithoutEventId,
     });
-    return updatedEvent;
+    console.log("success");
+    return "success";
   } catch (error) {
     console.error("Error updating event:", error);
     throw error;
   }
 }
 
-export async function createEvent(eventData: ExtendedEvent) {
+export async function createEvent(eventData: ExtendedEvent | any) {
   try {
     const {
       category_id,
@@ -115,8 +123,9 @@ export async function createEvent(eventData: ExtendedEvent) {
     });
     return newEvent;
   } catch (error) {
-    console.error("Error creating event:", error);
-    throw error;
+    //this may be an issue later
+    console.log("Error creating event:", error);
+    return;
   }
 }
 
@@ -152,10 +161,43 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
   try {
     const category = await prisma.category.findMany();
     if (!category) {
-      console.error("erroring retrieving organization");
+      console.error("erroring retrieving categories");
       return;
     }
     return category;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+  try {
+    const rawFeedback = await prisma.hourSubmission.findMany({
+      select: {
+        id: true,
+        event: true,
+        volunteer: true,
+        date_submitted: true,
+        feedback: true,
+      },
+      orderBy: {
+        date_submitted: "desc",
+      },
+      take: 8,
+    });
+    if (!rawFeedback) {
+      console.error("erroring retrieving feedback");
+      return;
+    }
+    const feedback: Feedback[] = rawFeedback.map((item) => ({
+      id: item.id || 1,
+      author: { id: item.volunteer.id, name: item.volunteer.name }, // Assuming volunteer matches Person type
+      event: item.event, // Assuming event matches Event type
+      content: item.feedback,
+      dateWritten: item.date_submitted,
+    }));
+
+    return feedback;
   } catch (error) {
     console.error(error);
   }

@@ -68,6 +68,7 @@ export interface CardGridProps {
   events: Event[];
   filter: number | Date;
   myEvents: Event[] | undefined;
+  view: string;
 }
 
 export interface Person {
@@ -179,4 +180,17 @@ export interface NewForm {
 export interface CreateFormResponse {
   newForm: Form;
   newFormCode: FormCode;
+}
+
+export interface Author {
+  id: number;
+  name: string;
+}
+
+export interface Feedback {
+  id: number;
+  author: Author;
+  event: Event;
+  content: string | null;
+  dateWritten: Date;
 }

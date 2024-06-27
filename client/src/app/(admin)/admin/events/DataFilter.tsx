@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 
@@ -10,28 +9,19 @@ const DateFilter: React.FC<DateFilterProps> = ({ setDateFilter }) => {
   const [date, setDate] = useState<Date>(new Date());
 
   const incrementMonth = () => {
-    setDate((prevDate) => {
-      const newDate = new Date(
-        prevDate.getFullYear(),
-        prevDate.getMonth() + 1,
-        1
-      );
-      setDateFilter(newDate);
-      return newDate;
-    });
+    const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+    setDate(newDate);
   };
 
   const decrementMonth = () => {
-    setDate((prevDate) => {
-      const newDate = new Date(
-        prevDate.getFullYear(),
-        prevDate.getMonth() - 1,
-        1
-      );
-      setDateFilter(newDate);
-      return newDate;
-    });
+    const newDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+    setDate(newDate);
   };
+
+  useEffect(() => {
+    // This effect will run after each render and update the filter in Events
+    setDateFilter(date);
+  }, [date, setDateFilter]);
 
   // Function to format date to "Month, Year"
   const formatDate = (date: Date) => {

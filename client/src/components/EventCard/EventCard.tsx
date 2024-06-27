@@ -44,7 +44,7 @@ const EventCard: React.FC<EventCardProps> = ({
     };
     fetchCategory();
   }, [category_id, coordinator_id]);
-  return category ? (
+  return eventPath && title ? (
     <Link
       href={
         isAdmin ? `/admin/events/${eventPath}` : `/user/events/${eventPath}`

@@ -12,9 +12,10 @@ import {
   formatDate,
   formatTime,
 } from "../../../../../app/_utils/DateFormatters";
-import AdminEventForm from "./AdminEventForm";
+import AdminEventForm from "../new/AdminEventForm";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import AdminEditEventForm from "./AdminEditEventForm";
 
 dayjs.extend(customParseFormat);
 
@@ -22,8 +23,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [modifying, setModifying] = useState<boolean>(false);
   const params = useParams();
-  const event_id = Number(params.event_id);
-  const router = useRouter();
+  const event_id = Number(params.events_id);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -183,7 +183,8 @@ export default function EventDetailPage() {
           </Button>
         </div>
         {modifying ? (
-          <AdminEventForm
+          <AdminEditEventForm
+            key={Math.random()}
             event={event}
             onUpdate={handleUpdateEvent}
             onCancel={() => setModifying(false)}
