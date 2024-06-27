@@ -62,6 +62,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
   const [categories, setCategories] = useState<Category[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [coordinator, setCoordinator] = useState<CoordinatorInput>();
+  const [imageUploaded, setImageUploaded] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -158,9 +159,9 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
       event_end: values.dates[1].toDate(),
       reg_start: values.registrationDates[0].toDate(),
       reg_end: values.registrationDates[1].toDate(),
-      image: updatedValues.image
+      image: imageUploaded
         ? await convertFileToBase64(updatedValues.image[0].originFileObj)
-        : event?.image?.toString("base64"),
+        : event.image,
     };
     console.log(updatedEvent);
     onUpdate(updatedEvent);
@@ -315,6 +316,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
             listType="picture"
             maxCount={1}
             beforeUpload={() => false}
+            onChange={() => setImageUploaded(true)}
             defaultFileList={[bufferToUploadFile(event.image)]}
           >
             <StyledButton icon={<UploadOutlined />}>
