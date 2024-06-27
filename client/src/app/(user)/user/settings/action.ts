@@ -64,6 +64,8 @@ export const updateUserDetails = async (details: {
     throw new Error("Not authenticated");
   }
 
+  console.log("session", session);
+
   console.log("Updating user details:", details);
 
   const user = await prisma.person.update({
@@ -71,7 +73,7 @@ export const updateUserDetails = async (details: {
     data: {
       phone_number: details.phone_number,
       bu_id: details.bu_id,
-      college: details.college,
+      college: details.college.toUpperCase(),
       dietary_restrictions: details.dietary_restrictions,
       class: details.class,
     },
