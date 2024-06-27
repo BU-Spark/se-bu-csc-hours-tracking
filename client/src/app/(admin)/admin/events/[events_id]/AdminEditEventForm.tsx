@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { getCoordinatorById } from "@/components/EventCard/action";
 import { getCategories, getOrganizations } from "./action";
+import convertToBase64 from "@/app/_utils/BufferToString";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -138,27 +139,46 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
   const bufferToUploadFile = (buffer: Buffer): UploadFile => {
     const file = new File([buffer], "image.png", { type: "image/png" });
     return {
-      uid: "-1", // Unique identifier for the file
+      uid: (100 * Math.random()).toString(),
       lastModifiedDate: new Date(),
-      name: "image.png",
-      status: "done", // Status of the upload, 'done' indicates uploaded successfully
-      url: URL.createObjectURL(file), // URL to display the image
-      originFileObj: file as RcFile, // Assigning RcFile to originFileObj
+      name: event.title,
+      status: "done",
+      url: URL.createObjectURL(file),
+      originFileObj: file as RcFile,
     };
   };
 
-  const handleFinish = (values: any) => {
+  const handleFinish = async (values: any) => {
+    const { dates, registrationDates, ...updatedValues } = values;
     const updatedEvent: Event = {
       ...event,
-      ...values,
+      ...updatedValues,
       event_start: values.dates[0].toDate(),
       event_end: values.dates[1].toDate(),
       reg_start: values.registrationDates[0].toDate(),
       reg_end: values.registrationDates[1].toDate(),
+      image: updatedValues.image
+        ? await convertFileToBase64(updatedValues.image[0].originFileObj)
+        : event?.image?.toString("base64"),
     };
+    console.log(updatedEvent);
     onUpdate(updatedEvent);
   };
 
+  const convertFileToBase64 = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        if (reader.result) {
+          resolve((reader.result as string).split(",")[1]);
+        } else {
+          reject("File reading failed");
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
   return (
     <FormContainer>
       <BackButton onClick={onCancel}>Back</BackButton>
@@ -292,6 +312,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
         >
           <Upload
             listType="picture"
+            maxCount={1}
             beforeUpload={() => false}
             defaultFileList={[bufferToUploadFile(event.image)]}
           >
