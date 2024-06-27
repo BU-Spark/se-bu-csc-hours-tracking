@@ -74,7 +74,7 @@ export async function updateEvent(eventId: number, eventData: ExtendedEvent) {
   }
 }
 
-export async function createEvent(eventData: ExtendedEvent) {
+export async function createEvent(eventData: ExtendedEvent | any) {
   try {
     const {
       category_id,

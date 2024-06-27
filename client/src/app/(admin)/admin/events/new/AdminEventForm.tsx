@@ -18,7 +18,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { Category, Event, Organization } from "@prisma/client";
-import { getCategories, getOrganizations } from "./action";
+import { getCategories, getOrganizations } from "../[events_id]/action";
 
 dayjs.extend(customParseFormat);
 

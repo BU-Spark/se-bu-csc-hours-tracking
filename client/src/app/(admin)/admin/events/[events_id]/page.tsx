@@ -12,7 +12,7 @@ import {
   formatDate,
   formatTime,
 } from "../../../../../app/_utils/DateFormatters";
-import AdminEventForm from "./AdminEventForm";
+import AdminEventForm from "../new/AdminEventForm";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 

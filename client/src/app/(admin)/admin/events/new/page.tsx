@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import AdminEventForm from "../[events_id]/AdminEventForm";
+import AdminEventForm from "./AdminEventForm";
 import { createEvent } from "../[events_id]/action";
 import { Event } from "@prisma/client";
 
