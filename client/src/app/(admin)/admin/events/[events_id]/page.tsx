@@ -15,6 +15,7 @@ import {
 import AdminEventForm from "../new/AdminEventForm";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import AdminEditEventForm from "./AdminEditEventForm";
 
 dayjs.extend(customParseFormat);
 
@@ -184,7 +185,7 @@ export default function EventDetailPage() {
           </Button>
         </div>
         {modifying ? (
-          <AdminEventForm
+          <AdminEditEventForm
             event={event}
             onUpdate={handleUpdateEvent}
             onCancel={() => setModifying(false)}
