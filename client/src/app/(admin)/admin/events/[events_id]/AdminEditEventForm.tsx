@@ -153,6 +153,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
     const updatedEvent: Event = {
       ...event,
       ...updatedValues,
+
       event_start: values.dates[0].toDate(),
       event_end: values.dates[1].toDate(),
       reg_start: values.registrationDates[0].toDate(),
@@ -190,7 +191,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
           ...event,
           "coordinator.name": coordinator?.name,
           "coordinator.email": coordinator?.email,
-          estimatedParticipants: event.estimated_participants,
+          estimated_participants: event.estimated_participants,
           category: event.category_id,
           organization: event.organization_id,
 
@@ -271,7 +272,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
           <RangePicker showTime />
         </Form.Item>
         <Form.Item
-          name="estimatedParticipants"
+          name="estimated_participants"
           label="Estimated Participants"
           rules={[
             {

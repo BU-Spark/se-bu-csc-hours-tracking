@@ -5,7 +5,7 @@ import prisma from "../../../../../lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
 
-interface ExtendedEvent extends Partial<Omit<Event, "id" | "coordinator_id">> {
+interface ExtendedEvent extends Partial<Event> {
   coordinator_name: string;
   coordinator_email: string;
 }
@@ -30,16 +30,20 @@ export async function getEvent(eventId: number) {
   }
 }
 
-export async function updateEvent(eventId: number, eventData: ExtendedEvent) {
+export async function updateEvent(eventId: number, eventData: any) {
   try {
     const {
       category_id,
       coordinator_name,
       coordinator_email,
       organization_id,
+      coordinator_id,
+      "coordinator.name": coordinatorName,
+      "coordinator.email": coordinatorEmail,
+      form_id,
       ...data
     } = eventData;
-    const coordinator = await prisma.person.findUnique({
+    const coordinator = await prisma.person.findFirst({
       where: { email: coordinator_email },
     });
 
@@ -63,11 +67,14 @@ export async function updateEvent(eventId: number, eventData: ExtendedEvent) {
       updateData.organization = { connect: { id: organization_id } };
     }
 
+    const { id, ...dataWithoutEventId } = updateData;
+
     const updatedEvent = await prisma.event.update({
-      where: { id: eventId },
-      data: updateData,
+      where: { title: eventData.title },
+      data: dataWithoutEventId,
     });
-    return updatedEvent;
+    console.log("success");
+    return "success";
   } catch (error) {
     console.error("Error updating event:", error);
     throw error;
