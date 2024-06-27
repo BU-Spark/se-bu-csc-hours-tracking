@@ -47,6 +47,7 @@ export async function updateEvent(eventId: number, eventData: any) {
       where: { email: coordinator_email },
     });
 
+
     if (!coordinator) {
       throw new Error(
         `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
@@ -70,7 +71,7 @@ export async function updateEvent(eventId: number, eventData: any) {
     const { id, ...dataWithoutEventId } = updateData;
 
     const updatedEvent = await prisma.event.update({
-      where: { title: eventData.title },
+      where: { id: eventId },
       data: dataWithoutEventId,
     });
     console.log("success");
