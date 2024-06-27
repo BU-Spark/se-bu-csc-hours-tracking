@@ -63,9 +63,11 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [coordinator, setCoordinator] = useState<CoordinatorInput>();
   const [imageUploaded, setImageUploaded] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
+    setLoading(true);
     fetchCoordinator();
     fetchCategories();
     fetchOrganizations();
@@ -82,7 +84,8 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
       registrationDates: [dayjs(event.reg_start), dayjs(event.reg_end)],
       image: event.image,
     });
-  }, [event, form, coordinator]);
+    setLoading(false);
+  }, [event, form, coordinator, categories, organizations]);
 
   const fetchCoordinator = async () => {
     try {
@@ -137,6 +140,45 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
     lastModifiedDate: Date;
   }
 
+  const handleFinish = async (values: any) => {
+    const { dates, registrationDates, ...updatedValues } = values;
+    const updatedEvent: Event = {
+      ...event,
+      ...updatedValues,
+      event_start: values.dates[0].toDate(),
+      event_end: values.dates[1].toDate(),
+      reg_start: values.registrationDates[0].toDate(),
+      reg_end: values.registrationDates[1].toDate(),
+      image: imageUploaded
+        ? await convertFileToBase64(updatedValues.image[0].originFileObj)
+        : event.image,
+    };
+    onUpdate(updatedEvent);
+  };
+
+  //IMAGE UPLOAD METHODS
+
+  const MAX_FILE_SIZE_MB = 5;
+
+  const validateFileSize = (file: UploadFile) => {
+    let fileSizeMB = 1000000000;
+    if (file.size) {
+      fileSizeMB = file.size / 1024 / 1024;
+    }
+
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      message.error(`File must be smaller than ${MAX_FILE_SIZE_MB}MB!`);
+      return false;
+    }
+    return true;
+  };
+
+  const checkFileSize = (_: any, fileList: UploadFile[]) => {
+    if (fileList.length === 0) return Promise.reject("Please upload an image");
+    const file: UploadFile = fileList[0];
+    return validateFileSize(file) ? Promise.resolve() : Promise.reject();
+  };
+
   const bufferToUploadFile = (buffer: Buffer): UploadFile => {
     const file = new File([buffer], "image.png", { type: "image/png" });
     return {
@@ -147,24 +189,6 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
       url: URL.createObjectURL(file),
       originFileObj: file as RcFile,
     };
-  };
-
-  const handleFinish = async (values: any) => {
-    const { dates, registrationDates, ...updatedValues } = values;
-    const updatedEvent: Event = {
-      ...event,
-      ...updatedValues,
-
-      event_start: values.dates[0].toDate(),
-      event_end: values.dates[1].toDate(),
-      reg_start: values.registrationDates[0].toDate(),
-      reg_end: values.registrationDates[1].toDate(),
-      image: imageUploaded
-        ? await convertFileToBase64(updatedValues.image[0].originFileObj)
-        : event.image,
-    };
-    console.log(updatedEvent);
-    onUpdate(updatedEvent);
   };
 
   const convertFileToBase64 = (file: File) => {
@@ -181,7 +205,9 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
       reader.onerror = (error) => reject(error);
     });
   };
-  return (
+  return loading ? (
+    <>Loading event...</>
+  ) : (
     <FormContainer>
       <BackButton onClick={onCancel}>Back</BackButton>
       <Form
@@ -224,7 +250,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
             {
               required: true,
               message: "Please enter the coordinator email",
-              type: "email",
+              type: "string",
             },
           ]}
         >
@@ -310,12 +336,15 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
           label="Image Upload"
           valuePropName="fileList2"
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
-          rules={[{ required: true, message: "Please upload an image" }]}
+          rules={[
+            { required: true, message: "Please upload an image" },
+            { validator: checkFileSize },
+          ]}
         >
           <Upload
             listType="picture"
             maxCount={1}
-            beforeUpload={() => false}
+            beforeUpload={validateFileSize}
             onChange={() => setImageUploaded(true)}
             defaultFileList={[bufferToUploadFile(event.image)]}
           >
