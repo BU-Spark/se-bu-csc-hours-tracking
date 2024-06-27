@@ -1,5 +1,6 @@
 "use server";
 
+import { Feedback } from "@/interfaces/interfaces";
 import prisma from "../../../../../lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
@@ -115,6 +116,7 @@ export async function createEvent(eventData: ExtendedEvent) {
     });
     return newEvent;
   } catch (error) {
+    //this may be an issue later
     console.log("Error creating event:", error);
     return;
   }
@@ -152,10 +154,43 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
   try {
     const category = await prisma.category.findMany();
     if (!category) {
-      console.error("erroring retrieving organization");
+      console.error("erroring retrieving categories");
       return;
     }
     return category;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+  try {
+    const rawFeedback = await prisma.hourSubmission.findMany({
+      select: {
+        id: true,
+        event: true,
+        volunteer: true,
+        date_submitted: true,
+        feedback: true,
+      },
+      orderBy: {
+        date_submitted: "desc",
+      },
+      take: 8,
+    });
+    if (!rawFeedback) {
+      console.error("erroring retrieving feedback");
+      return;
+    }
+    const feedback: Feedback[] = rawFeedback.map((item) => ({
+      id: item.id || 1,
+      author: { id: item.volunteer.id, name: item.volunteer.name }, // Assuming volunteer matches Person type
+      event: item.event, // Assuming event matches Event type
+      content: item.feedback,
+      dateWritten: item.date_submitted,
+    }));
+
+    return feedback;
   } catch (error) {
     console.error(error);
   }

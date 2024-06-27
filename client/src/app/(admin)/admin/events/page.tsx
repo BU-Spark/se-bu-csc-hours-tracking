@@ -10,14 +10,19 @@ import {
   getEventsByApplicationEventIds,
 } from "@/app/(user)/user/events/action";
 import CardGrid from "@/app/(user)/user/events/CardGrid";
-import { AddHoursButton, PlusCircle, Rectangle } from "@/_common/styledDivs";
+import {
+  AddHoursButton,
+  PlusCircle,
+  Rectangle,
+  SummaryBox,
+  SummaryContainer,
+} from "@/_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import DateFilter from "./DataFilter";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(true);
   const { data: session } = useSession();
@@ -36,6 +41,19 @@ function Events() {
   const handleSetDateFilter = (date: Date) => {
     setDateFilter(date);
   };
+
+  const today = new Date();
+  const isToday = (date: Date) =>
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  const eventsToday = events.filter((event) =>
+    isToday(new Date(event.event_start))
+  );
+  const upcomingEvents = events.filter(
+    (event) => new Date(event.event_start) > today
+  );
 
   return (
     <Layout
@@ -56,11 +74,23 @@ function Events() {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </div>
+        <SummaryContainer
+          style={{ alignItems: "start", justifyContent: "start" }}
+        >
+          <SummaryBox>
+            <h2>{eventsToday.length}</h2>
+            <p>Events Today</p>
+          </SummaryBox>
+          <SummaryBox>
+            <h2>{upcomingEvents.length}</h2>
+            <p>Upcoming Events</p>
+          </SummaryBox>
+        </SummaryContainer>
         <DateFilter setDateFilter={handleSetDateFilter} />
         {loading ? (
           <>Loading events...</>
         ) : events ? (
-          <CardGrid events={events} filter={dateFilter} myEvents={myEvents} />
+          <CardGrid events={events} filter={dateFilter} myEvents={[]} />
         ) : (
           <p>loading</p>
         )}
