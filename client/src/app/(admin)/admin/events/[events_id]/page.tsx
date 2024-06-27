@@ -23,9 +23,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [modifying, setModifying] = useState<boolean>(false);
   const params = useParams();
-  console.log("params", params);
   const event_id = Number(params.events_id);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchEvent = async () => {
