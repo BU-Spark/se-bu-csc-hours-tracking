@@ -97,7 +97,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
         }
 
         const items = response.map((org: Organization) => ({
-          key: `org-${org.id}${100 * Math.random()}`, // Ensure unique key
+          key: org.id, // Ensure unique key
           label: org.name,
         }));
 
@@ -123,7 +123,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
         }
 
         const items = response.map((cat: Category) => ({
-          key: `cat-${cat.id}-${100 * Math.random()}`, // Ensure unique key
+          key: cat.id, // Ensure unique key
           label: cat.name,
         }));
 
@@ -244,10 +244,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
             onChange={(value) => setCategory(value)}
           >
             {categoryDropdown.map((item: any) => (
-              <Select.Option
-                key={`${item.key}-${100 * Math.random()}`}
-                value={item.key}
-              >
+              <Select.Option key={item.key} value={item.key}>
                 {item.label}
               </Select.Option>
             ))}
@@ -266,10 +263,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
             onChange={(value) => setOrganization(value)}
           >
             {organizationsDropdown.map((item: any) => (
-              <Select.Option
-                key={`${item.key}-${100 * Math.random()}`}
-                value={item.key}
-              >
+              <Select.Option key={item.key} value={item.key}>
                 {item.label}
               </Select.Option>
             ))}
