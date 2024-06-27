@@ -55,7 +55,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       dayjs(values.eventDate).format("YYYY-MM-DD HH:mm") ===
       dayjs(event?.event_start).format("YYYY-MM-DD HH:mm")
     ) {
-      if (!event?.application_password) {
+      if (
+        !event?.application_password ||
+        event.application_password.length < 1
+      ) {
         success();
         setTimeout(() => {
           setRegistering(false);
