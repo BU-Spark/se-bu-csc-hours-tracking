@@ -90,7 +90,12 @@ function Events() {
         {loading ? (
           <>Loading events...</>
         ) : events ? (
-          <CardGrid events={events} filter={dateFilter} myEvents={[]} />
+          <CardGrid
+            events={events}
+            filter={dateFilter}
+            myEvents={[]}
+            view={"admin"}
+          />
         ) : (
           <p>loading</p>
         )}

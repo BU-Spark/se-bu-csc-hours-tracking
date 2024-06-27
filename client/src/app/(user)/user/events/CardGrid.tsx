@@ -6,7 +6,7 @@ import { Event } from "@prisma/client";
 import convertToBase64 from "../../../_utils/BufferToString";
 
 function CardGrid(props: CardGridProps) {
-  const { events, filter, myEvents } = props;
+  const { events, filter, myEvents, view } = props;
 
   let filteredEvents: Event[] = events;
 
@@ -57,6 +57,7 @@ function CardGrid(props: CardGridProps) {
                     event.application_password != undefined &&
                     event.application_password.length > 0
                   }
+                  isAdmin={view == "admin"}
                 />
               </Col>
             );

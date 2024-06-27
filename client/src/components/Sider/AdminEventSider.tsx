@@ -19,6 +19,7 @@ function AdminEventSider() {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
 
   useEffect(() => {
+    if (!isDisplayed) return;
     const fetchFeedback = async () => {
       setLoading(true);
       try {

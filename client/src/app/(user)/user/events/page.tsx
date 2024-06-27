@@ -94,7 +94,12 @@ function Events() {
           />
         </div>
         {events ? (
-          <CardGrid events={events} filter={filter} myEvents={myEvents} />
+          <CardGrid
+            events={events}
+            filter={filter}
+            myEvents={myEvents}
+            view="student"
+          />
         ) : (
           <p>loading</p>
         )}
