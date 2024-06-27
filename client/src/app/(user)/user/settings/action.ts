@@ -64,9 +64,6 @@ export const updateUserDetails = async (details: {
     throw new Error("Not authenticated");
   }
 
-  console.log("session", session);
-
-  console.log("Updating user details:", details);
 
   const user = await prisma.person.update({
     where: { email: session.user.email },

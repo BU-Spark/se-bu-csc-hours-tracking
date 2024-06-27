@@ -65,7 +65,6 @@ export default function Page() {
     fetchCapacity();
   }, [event_id]);
 
-  console.log(event);
 
   return event ? (
     <div

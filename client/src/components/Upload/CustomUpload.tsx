@@ -18,7 +18,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
   const allowedTypes = ["application/pdf"]; // only allows pdfs
 
   const handleFileUpload = async (file: File) => {
-    console.log("file upload...");
+    // console.log("file upload...");
   };
 
   const props = {
@@ -28,7 +28,7 @@ const CustomUpload: React.FC<CustomUploadProps> = ({
     onChange(info: any) {
       const { status, originFileObj } = info.file;
       if (status !== "uploading") {
-        console.log("uploading...", info.file, info.fileList);
+        // console.log("uploading...", info.file, info.fileList);
       }
       if (status === "done") {
         handleFileUpload(originFileObj);

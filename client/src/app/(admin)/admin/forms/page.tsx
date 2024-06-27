@@ -36,7 +36,6 @@ const Forms: React.FC = () => {
             setForms((prevForms) =>
               prevForms?.filter((f) => f.id !== formDeleted)
             );
-            console.log("Form deleted successfully");
           }
         } else {
           console.error("Failed to delete form");
@@ -191,11 +190,10 @@ const Forms: React.FC = () => {
 
     const handleDownload = () => {
       // check if its a redirect form (goes to a seperate page)
-      console.log(completeForm.file);
       if (completeForm.file.startsWith("REDIRECT-")) {
         window.open(completeForm.file.toString().substring(9), "_blank");
       } else {
-        console.log(`Downloading ${completeForm.title}`);
+        // console.log(`Downloading ${completeForm.title}`);
         download(`/forms/${completeForm.file}`, completeForm.title.toString());
       }
     };

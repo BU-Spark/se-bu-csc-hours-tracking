@@ -137,9 +137,6 @@ export const getAllApprovedEventsByUserId = async (
         eventIdsWithApplications.includes(event.id) &&
         !eventIdsWithSubmissions.includes(event.id)
     );
-    console.log("eventsWithoutSubmissions: ::::", eventsWithoutSubmissions);
-    console.log("eventIdsWithApplications: ::::", eventIdsWithApplications);
-    console.log("approvedApplications: ::::", approvedApplications);
 
     return eventsWithoutSubmissions;
   } catch (error) {

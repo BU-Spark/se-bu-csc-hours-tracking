@@ -47,7 +47,6 @@ export async function updateEvent(eventId: number, eventData: any) {
       where: { email: coordinator_email },
     });
 
-
     if (!coordinator) {
       throw new Error(
         `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
@@ -74,7 +73,6 @@ export async function updateEvent(eventId: number, eventData: any) {
       where: { id: eventId },
       data: dataWithoutEventId,
     });
-    console.log("success");
     return "success";
   } catch (error) {
     console.error("Error updating event:", error);
@@ -95,7 +93,6 @@ export async function createEvent(eventData: ExtendedEvent | any) {
     // const coordinator = await prisma.person.findUnique({
     //   where: { email: coordinator_email },
     // });
-    console.log("eventData", eventData);
     const dummyCoordinator = await prisma.person.findFirst({
       where: { id: 1 },
     });
@@ -120,7 +117,6 @@ export async function createEvent(eventData: ExtendedEvent | any) {
     if (organization_id) {
       createData.organization = { connect: { id: organization_id } };
     }
-    console.log("DATA:", createData);
 
     const newEvent = await prisma.event.create({
       data: { ...createData },
