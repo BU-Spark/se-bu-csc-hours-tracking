@@ -57,6 +57,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     ) {
       if (!event?.application_password) {
         success();
+        setTimeout(() => {
+          setRegistering(false);
+          setHasRegistered(true);
+        }, 1000);
       }
       if (values.password === event?.application_password) {
         success();

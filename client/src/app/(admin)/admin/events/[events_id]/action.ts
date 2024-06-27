@@ -88,11 +88,13 @@ export async function createEvent(eventData: ExtendedEvent | any) {
       coordinator_name,
       coordinator_email,
       organization_id,
+      password,
       ...data
     } = eventData;
     // const coordinator = await prisma.person.findUnique({
     //   where: { email: coordinator_email },
     // });
+    console.log("eventData", eventData);
     const dummyCoordinator = await prisma.person.findFirst({
       where: { id: 1 },
     });
@@ -109,6 +111,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
 
     const createData: any = {
       ...data,
+      application_password: data.password,
       category: { connect: { id: category_id } },
       coordinator: { connect: { id: dummyCoordinator.id } },
     };
@@ -119,7 +122,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
     console.log("DATA:", createData);
 
     const newEvent = await prisma.event.create({
-      data: createData,
+      data: { ...createData },
     });
     return newEvent;
   } catch (error) {

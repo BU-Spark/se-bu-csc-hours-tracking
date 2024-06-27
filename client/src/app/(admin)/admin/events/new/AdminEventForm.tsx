@@ -158,6 +158,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
         : 1,
       organization_name: organization?.name,
       estimated_participants: parseInt(values.estimated_participants, 10), // Ensure this is an integer
+      password: values.password ? values.password : undefined,
     };
     onUpdate(formattedValues, isDraft);
   };
@@ -355,6 +356,13 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
           rules={[{ required: true, message: "Please enter the description" }]}
         >
           <TextArea rows={4} />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          label="Event Password"
+          rules={[{ required: false }]}
+        >
+          <TextArea rows={1} />
         </Form.Item>
         <Form.Item
           name="image"
