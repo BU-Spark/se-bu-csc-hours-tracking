@@ -33,6 +33,11 @@ export const getHourSubmissionsByUserEmail = async (
         where: { id: submission.event_id },
       });
 
+      if (!event?.organization_id) {
+        console.error("no organization_id");
+        return null;
+      }
+
       const organization: Organization | null =
         await prisma.organization.findUnique({
           where: { id: event?.organization_id },
