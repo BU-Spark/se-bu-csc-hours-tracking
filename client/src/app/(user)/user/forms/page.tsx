@@ -213,12 +213,12 @@ const Forms = () => {
         )}
       </Row>
       {/* UNCOMMENT TO MAKE DUMMY DATA */}
-      <button
+      {/* <button
         style={{ position: "fixed", bottom: 0 }}
         onClick={() => createDummyForms()}
       >
         Create Forms
-      </button>
+      </button> */}
     </>
   );
 };
