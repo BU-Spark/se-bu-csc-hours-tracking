@@ -184,6 +184,7 @@ export default function EventDetailPage() {
         </div>
         {modifying ? (
           <AdminEditEventForm
+            key={Math.random()}
             event={event}
             onUpdate={handleUpdateEvent}
             onCancel={() => setModifying(false)}
