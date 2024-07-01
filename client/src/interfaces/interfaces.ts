@@ -45,7 +45,8 @@ export interface EventCardProps {
   category_id: number;
   location: string;
   image: string;
-  event_start: Date;
+  reg_start: Date;
+  reg_end: Date;
   hasPassword: boolean;
   isAdmin?: boolean;
 }
@@ -69,6 +70,7 @@ export interface CardGridProps {
   filter: number | Date;
   myEvents: Event[] | undefined;
   view: string;
+  pastEvents: boolean | undefined;
 }
 
 export interface Person {

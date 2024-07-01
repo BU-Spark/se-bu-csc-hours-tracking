@@ -95,6 +95,7 @@ function Events() {
             filter={dateFilter}
             myEvents={[]}
             view={"admin"}
+            pastEvents={true}
           />
         ) : (
           <p>loading</p>

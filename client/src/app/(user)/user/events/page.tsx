@@ -8,7 +8,7 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
 } from "./action";
-import { Layout } from "antd";
+import { Checkbox, Layout } from "antd";
 import CardGrid from "./CardGrid";
 import { Content } from "antd/es/layout/layout";
 import StyledButton from "@/components/StyledButton";
@@ -18,6 +18,7 @@ function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [filter, setFilter] = useState<number>(0);
+  const [showPastEvents, setShowPastEvents] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -93,12 +94,25 @@ function Events() {
             selected={filter == 0}
           />
         </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <Checkbox onChange={() => setShowPastEvents(!showPastEvents)}>
+            Show past events
+          </Checkbox>
+        </div>
         {events ? (
           <CardGrid
             events={events}
             filter={filter}
             myEvents={myEvents}
             view="student"
+            pastEvents={showPastEvents}
           />
         ) : (
           <p>loading</p>
