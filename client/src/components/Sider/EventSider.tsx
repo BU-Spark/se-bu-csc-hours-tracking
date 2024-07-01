@@ -31,7 +31,6 @@ function EventSider() {
     if (!isDisplayed) return;
     setLoading(true);
     const fetchMyApplications = async () => {
-      console.log(session?.user.id);
       if (!session?.user?.id) return;
 
       const userApplications = await getApplicationsByUserId(

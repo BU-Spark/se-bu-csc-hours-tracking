@@ -11,14 +11,17 @@ import "./CardGrid.css";
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents, view, pastEvents } = props;
 
-  let filteredEvents: Event[] = events;
+  let filteredEvents: Event[] = [];
 
   if (myEvents && filter == 1) {
     filteredEvents = myEvents;
   }
+  if (events && filter == 0) {
+    filteredEvents = events;
+  }
 
   if (filter instanceof Date) {
-    filteredEvents = events.filter((event) => {
+    filteredEvents = filteredEvents.filter((event) => {
       const eventDate = new Date(event.event_start);
       return (
         eventDate.getFullYear() === filter.getFullYear() &&
@@ -29,7 +32,7 @@ function CardGrid(props: CardGridProps) {
 
   if (pastEvents !== true) {
     const currentTime = new Date();
-    filteredEvents = events.filter((event) => {
+    filteredEvents = filteredEvents.filter((event) => {
       const regEnd = new Date(event.reg_end);
       const eventDate = new Date(event.event_start);
 

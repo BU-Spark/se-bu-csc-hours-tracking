@@ -106,7 +106,7 @@ function Events() {
             Show past events
           </Checkbox>
         </div>
-        {events ? (
+        {(filter == 0 && events) || (filter == 1 && myEvents) ? (
           <CardGrid
             events={events}
             filter={filter}
