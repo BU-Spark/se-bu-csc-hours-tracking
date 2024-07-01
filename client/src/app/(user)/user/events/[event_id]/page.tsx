@@ -236,7 +236,7 @@ export default function Page() {
               }}
               onClick={() => setRegistering(!registering)}
             >
-              {registering ? "Close" : "Register"}
+              {registering ? "Close" : "Apply"}
             </Button>
           )}
         </div>
