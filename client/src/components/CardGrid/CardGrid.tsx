@@ -14,9 +14,8 @@ function CardGrid(props: CardGridProps) {
 
   if (myEvents && filter == 1) {
     filteredEvents = myEvents;
-  }
-  if (events && filter == 0) {
-    filteredEvents = events;
+  } else {
+    if (events) filteredEvents = events;
   }
 
   if (filter instanceof Date) {
@@ -43,6 +42,21 @@ function CardGrid(props: CardGridProps) {
     (a, b) => new Date(b.reg_end).getTime() - new Date(a.reg_end).getTime()
   );
 
+  if (filteredEvents.length == 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          top: 0,
+          bottom: 0,
+        }}
+      >
+        <p>No events</p>
+      </div>
+    );
+  }
 
   return (
     <Row justify="start" style={{ marginRight: "3rem" }}>

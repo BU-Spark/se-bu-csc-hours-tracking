@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
-import { Button, Layout } from "antd";
+import { Button, Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useSession } from "next-auth/react";
 import {
@@ -88,12 +88,22 @@ function Events() {
         </SummaryContainer>
         <DateFilter setDateFilter={handleSetDateFilter} />
         {loading ? (
-          <>Loading events...</>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              top: 0,
+              bottom: 0,
+            }}
+          >
+            <Spin />
+          </div>
         ) : events ? (
           <CardGrid
             events={events}
             filter={dateFilter}
-            myEvents={[]}
+            myEvents={undefined}
             view={"admin"}
             pastEvents={true}
           />
