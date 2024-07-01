@@ -48,8 +48,7 @@ function EventSider() {
       }
     };
     fetchMyApplications();
-    setLoading(false);
-  }, [session]);
+  }, [session, isDisplayed]);
 
   // **Uncomment if you want category names
   // const translateToCategoryNames = async (events: Event[]) => {
@@ -82,6 +81,7 @@ function EventSider() {
     });
 
     setEventGroups(groupedEvents);
+    setLoading(false);
   }
 
   const DateGroup = ({ events, date }: { events: Event[]; date: string }) => {
