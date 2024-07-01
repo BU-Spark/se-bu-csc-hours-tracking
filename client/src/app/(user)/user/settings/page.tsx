@@ -10,6 +10,7 @@ import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { Person } from "@prisma/client";
+import { message } from "antd";
 
 const FormContainer = styled.div`
   max-width: 600px;
@@ -215,6 +216,7 @@ const Settings: React.FC = () => {
   const [showError, setShowError] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -265,6 +267,12 @@ const Settings: React.FC = () => {
       dietaryRestrictions.length > 0
     );
   };
+  const success = (message: string) => {
+    messageApi.open({
+      type: "success",
+      content: message,
+    });
+  };
 
   const handleBackButtonClick = () => {
     setFormSubmitted(true);
@@ -290,7 +298,10 @@ const Settings: React.FC = () => {
         class: Number(classYear),
         dietary_restrictions: dietaryRestrictions.join(","),
       });
-      router.push("/user/my-hours");
+      success("User settings updated");
+      setTimeout(() => {
+        router.push("/user/my-hours");
+      }, 1000);
     } catch (error) {
       console.error("Error updating user details:", error);
     }
@@ -460,6 +471,7 @@ const Settings: React.FC = () => {
             }),
           }}
         />
+        {contextHolder}
         <SubmitButton type="submit">Submit</SubmitButton>
       </form>
       {showError && (
