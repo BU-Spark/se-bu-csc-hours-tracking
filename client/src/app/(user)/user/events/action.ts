@@ -115,10 +115,14 @@ export const getEventsByApplicationEventIds = async (
   ids: number[]
 ): Promise<Event[] | undefined> => {
   try {
+    const currentTime = new Date();
     const events: Event[] = await prisma.event.findMany({
       where: {
         id: {
           in: ids,
+        },
+        event_start: {
+          gt: currentTime, // Only include events where event_start is after the current time
         },
       },
     });

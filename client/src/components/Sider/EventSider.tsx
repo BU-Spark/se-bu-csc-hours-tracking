@@ -93,7 +93,7 @@ function EventSider() {
     fetchUser();
   }, [session]);
 
-  //GET EVENTS USER IS SIGNED UP FOR
+  //GET EVENTS USER IS SIGNED UP FOR THAT ARE UPCOMING
   useEffect(() => {
     if (!isDisplayed) return;
     const fetchMyApplications = async () => {
@@ -105,7 +105,7 @@ function EventSider() {
         const eventIds = userApplications.map(
           (application) => application.event_id
         );
-        const userEvents = await getEventsByApplicationEventIds(eventIds); //get all events those applications were related to
+        const userEvents = await getEventsByApplicationEventIds(eventIds); //get all events those applications were related to that are upcoming
         if (userEvents) {
           setMyEvents(userEvents);
         }
