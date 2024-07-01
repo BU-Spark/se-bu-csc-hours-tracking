@@ -59,7 +59,7 @@ const AddHours: React.FC = () => {
     e.preventDefault();
     if (!event) return;
     const body: CreateNewHourSubmissionParams = {
-      eventId: Number(event.id),
+      eventId: Number(event),
       userId: Number(session?.user.id),
       hours: Number(hours),
       feedback: feedback,
@@ -104,8 +104,8 @@ const AddHours: React.FC = () => {
             onChange={(value) => setEvent(value)}
           >
             {options.map((option) => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
+              <Option key={option.value} value={option.event.id}>
+                {option.label.toString()}
               </Option>
             ))}
           </Select>
