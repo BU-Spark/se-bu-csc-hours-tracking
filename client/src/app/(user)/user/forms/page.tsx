@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Row, Typography, Upload } from "antd";
+import { Button, Col, Row, Spin, Typography, Upload } from "antd";
 import { buRed } from "@/_common/styles";
 import { DownloadOutlined } from "@ant-design/icons";
 import { createDummyForms, getCodes, getForms } from "./action";
@@ -207,8 +207,16 @@ const Forms = () => {
             />
           ))
         ) : (
-          <div>
-            <p>Loading forms...</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              top: 0,
+              bottom: 0,
+            }}
+          >
+            <Spin />
           </div>
         )}
       </Row>

@@ -15,3 +15,7 @@ body {
   height: auto;
 }
 
+.ant-spin-dot-holder{
+  color: var(--buRed) !important
+} 
+

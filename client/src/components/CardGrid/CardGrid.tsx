@@ -6,7 +6,6 @@ import { CardGridProps, EventImage } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
 import convertToBase64 from "../../app/_utils/BufferToString";
 import { buRed } from "@/_common/styles";
-import "./CardGrid.css";
 
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents, view, pastEvents } = props;
