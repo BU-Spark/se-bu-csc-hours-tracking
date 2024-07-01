@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import StyledButton from "@/components/StyledButton";
 import { useRouter } from "next/navigation";
-import { Button, Col, InputNumber, Popover, Row, Upload } from "antd";
+import { Button, Col, InputNumber, Popover, Row, Spin, Upload } from "antd";
 import {
   Code,
   CompleteForm,
@@ -331,8 +331,16 @@ const Forms: React.FC = () => {
               />
             ))
           ) : (
-            <div>
-              <p>Loading forms...</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                top: 0,
+                bottom: 0,
+              }}
+            >
+              <Spin />
             </div>
           )}
         </Row>
