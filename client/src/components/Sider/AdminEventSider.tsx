@@ -37,7 +37,7 @@ function AdminEventSider() {
       }
     };
     fetchFeedback();
-  }, []);
+  }, [isDisplayed]);
 
   const FeedbackBubble = ({ feedback }: { feedback: Feedback }) => {
     return (
@@ -47,7 +47,7 @@ function AdminEventSider() {
             backgroundColor: "#f0f0f0",
             padding: "1rem",
             borderRadius: "15px",
-            width: "14rem",
+            width: "12rem",
             minHeight: "4rem",
             maxHeight: "10rem",
             overflow: "hidden", // Ensure content beyond maxHeight is hidden
@@ -55,7 +55,6 @@ function AdminEventSider() {
             flexDirection: "column",
             justifyContent: "start",
             alignItems: "start",
-            position: "relative",
           }}
         >
           <p
