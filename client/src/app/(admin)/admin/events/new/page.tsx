@@ -12,6 +12,7 @@ const NewEventPage: React.FC = () => {
   const handleCreateEvent = async (eventData: Partial<Event>) => {
     try {
       await createEvent(eventData as Omit<Event, "id">);
+
       router.push("/admin/events");
     } catch (error) {
       console.error("Error creating event:", error);
