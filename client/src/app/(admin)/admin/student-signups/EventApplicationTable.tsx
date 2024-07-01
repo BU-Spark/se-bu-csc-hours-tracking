@@ -256,7 +256,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         ...getColumnSearchProps("eventTitle"),
         render: (text: string, record: EventApplicationsTableData) => {
           return (
-            <a href={`/admin/event/${record.eventId}`}>{record.eventTitle}</a>
+            <a href={`/admin/events/${record.eventId}`}>{record.eventTitle}</a>
           );
         },
       },
@@ -284,7 +284,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         title: "Date Applied",
         dataIndex: "dateApplied",
         key: "date_applied",
-        width: "8%",
+        width: "15%",
         align: "center",
         sorter: (
           a: EventApplicationsTableData,
@@ -305,6 +305,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         key: "approval",
         width: "15rem%",
         align: "center",
+
         render: (text: string, record: EventApplicationsTableData) => {
           if (editingKey == Number(record.applicationId)) {
             return (
