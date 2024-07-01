@@ -118,6 +118,7 @@ export interface HoursTableData {
   key: React.Key;
   submissionId: string;
   studentName: string;
+  buId: string;
   college: string;
   category: string;
   dateSubmitted: Date;
@@ -135,6 +136,7 @@ export interface EventApplicationsTableData {
   updatedBy: string;
   reason: Reason;
   studentName: string;
+  buId: string;
   class: number;
   college: string;
   eventId: string;

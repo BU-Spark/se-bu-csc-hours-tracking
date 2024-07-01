@@ -240,7 +240,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         title: "Student Name",
         dataIndex: "studentName",
         key: "student_name",
-        width: "25%",
+        width: "20%",
         align: "center",
         render: (text: string, record: EventApplicationsTableData) => (
           <strong>{text}</strong>
@@ -248,10 +248,17 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         ...getColumnSearchProps("studentName"),
       },
       {
+        title: "BU ID",
+        dataIndex: "buId",
+        key: "bu_id",
+        width: "10%",
+        align: "center",
+      },
+      {
         title: "Event",
         dataIndex: "eventTitle",
         key: "event_title",
-        width: "15%",
+        width: "10%",
         align: "center",
         ...getColumnSearchProps("eventTitle"),
         render: (text: string, record: EventApplicationsTableData) => {
@@ -286,14 +293,14 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         key: "date_applied",
         width: "15%",
         align: "center",
-        sorter: (
-          a: EventApplicationsTableData,
-          b: EventApplicationsTableData
-        ) => {
-          const dateA = new Date(a.dateApplied).getTime();
-          const dateB = new Date(b.dateApplied).getTime();
-          return dateA - dateB;
-        },
+        // sorter: (
+        //   a: EventApplicationsTableData,
+        //   b: EventApplicationsTableData
+        // ) => {
+        //   const dateA = new Date(a.dateApplied).getTime();
+        //   const dateB = new Date(b.dateApplied).getTime();
+        //   return dateA - dateB;
+        // },
         defaultSortOrder: "ascend",
         render: (text: string, record: EventApplicationsTableData) =>
           new Date(record.dateApplied).toLocaleDateString("en-US"),
