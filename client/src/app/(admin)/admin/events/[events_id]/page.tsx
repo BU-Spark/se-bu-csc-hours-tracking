@@ -5,7 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import { getEvent, updateEvent } from "./action";
 import { Event } from "@prisma/client";
 import { Button, message, Typography } from "antd";
-import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import { buRed } from "../../../../../_common/styles";
 import FmdGoodOutlinedIcon from "@mui/icons-material/FmdGoodOutlined";
 import {
@@ -16,12 +20,14 @@ import AdminEventForm from "../new/AdminEventForm";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import AdminEditEventForm from "./AdminEditEventForm";
+import { getEventSpotsLeft } from "../../student-signups/action";
 
 dayjs.extend(customParseFormat);
 
 export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [modifying, setModifying] = useState<boolean>(false);
+  const [capacity, setCapacity] = useState<number>();
   const params = useParams();
   const event_id = Number(params.events_id);
 
@@ -41,7 +47,14 @@ export default function EventDetailPage() {
         setEvent(eventFromDTO);
       }
     };
+    const fetchCapacity = async () => {
+      const response = await getEventSpotsLeft(event_id);
+      if (response) {
+        setCapacity(response);
+      }
+    };
     fetchEvent();
+    fetchCapacity();
   }, [event_id]);
 
   const handleUpdateEvent = async (updatedEvent: Partial<Event>) => {
@@ -148,6 +161,25 @@ export default function EventDetailPage() {
               style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
             />{" "}
             {formatTime(event.event_start)} - {formatTime(event.event_end)}
+          </div>
+          <div
+            className="capacity"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TeamOutlined
+              style={{ fontSize: "2rem", color: buRed, padding: "0rem 1rem" }}
+            />
+            {capacity ? (
+              <p>
+                {capacity} / {event.estimated_participants} spots
+              </p>
+            ) : (
+              <></>
+            )}
           </div>
           <div
             className="location"
