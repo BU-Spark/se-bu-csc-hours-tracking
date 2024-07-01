@@ -225,6 +225,8 @@ export default function Page() {
         >
           {hasRegistered ? (
             <p style={{ color: buRed }}>Applied!</p>
+          ) : event.reg_end < new Date() ? (
+            <p style={{ color: buRed }}>Registration Ended</p>
           ) : (
             <Button
               style={{
