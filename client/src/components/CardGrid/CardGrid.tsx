@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
-import { Row, Col } from "antd";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Spin } from "antd";
 import EventCard from "@/components/EventCard/EventCard";
 import { CardGridProps, EventImage } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import convertToBase64 from "../../../_utils/BufferToString";
+import convertToBase64 from "../../app/_utils/BufferToString";
+import { buRed } from "@/_common/styles";
+import "./CardGrid.css";
 
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents, view, pastEvents } = props;
