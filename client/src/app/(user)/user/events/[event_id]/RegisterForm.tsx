@@ -59,8 +59,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         !event?.application_password ||
         event.application_password.length < 1
       ) {
-        success();
-        if (event?.id) createApplication(event?.id, userId, values.reason); 
+        success("Registration Successful");
+        if (event?.id) createApplication(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
           setHasRegistered(true);
@@ -68,7 +68,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         return;
       }
       if (values.password === event?.application_password) {
-        success();
+        success("Registration Successful");
         if (event?.id) createApplication(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
@@ -88,10 +88,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     }
   };
 
-  const success = () => {
+  const success = (message: string) => {
     messageApi.open({
       type: "success",
-      content: "Registration Successful",
+      content: message,
     });
   };
 

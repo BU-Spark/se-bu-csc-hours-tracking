@@ -28,6 +28,26 @@ const Forms: React.FC = () => {
   const [fileLink, setFileLink] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const success = (message: string) => {
+    messageApi.open({
+      type: "success",
+      content: message,
+    });
+  };
+
+  const error = (mistake: string) => {
+    messageApi.open({
+      type: "error",
+      content:
+        mistake == "date"
+          ? "Please input the correct event date/time"
+          : mistake == "password"
+          ? "Incorrect event password"
+          : `Unknown error: ${mistake}`,
+    });
+  };
 
   useEffect(() => {
     // Check if all fields are filled
@@ -67,14 +87,15 @@ const Forms: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!fileLink) {
-      message.error("Please upload a file.");
+      error("No file link added");
       return;
     }
-    setLoading(true);
+    success("Form created");
+    setTimeout(() => {
+      setLoading(true);
+    }, 1000);
     return;
   };
-
-  
 
   return (
     <div>
@@ -134,6 +155,7 @@ const Forms: React.FC = () => {
               onChange={(e) => setFileLink(e.target.value)}
             />
           </Label>
+          {contextHolder}
           <SubmitButton
             type="submit"
             style={{ opacity: isFormValid ? "100%" : "40%" }}
