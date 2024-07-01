@@ -31,6 +31,7 @@ function EventSider() {
     if (!isDisplayed) return;
     setLoading(true);
     const fetchMyApplications = async () => {
+      console.log(session?.user.id);
       if (!session?.user?.id) return;
 
       const userApplications = await getApplicationsByUserId(
@@ -49,7 +50,7 @@ function EventSider() {
     };
     fetchMyApplications();
     setLoading(false);
-  }, []);
+  }, [session]);
 
   // **Uncomment if you want category names
   // const translateToCategoryNames = async (events: Event[]) => {

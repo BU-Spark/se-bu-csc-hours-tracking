@@ -37,6 +37,11 @@ function CardGrid(props: CardGridProps) {
     });
   }
 
+  filteredEvents.sort(
+    (a, b) => new Date(b.reg_end).getTime() - new Date(a.reg_end).getTime()
+  );
+
+
   return (
     <Row justify="start" style={{ marginRight: "3rem" }}>
       {filteredEvents ? (
