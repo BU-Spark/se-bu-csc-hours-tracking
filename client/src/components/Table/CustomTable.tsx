@@ -1,4 +1,6 @@
 "use client";
+
+import "./CustomTable.css";
 import React, { useEffect, useRef, useState } from "react";
 import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
@@ -13,7 +15,6 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import "./CustomTable.css";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
 import { useSession } from "next-auth/react";
 import { buRed } from "@/_common/styles";

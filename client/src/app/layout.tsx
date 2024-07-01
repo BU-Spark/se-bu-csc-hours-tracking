@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
-import { Providers } from './providers';
-import CustomHeader from '@/components/Header/CustomHeader';
-import CustomSider from '@/components/Sider/CustomSider';
-import { Content } from 'antd/es/layout/layout';
-import './page.css'
-import BodyHeader from '@/components/BodyHeader';
+import "./page.css";
+import { ReactNode } from "react";
+import { Providers } from "./providers";
+import CustomHeader from "@/components/Header/CustomHeader";
+import CustomSider from "@/components/Sider/CustomSider";
+import { Content } from "antd/es/layout/layout";
+import BodyHeader from "@/components/BodyHeader";
 import EventSider from "@/components/Sider/EventSider";
 import AdminEventSider from "@/components/Sider/AdminEventSider";
 

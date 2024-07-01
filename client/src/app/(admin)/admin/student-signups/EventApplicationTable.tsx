@@ -1,4 +1,6 @@
 "use client";
+import "./EventApplicationTable.css";
+import "../../../../components/Table/CustomTable.css";
 import React, { useEffect, useRef, useState } from "react";
 import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
@@ -14,12 +16,11 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import "../../../../components/Table/CustomTable.css";
 import { useSession } from "next-auth/react";
 import { getEventSpotsLeft, reviewEventApplication } from "./action";
 import { text } from "stream/consumers";
 import { buRed } from "@/_common/styles";
-import "./EventApplicationTable.css";
+;
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   data,

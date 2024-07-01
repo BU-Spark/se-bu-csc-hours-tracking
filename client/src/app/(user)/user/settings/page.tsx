@@ -1,5 +1,6 @@
 "use client";
 
+import "react-phone-input-2/lib/style.css";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { checkIfNewUser, getUserDetails, updateUserDetails } from "./action";
@@ -7,7 +8,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
-import "react-phone-input-2/lib/style.css";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { Person } from "@prisma/client";
 

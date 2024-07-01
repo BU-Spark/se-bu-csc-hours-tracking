@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import "./page.css";
 import Dashboard from "./(user)/user/dashboard/page";
 import Login from "./login/page";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import "./page.css";
 import icon from "../../public/photos/full_logo.png";
 import Image from 'next/image';
 

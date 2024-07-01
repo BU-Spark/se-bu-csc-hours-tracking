@@ -1,7 +1,7 @@
+import "./CustomUpload.css";
 import React from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
-import "./CustomUpload.css";
 
 const { Dragger } = Upload;
 
