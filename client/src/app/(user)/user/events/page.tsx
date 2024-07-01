@@ -9,7 +9,7 @@ import {
   getEventsByApplicationEventIds,
 } from "./action";
 import { Checkbox, Layout, Spin } from "antd";
-import CardGrid from "../../../../components/CardGrid/CardGrid";
+import CardGrid from "@/components/CardGrid/CardGrid";
 import { Content } from "antd/es/layout/layout";
 import StyledButton from "@/components/StyledButton";
 import { useSession } from "next-auth/react";

@@ -9,7 +9,7 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
 } from "@/app/(user)/user/events/action";
-import CardGrid from "@/app/(user)/user/events/CardGrid";
+import CardGrid from "@/components/CardGrid/CardGrid";
 import {
   AddHoursButton,
   PlusCircle,

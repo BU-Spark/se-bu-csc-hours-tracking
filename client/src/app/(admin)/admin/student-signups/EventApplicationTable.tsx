@@ -284,7 +284,9 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         width: "5%",
         align: "center",
         render: (eventId: number, record: EventApplicationsTableData) => {
-          return <SpotsLeft eventId={eventId} />;
+      
+
+          return <SpotsLeft eventId={Number(record.eventId)} />;
         },
       },
       {
