@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import StyledButton from "@/components/StyledButton";
 import { useRouter } from "next/navigation";
-import { Button, Col, InputNumber, Popover, Row, Upload } from "antd";
+import { Button, Col, InputNumber, Popover, Row, Spin, Upload } from "antd";
 import {
   Code,
   CompleteForm,
@@ -36,7 +36,6 @@ const Forms: React.FC = () => {
             setForms((prevForms) =>
               prevForms?.filter((f) => f.id !== formDeleted)
             );
-            console.log("Form deleted successfully");
           }
         } else {
           console.error("Failed to delete form");
@@ -191,11 +190,10 @@ const Forms: React.FC = () => {
 
     const handleDownload = () => {
       // check if its a redirect form (goes to a seperate page)
-      console.log(completeForm.file);
       if (completeForm.file.startsWith("REDIRECT-")) {
         window.open(completeForm.file.toString().substring(9), "_blank");
       } else {
-        console.log(`Downloading ${completeForm.title}`);
+        // console.log(`Downloading ${completeForm.title}`);
         download(`/forms/${completeForm.file}`, completeForm.title.toString());
       }
     };
@@ -333,8 +331,16 @@ const Forms: React.FC = () => {
               />
             ))
           ) : (
-            <div>
-              <p>Loading forms...</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                top: 0,
+                bottom: 0,
+              }}
+            >
+              <Spin />
             </div>
           )}
         </Row>

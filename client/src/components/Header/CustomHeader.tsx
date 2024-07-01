@@ -1,8 +1,9 @@
 "use client";
+
+import "./CustomHeader.css";
 import React from "react";
 import { Layout } from "antd";
 import Image from "next/image";
-import "./CustomHeader.css";
 import { accentBackground, buRed } from "../../_common/styles";
 import Pfp from "../Pfp";
 import { signOut, useSession } from "next-auth/react";

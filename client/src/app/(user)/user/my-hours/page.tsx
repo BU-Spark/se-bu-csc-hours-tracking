@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { getSession } from "next-auth/react";
 import {
@@ -19,8 +18,6 @@ import {
   SummaryBox,
   HoursGrid,
   HoursItem,
-  EventName,
-  SubTitle,
   BoldText,
   SubText,
   AddHoursButtonContainer,
@@ -30,10 +27,10 @@ import {
   Overlay,
   PopupContainer,
 } from "@/_common/styledDivs";
-import hours from "@/app/api/add-hours/hours";
+import { Spin } from "antd";
 
 const MyHours: React.FC = () => {
-  const [eventHours, setEventHours] = useState<EventHours[]>([]);
+  const [eventHours, setEventHours] = useState<EventHours[]>();
   const [expandedHour, setExpandedHour] = useState<EventHours | null>(null);
   const [approvedHours, setApprovedHours] = useState<Number>(0);
   const [submittedHours, setSubmittedHours] = useState<Number>(0);
@@ -93,12 +90,16 @@ const MyHours: React.FC = () => {
     setExpandedHour(expandedHour === hour ? null : hour);
   };
 
-  const filteredHours = eventHours.filter((hour: EventHours) => {
-    if (filter === 1) return hour.approval_status === 1; // Approved
-    if (filter === 2) return hour.approval_status === 2; // Denied
-    if (filter === 0) return hour.approval_status === 0; // Pending
-    return true; // Show all for filter === 3 (none)
-  });
+  let filteredHours;
+
+  if (eventHours) {
+    filteredHours = eventHours.filter((hour: EventHours) => {
+      if (filter === 1) return hour.approval_status === 1; // Approved
+      if (filter === 2) return hour.approval_status === 2; // Denied
+      if (filter === 0) return hour.approval_status === 0; // Pending
+      return true; // Show all for filter === 3 (none)
+    });
+  }
 
   return (
     <HeaderOffset>
@@ -153,65 +154,80 @@ const MyHours: React.FC = () => {
           selected={filter == 2}
         />
       </div>
-      <HoursGrid>
-        {filteredHours.map((hour: EventHours) => {
-          return (
-            <HoursItem key={hour.id} status={hour.approval_status}>
-              <img
-                src={`data:image/png;base64,${hour.image}`}
-                alt={hour.eventName}
-              />
-              <div className="divider"></div>
-              <div className="details">
-                <div className="section">
-                  <BoldText>{hour.eventName}</BoldText>
-                  <SubText>{hour.organization}</SubText>
+      {eventHours && filteredHours ? (
+        <HoursGrid>
+          {filteredHours.map((hour: EventHours) => {
+            return (
+              <HoursItem key={hour.id} status={hour.approval_status}>
+                <img
+                  src={`data:image/png;base64,${hour.image}`}
+                  alt={hour.eventName}
+                />
+                <div className="divider"></div>
+                <div className="details">
+                  <div className="section">
+                    <BoldText>{hour.eventName}</BoldText>
+                    <SubText>{hour.organization}</SubText>
+                  </div>
+                  <div className="section">
+                    <BoldText>{hour.hours} Hours</BoldText>
+                    <SubText>{hour.location}</SubText>
+                  </div>
+                  <div className="section">
+                    <BoldText className="status">
+                      {hour.approval_status === 1
+                        ? "Approved"
+                        : hour.approval_status === 0
+                        ? "Pending"
+                        : "Denied"}
+                    </BoldText>
+                    {hour.approval_status != 0 ? (
+                      <SubText>
+                        {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
+                        <div
+                          style={{
+                            textDecoration: "underline",
+                            marginTop: "0.5rem",
+                          }}
+                        >
+                          Reviewed By:
+                        </div>{" "}
+                        {hour.reviewer ? hour.reviewer : "N/A"}
+                      </SubText>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                  <div className="section">
+                    <BoldText>
+                      {new Date(hour.date).toLocaleDateString()}
+                    </BoldText>
+                  </div>
+                  <div className="section">
+                    <FaComment
+                      onClick={() => toggleExpand(hour)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </div>
                 </div>
-                <div className="section">
-                  <BoldText>{hour.hours} Hours</BoldText>
-                  <SubText>{hour.location}</SubText>
-                </div>
-                <div className="section">
-                  <BoldText className="status">
-                    {hour.approval_status === 1
-                      ? "Approved"
-                      : hour.approval_status === 0
-                      ? "Pending"
-                      : "Denied"}
-                  </BoldText>
-                  {hour.approval_status != 0 ? (
-                    <SubText>
-                      {/* Reviewed By: {hour.reviewer ? hour.reviewer : "N/A"}  CHANGE TO GET USER*/}
-                      <div
-                        style={{
-                          textDecoration: "underline",
-                          marginTop: "0.5rem",
-                        }}
-                      >
-                        Reviewed By:
-                      </div>{" "}
-                      {hour.reviewer ? hour.reviewer : "N/A"}
-                    </SubText>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                <div className="section">
-                  <BoldText>
-                    {new Date(hour.date).toLocaleDateString()}
-                  </BoldText>
-                </div>
-                <div className="section">
-                  <FaComment
-                    onClick={() => toggleExpand(hour)}
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
-              </div>
-            </HoursItem>
-          );
-        })}
-      </HoursGrid>
+              </HoursItem>
+            );
+          })}{" "}
+        </HoursGrid>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            top: 0,
+            bottom: 0,
+          }}
+        >
+          <Spin />
+        </div>
+      )}
+
       {expandedHour && (
         <>
           <Overlay onClick={() => setExpandedHour(null)} />

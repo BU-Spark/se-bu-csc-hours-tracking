@@ -1,4 +1,6 @@
 "use client";
+import "./EventApplicationTable.css";
+import "../../../../components/Table/CustomTable.css";
 import React, { useEffect, useRef, useState } from "react";
 import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
@@ -14,12 +16,11 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import "../../../../components/Table/CustomTable.css";
 import { useSession } from "next-auth/react";
 import { getEventSpotsLeft, reviewEventApplication } from "./action";
 import { text } from "stream/consumers";
 import { buRed } from "@/_common/styles";
-import "./EventApplicationTable.css";
+;
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   data,
@@ -239,7 +240,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         title: "Student Name",
         dataIndex: "studentName",
         key: "student_name",
-        width: "25%",
+        width: "20%",
         align: "center",
         render: (text: string, record: EventApplicationsTableData) => (
           <strong>{text}</strong>
@@ -247,15 +248,22 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         ...getColumnSearchProps("studentName"),
       },
       {
+        title: "BU ID",
+        dataIndex: "buId",
+        key: "bu_id",
+        width: "10%",
+        align: "center",
+      },
+      {
         title: "Event",
         dataIndex: "eventTitle",
         key: "event_title",
-        width: "15%",
+        width: "10%",
         align: "center",
         ...getColumnSearchProps("eventTitle"),
         render: (text: string, record: EventApplicationsTableData) => {
           return (
-            <a href={`/admin/event/${record.eventId}`}>{record.eventTitle}</a>
+            <a href={`/admin/events/${record.eventId}`}>{record.eventTitle}</a>
           );
         },
       },
@@ -276,23 +284,25 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         width: "5%",
         align: "center",
         render: (eventId: number, record: EventApplicationsTableData) => {
-          return <SpotsLeft eventId={eventId} />;
+      
+
+          return <SpotsLeft eventId={Number(record.eventId)} />;
         },
       },
       {
         title: "Date Applied",
         dataIndex: "dateApplied",
         key: "date_applied",
-        width: "8%",
+        width: "15%",
         align: "center",
-        sorter: (
-          a: EventApplicationsTableData,
-          b: EventApplicationsTableData
-        ) => {
-          const dateA = new Date(a.dateApplied).getTime();
-          const dateB = new Date(b.dateApplied).getTime();
-          return dateA - dateB;
-        },
+        // sorter: (
+        //   a: EventApplicationsTableData,
+        //   b: EventApplicationsTableData
+        // ) => {
+        //   const dateA = new Date(a.dateApplied).getTime();
+        //   const dateB = new Date(b.dateApplied).getTime();
+        //   return dateA - dateB;
+        // },
         defaultSortOrder: "ascend",
         render: (text: string, record: EventApplicationsTableData) =>
           new Date(record.dateApplied).toLocaleDateString("en-US"),
@@ -304,6 +314,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         key: "approval",
         width: "15rem%",
         align: "center",
+
         render: (text: string, record: EventApplicationsTableData) => {
           if (editingKey == Number(record.applicationId)) {
             return (

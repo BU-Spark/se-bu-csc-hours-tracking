@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event, HourSubmission } from "@prisma/client";
+import { assert } from "console";
 
 export async function createNewHourSubmission({
   eventId,
@@ -28,7 +29,9 @@ export async function createNewHourSubmission({
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    let eventData = await prisma.event.findUnique({
+    assert(eventId != null && eventId != undefined && !Number.isNaN(eventId));
+
+    let eventData = await prisma.event.findFirst({
       where: { id: eventId },
       select: {
         id: true,
@@ -137,9 +140,6 @@ export const getAllApprovedEventsByUserId = async (
         eventIdsWithApplications.includes(event.id) &&
         !eventIdsWithSubmissions.includes(event.id)
     );
-    console.log("eventsWithoutSubmissions: ::::", eventsWithoutSubmissions);
-    console.log("eventIdsWithApplications: ::::", eventIdsWithApplications);
-    console.log("approvedApplications: ::::", approvedApplications);
 
     return eventsWithoutSubmissions;
   } catch (error) {

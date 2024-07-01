@@ -337,7 +337,7 @@ const AdminEditEventForm: React.FC<AdminEditEventFormProps> = ({
           valuePropName="fileList2"
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
           rules={[
-            { required: true, message: "Please upload an image" },
+            { required: true, message: "Please upload an image!" },
             { validator: checkFileSize },
           ]}
         >

@@ -1,4 +1,6 @@
 "use client";
+
+import "./CustomTable.css";
 import React, { useEffect, useRef, useState } from "react";
 import { DownOutlined, SearchOutlined, UpOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
@@ -13,7 +15,6 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import "./CustomTable.css";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
 import { useSession } from "next-auth/react";
 import { buRed } from "@/_common/styles";
@@ -234,6 +235,8 @@ const CustomTable: React.FC<CustomTableParams> = ({
         {toggled ? (
           <div
             style={{
+              display: "flex",
+              alignItems: "flex-start", // Align items to the start (top) of the container
               fontSize: "0.75rem",
               width: "90%",
               wordWrap: "break-word",
@@ -241,7 +244,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
               margin: "1rem 0",
             }}
           >
-            {record.description}
+            <p style={{ flexWrap: "wrap" }}>{record.description}</p>
           </div>
         ) : (
           <></>
@@ -261,6 +264,15 @@ const CustomTable: React.FC<CustomTableParams> = ({
       render: (text: string, record: HoursTableData) => {
         return <StudentDropdown record={record} />;
       },
+      ...getColumnSearchProps("studentName"),
+    },
+    {
+      title: "BU ID",
+      dataIndex: "buId",
+      key: "bu_id",
+      width: "10%",
+      align: "center",
+
       ...getColumnSearchProps("studentName"),
     },
     {
@@ -289,11 +301,11 @@ const CustomTable: React.FC<CustomTableParams> = ({
       render: (text: string, record: HoursTableData) =>
         new Date(record.dateSubmitted).toLocaleDateString("en-US"),
       ...getColumnSearchProps("dateSubmitted"),
-      sorter: (a: HoursTableData, b: HoursTableData) => {
-        const dateA = new Date(a.dateSubmitted).getTime();
-        const dateB = new Date(b.dateSubmitted).getTime();
-        return dateA - dateB;
-      },
+      // sorter: (a: HoursTableData, b: HoursTableData) => {
+      //   const dateA = new Date(a.dateSubmitted).getTime();
+      //   const dateB = new Date(b.dateSubmitted).getTime();
+      //   return dateA - dateB;
+      // },
       defaultSortOrder: "ascend",
     },
     {

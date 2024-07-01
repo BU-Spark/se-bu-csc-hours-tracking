@@ -3,15 +3,14 @@ import React, { useEffect, useState } from "react";
 import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
-import { useSession } from "next-auth/react";
 import { Feedback } from "@/interfaces/interfaces";
 import { getFeedback } from "@/app/(admin)/admin/events/[events_id]/action";
 import { buRed } from "@/_common/styles";
+import Link from "next/link";
 
 function AdminEventSider() {
   //session and path vars
   const path = usePathname();
-  const { data: session, status } = useSession();
   const isDisplayed = path === "/admin/events";
 
   //useState variables
@@ -38,7 +37,7 @@ function AdminEventSider() {
       }
     };
     fetchFeedback();
-  }, []);
+  }, [isDisplayed]);
 
   const FeedbackBubble = ({ feedback }: { feedback: Feedback }) => {
     return (
@@ -48,7 +47,7 @@ function AdminEventSider() {
             backgroundColor: "#f0f0f0",
             padding: "1rem",
             borderRadius: "15px",
-            width: "70%",
+            width: "12rem",
             minHeight: "4rem",
             maxHeight: "10rem",
             overflow: "hidden", // Ensure content beyond maxHeight is hidden
@@ -56,7 +55,6 @@ function AdminEventSider() {
             flexDirection: "column",
             justifyContent: "start",
             alignItems: "start",
-            position: "relative",
           }}
         >
           <p
@@ -68,9 +66,15 @@ function AdminEventSider() {
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
+              maxWidth: "100%",
             }}
           >
-            {feedback.event.title}
+            <Link
+              href={`/admin/events/${feedback.event.id}`}
+              style={{ color: buRed }}
+            >
+              {feedback.event.title}
+            </Link>
           </p>
           <p
             style={{
@@ -78,7 +82,7 @@ function AdminEventSider() {
               fontSize: "0.7rem",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 7, // Limits the text to 3 lines
+              WebkitLineClamp: 7,
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}

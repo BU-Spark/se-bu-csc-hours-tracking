@@ -8,16 +8,17 @@ import {
   getEvents,
   getEventsByApplicationEventIds,
 } from "./action";
-import { Layout } from "antd";
-import CardGrid from "./CardGrid";
+import { Checkbox, Layout, Spin } from "antd";
+import CardGrid from "@/components/CardGrid/CardGrid";
 import { Content } from "antd/es/layout/layout";
 import StyledButton from "@/components/StyledButton";
 import { useSession } from "next-auth/react";
 
 function Events() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>();
+  const [myEvents, setMyEvents] = useState<Event[]>();
   const [filter, setFilter] = useState<number>(0);
+  const [showPastEvents, setShowPastEvents] = useState<boolean>(false);
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -93,15 +94,38 @@ function Events() {
             selected={filter == 0}
           />
         </div>
-        {events ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <Checkbox onChange={() => setShowPastEvents(!showPastEvents)}>
+            Show past events
+          </Checkbox>
+        </div>
+        {(filter == 0 && events) || (filter == 1 && myEvents) ? (
           <CardGrid
             events={events}
             filter={filter}
             myEvents={myEvents}
             view="student"
+            pastEvents={showPastEvents}
           />
         ) : (
-          <p>loading</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              top: 0,
+              bottom: 0,
+            }}
+          >
+            <Spin />
+          </div>
         )}
         {/* UNCOMMENT TO MAKE DUMMY DATA */}
         {/* <button

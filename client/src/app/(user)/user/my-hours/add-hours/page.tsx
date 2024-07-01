@@ -11,7 +11,7 @@ import {
 } from "./action";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
-import { AutoComplete, Select } from "antd";
+import { AutoComplete, Select, message } from "antd";
 import { buRed } from "@/_common/styles";
 import {
   Asterisk,
@@ -32,6 +32,7 @@ const AddHours: React.FC = () => {
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -55,11 +56,18 @@ const AddHours: React.FC = () => {
     fetchValidEvents();
   }, [session?.user.id]);
 
+  const success = (message: string) => {
+    messageApi.open({
+      type: "success",
+      content: message,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!event) return;
     const body: CreateNewHourSubmissionParams = {
-      eventId: Number(event.id),
+      eventId: Number(event),
       userId: Number(session?.user.id),
       hours: Number(hours),
       feedback: feedback,
@@ -68,8 +76,10 @@ const AddHours: React.FC = () => {
     try {
       const response = await createNewHourSubmission(body);
       if (response) {
-        router.push("/user/my-hours");
-        console.log("Success");
+        success("Hour Submission sent");
+        setTimeout(() => {
+          router.push("/user/my-hours");
+        }, 1000);
       } else {
         console.log("Failed to log hours");
         router.push("/user/my-hours");
@@ -104,34 +114,18 @@ const AddHours: React.FC = () => {
             onChange={(value) => setEvent(value)}
           >
             {options.map((option) => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
+              <Option key={option.value} value={option.event.id}>
+                {option.label.toString()}
               </Option>
             ))}
           </Select>
         </Label>
-        {/* <Label>
-          <LabelTitle>
-            Event
-            <Asterisk>*</Asterisk>
-          </LabelTitle>
-          <AutoComplete
-            options={options}
-            style={{ width: "100%" }}
-            placeholder="Choose Event"
-            onSelect={(value, option) => setEvent(option.event)}
-            filterOption={(inputValue, option) =>
-              option!.value.toUpperCase().includes(inputValue.toUpperCase())
-            }
-          />
-        </Label> */}
         <Label>
           <LabelTitle>
             Hours
             <Asterisk>*</Asterisk>
           </LabelTitle>
           <StyledInputNumber
-            defaultValue="1"
             min="0"
             max="10"
             step="0.25"
@@ -166,7 +160,7 @@ const AddHours: React.FC = () => {
             opacity: isFormValid ? "100%" : "40%",
           }}
         >
-          {" "}
+          {contextHolder}
           <SubmitButton type="submit" disabled={isFormValid ? false : true}>
             Submit
           </SubmitButton>

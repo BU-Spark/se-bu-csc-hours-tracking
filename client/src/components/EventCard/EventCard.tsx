@@ -17,7 +17,8 @@ const EventCard: React.FC<EventCardProps> = ({
   coordinator_id,
   location,
   image,
-  event_start,
+  reg_start,
+  reg_end,
   hasPassword,
   isAdmin,
 }) => {
@@ -44,7 +45,7 @@ const EventCard: React.FC<EventCardProps> = ({
     };
     fetchCategory();
   }, [category_id, coordinator_id]);
-  return eventPath && title ? (
+  return eventPath && title && coordinator ? (
     <Link
       href={
         isAdmin ? `/admin/events/${eventPath}` : `/user/events/${eventPath}`
@@ -60,6 +61,7 @@ const EventCard: React.FC<EventCardProps> = ({
           position: "relative",
           overflow: "hidden",
           marginBottom: "3rem",
+          filter: reg_end < new Date() ? "grayscale(100%)" : "none",
         }}
         hoverable
       >

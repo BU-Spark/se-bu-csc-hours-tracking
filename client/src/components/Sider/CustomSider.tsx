@@ -1,7 +1,8 @@
 "use client";
+
+import "./CustomSider.css";
 import React from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import "./CustomSider.css";
 import { useRouter, usePathname } from "next/navigation";
 const { Sider } = Layout;
 import Pfp from "../Pfp";
