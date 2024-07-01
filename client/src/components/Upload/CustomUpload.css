@@ -1,9 +1,0 @@
-:root {
-    --buRed: #CC0000;
-  }
-
-
-.anticon-inbox{
-    color: var(--buRed) !important
-}
-
