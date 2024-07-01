@@ -16,7 +16,6 @@ import {
   SubmitButton,
   TextArea,
 } from "@/_common/styledDivs";
-import CustomUpload from "@/components/Upload/CustomUpload";
 import { CreateFormResponse, NewForm } from "@/interfaces/interfaces";
 import { createForm } from "./action";
 
