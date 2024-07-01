@@ -10,12 +10,16 @@ An application that connects BU students with nonprofit organizations looking fo
 `cd client` <br/>
 `npm install` <br/>
 `docker compose up` (if this is your first time) <br/>
-`npx prisma migrate deploy` (run `npx prisma studio` if you want to see the contents)
-`npm run dev` <br>
+`npx prisma migrate deploy` (run `npx prisma studio` if you want to see the contents) <br/>
+`npm run dev` <br/>
+
+# .env
+View the Product Description. Place inside `/client`
 
 # Contributors
-Ale Lanz (alessandralanz)<br/>
-Owen Mariani (owenm-26)
+Owen Mariani (owenm-26) <br/>
+Alessandra Lanz (alessandralanz)<br/>
+
 
 
 
