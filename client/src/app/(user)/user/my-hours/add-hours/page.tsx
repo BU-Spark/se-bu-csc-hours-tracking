@@ -110,28 +110,12 @@ const AddHours: React.FC = () => {
             ))}
           </Select>
         </Label>
-        {/* <Label>
-          <LabelTitle>
-            Event
-            <Asterisk>*</Asterisk>
-          </LabelTitle>
-          <AutoComplete
-            options={options}
-            style={{ width: "100%" }}
-            placeholder="Choose Event"
-            onSelect={(value, option) => setEvent(option.event)}
-            filterOption={(inputValue, option) =>
-              option!.value.toUpperCase().includes(inputValue.toUpperCase())
-            }
-          />
-        </Label> */}
         <Label>
           <LabelTitle>
             Hours
             <Asterisk>*</Asterisk>
           </LabelTitle>
           <StyledInputNumber
-            defaultValue="1"
             min="0"
             max="10"
             step="0.25"
