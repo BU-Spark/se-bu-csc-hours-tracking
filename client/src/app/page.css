@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+:root {
+  --buRed: #CC0000;
+  --accentBackground: #EBEBEB;
+}
+
+body {
+  font-family: "Whitney SSm A", "Whitney SSm B", "Benton", Helvetica, sans-serif;
+  /* font-family: 'Inter', sans-serif; */
+}
+
+.loading-image{
+  width: 50vw;
+  height: auto;
+}
+
+.ant-spin-dot-holder{
+  color: var(--buRed) !important
+} 
+

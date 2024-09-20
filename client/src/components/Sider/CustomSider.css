@@ -1,0 +1,62 @@
+:root {
+  --buRed: #CC0000;
+}
+
+.sider-content {
+  padding: 0.5em 0.5em;
+  margin: 3em 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90%;
+}
+
+.sider-profile {
+  margin-top: 3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sider-profile-details {
+  margin-top: 1.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-name {
+  font-size: 20px;
+  margin-bottom: -0.8em;
+}
+
+.custom-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100% !important;  /* Ensure the menu takes full width */
+}
+
+.custom-menu .ant-menu-item {
+  display: flex;
+  justify-content: center;
+  width: 100%;  /* Ensure each menu item takes full width */
+  padding: 1em 0;  /* Add padding for better spacing */
+  font-family: 'Inter', sans-serif !important;
+  font-size: medium !important;
+}
+
+.ant-menu-item:hover {
+  background-color: var(--buRed)!important;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  background-color: var(--buRed) !important;
+  color: white;
+}
+
+.ant-menu-light.ant-menu-root.ant-menu-inline {
+  border-inline-end: none !important;
+  width: 100%;  /* Ensure the inline menu takes full width */
+  padding: 0;
+}
