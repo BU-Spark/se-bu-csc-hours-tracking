@@ -238,7 +238,7 @@ export default function Page() {
               }}
               onClick={() => setRegistering(!registering)}
             >
-              {registering ? "Close" : "Apply"}
+              {registering ? "Close" : (capacity == 0 ? "Waitlist":"Apply")}
             </Button>
           )}
         </div>
