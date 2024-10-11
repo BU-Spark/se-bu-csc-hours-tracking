@@ -28,7 +28,7 @@ const { Option } = Select;
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
-  const [hours, setHours] = useState<number | string>();
+  const [hours, setHours] = useState<number>();
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
