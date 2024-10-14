@@ -2,6 +2,7 @@
 import prisma from "@/app/_utils/prisma";
 import { Event } from "@prisma/client";
 import { Application, Reason } from "@prisma/client";
+import { Waitlist } from "@prisma/client";
 
 export async function getEvent(eventId: number): Promise<any> {
   try {
@@ -85,6 +86,31 @@ export async function createApplication(
     console.log(error);
   }
 }
+
+export async function createWaitlist(
+  event_id: number,
+  userId: number,
+  reason: number
+): Promise<Waitlist | undefined> {
+  try {
+    const waitlist = await prisma.waitlist.create({
+      data: {
+        date_applied: new Date(),
+        reason_id: reason, //FIX REASON
+        approval_status: 0,
+        applicant_id: userId,
+        event_id: event_id,
+        updated_by_id: userId,
+        updated_at: new Date(),
+      },
+    });
+
+    if (waitlist) return waitlist;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 
 export const getReasons = async (): Promise<Reason[] | undefined> => {
   try {
