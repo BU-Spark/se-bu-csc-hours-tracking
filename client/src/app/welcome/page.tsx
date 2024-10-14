@@ -22,6 +22,9 @@ const Dashboard: React.FC = () => {
           if (session?.user.role == "ADMIN") {
             router.push("/admin/student-hours");
           }
+          if (session?.user.role == "ORGANIZER") {
+            router.push("/third-party/test");
+          }
         }
       } catch (error) {
         console.error("Error checking if new user:", error);
