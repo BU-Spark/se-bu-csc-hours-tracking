@@ -21,6 +21,7 @@ import RegisterForm from "./RegisterForm";
 import { useSession } from "next-auth/react";
 import { getEventSpotsLeft } from "@/app/(admin)/admin/student-signups/action";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import WaitlistForm from "./WaitlistForm";
 
 dayjs.extend(customParseFormat);
 
@@ -242,14 +243,21 @@ export default function Page() {
             </Button>
           )}
         </div>
-        {registering && session.data?.user.id ? (
+        {registering && session.data?.user.id ? (capacity !== event.estimated_participants ? (
           <RegisterForm
             event={event}
             userId={Number(session.data?.user.id)}
             setRegistering={setRegistering}
             setHasRegistered={setHasRegistered}
           />
-        ) : (
+        ):(
+          <WaitlistForm
+            event={event}
+            userId={Number(session.data?.user.id)}
+            setRegistering={setRegistering}
+            setHasRegistered={setHasRegistered}
+          />
+        )) : (
           <div className="description">{event.description}</div>
         )}
       </div>
