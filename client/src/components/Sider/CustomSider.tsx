@@ -64,6 +64,11 @@ const CustomSider: React.FC = () => {
     : session?.user.role === "ORGANIZER"
     ? [
         {
+          key: "dashboard",
+          label: "Dashboard",
+          onClick: () => router.push("/third-party/dashboard"),
+        },
+        {
           key: "my-events",
           label: "My Events",
           onClick: () => router.push("/third-party/my-events"),
@@ -111,6 +116,9 @@ const CustomSider: React.FC = () => {
     }
     if (pathname.startsWith("/admin/forms")) {
       return "forms";
+    }
+    if (pathname.startsWith("/third-party/dashboard")) {
+      return "dashboard";
     }
     if (pathname.startsWith("/third-party/my-events")) {
       return "my_events";

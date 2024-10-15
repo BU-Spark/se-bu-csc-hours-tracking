@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
             router.push("/admin/student-hours");
           }
           if (session?.user.role == "ORGANIZER") {
-            router.push("/third-party/test");
+            router.push("/third-party/dashboard");
           }
         }
       } catch (error) {
