@@ -12,7 +12,7 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { buRed } from "@/_common/styles";
-import { createApplication, getReasons } from "./action";
+import { createApplication, createWaitlist, getReasons } from "./action";
 import { useEffect, useState } from "react";
 
 interface WaitlistFormProps {
@@ -60,7 +60,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         event.application_password.length < 1
       ) {
         success("Waitlist Successful");
-        if (event?.id) createApplication(event?.id, userId, values.reason);
+        if (event?.id) createWaitlist(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
           setHasRegistered(true);
@@ -69,7 +69,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
       }
       if (values.password === event?.application_password) {
         success("Waitlist Successful");
-        if (event?.id) createApplication(event?.id, userId, values.reason);
+        if (event?.id) createWaitlist(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
           setHasRegistered(true);
