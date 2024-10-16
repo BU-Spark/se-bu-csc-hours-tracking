@@ -19,14 +19,14 @@ interface WaitlistFormProps {
   event: Event | undefined;
   setRegistering: (value: boolean) => void;
   userId: number;
-  setHasRegistered: (value: boolean) => void;
+  setHasWaitlisted: (value: boolean) => void;
 }
 
 const WaitlistForm: React.FC<WaitlistFormProps> = ({
   event,
   setRegistering,
   userId,
-  setHasRegistered,
+  setHasWaitlisted,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
@@ -63,7 +63,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         if (event?.id) createWaitlist(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
-          setHasRegistered(true);
+          setHasWaitlisted(true);
         }, 1000);
         return;
       }
@@ -72,7 +72,7 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         if (event?.id) createWaitlist(event?.id, userId, values.reason);
         setTimeout(() => {
           setRegistering(false);
-          setHasRegistered(true);
+          setHasWaitlisted(true);
         }, 1000);
       } else {
         errorReason = "password";

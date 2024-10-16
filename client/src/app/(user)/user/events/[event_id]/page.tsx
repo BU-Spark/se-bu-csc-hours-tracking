@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { checkIfApplied, getEvent } from "./action";
+import { checkIfApplied, checkIfWaitlisted, getEvent } from "./action";
 import { Event } from "@prisma/client";
 import { Button, Typography } from "antd";
 import {
@@ -29,6 +29,7 @@ export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
   const [hasRegistered, setHasRegistered] = useState<boolean>(false);
+  const [hasWaitlisted, setHasWaitlisted] = useState<boolean>(false);
   const [capacity, setCapacity] = useState<number>();
   const event_id: number = Number(useParams().event_id);
   const session = useSession();
@@ -42,6 +43,15 @@ export default function Page() {
           Number(session?.data?.user.id)
         );
         setHasRegistered(result);
+      }
+    };
+    const fetchCheckWaitlisted = async () => {
+      if (session?.data?.user) {
+        const result: boolean = await checkIfWaitlisted(
+          event_id,
+          Number(session?.data?.user.id)
+        );
+        setHasWaitlisted(result);
       }
     };
     if (session.status != "loading") fetchCheckApplied();
@@ -226,6 +236,8 @@ export default function Page() {
         >
           {hasRegistered ? (
             <p style={{ color: buRed }}>Applied!</p>
+          ) : hasWaitlisted ? (
+            <p style={{ color: buRed }}>Waitlisted!</p>
           ) : event.reg_end < new Date() ? (
             <p style={{ color: buRed }}>Registration Ended</p>
           ) : (
@@ -255,7 +267,7 @@ export default function Page() {
             event={event}
             userId={Number(session.data?.user.id)}
             setRegistering={setRegistering}
-            setHasRegistered={setHasRegistered}
+            setHasWaitlisted={setHasWaitlisted}
           />
         )) : (
           <div className="description">{event.description}</div>

@@ -63,6 +63,27 @@ export async function checkIfApplied(
   }
 }
 
+export async function checkIfWaitlisted(
+  eventId: number,
+  userId: number
+): Promise<boolean> {
+  try {
+    const applied = await prisma.waitlist.findFirst({
+      where: {
+        event_id: eventId,
+        applicant_id: userId,
+      },
+    });
+    if (applied) return true;
+    return false;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return false;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 export async function createApplication(
   event_id: number,
   userId: number,
