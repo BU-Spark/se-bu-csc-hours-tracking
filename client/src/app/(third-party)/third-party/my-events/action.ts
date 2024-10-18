@@ -31,6 +31,7 @@ export async function getEvent(eventId: number) {
 }
 
 export async function updateEvent(eventId: number, eventData: any) {
+  console.log("updating evet");
   try {
     const {
       category_id,
@@ -38,11 +39,10 @@ export async function updateEvent(eventId: number, eventData: any) {
       coordinator_email,
       organization_id,
       coordinator_id,
-      "coordinator.name": coordinatorName,
-      "coordinator.email": coordinatorEmail,
       form_id,
       ...data
     } = eventData;
+    console.log(eventData);
     const coordinator = await prisma.person.findFirst({
       where: { email: coordinator_email },
     });
@@ -84,24 +84,11 @@ export async function createEvent(eventData: ExtendedEvent | any) {
   try {
     const {
       category_id,
-      coordinator_name,
-      coordinator_email,
+      coordinator_id,
       organization_id,
       password,
       ...data
     } = eventData;
-    // const coordinator = await prisma.person.findUnique({
-    //   where: { email: coordinator_email },
-    // });
-    const dummyCoordinator = await prisma.person.findFirst({
-      where: { id: 1 },
-    });
-
-    if (!dummyCoordinator) {
-      throw new Error(
-        `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
-      );
-    }
 
     if (typeof data.image === "string") {
       data.image = Buffer.from(data.image, "base64");
@@ -111,7 +98,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
       ...data,
       application_password: data.password,
       category: { connect: { id: category_id } },
-      coordinator: { connect: { id: dummyCoordinator.id } },
+      coordinator: { connect: { id: coordinator_id } },
     };
 
     if (organization_id) {

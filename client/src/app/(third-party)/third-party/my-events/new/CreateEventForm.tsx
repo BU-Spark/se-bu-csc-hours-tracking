@@ -23,9 +23,9 @@ import { Category, Event, Organization } from "@prisma/client";
 import { getCategories, getOrganizations } from "../action";
 import { useSession } from "next-auth/react";
 import {
-  getEvents,
-  getEventsByOrganizerId,
-  getOrganizationByUserId,
+	getEvents,
+	getEventsByOrganizerId,
+	getOrganizationByUserId,
 } from "../action";
 
 dayjs.extend(customParseFormat);
@@ -82,12 +82,12 @@ interface AdminEventFormProps {
 }
 
 type OrgType = {
-  affiliation: {
-    id: number;
-    name: string;
-    abbreviation: string;
-    unit: string | null;
-  } | null;
+	affiliation: {
+		id: number;
+		name: string;
+		abbreviation: string;
+		unit: string | null;
+	} | null;
 } | null | undefined;
 
 const CreateEventForm: React.FC<AdminEventFormProps> = ({
@@ -156,10 +156,10 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 
 		const fetchUserOrganizaiton = async () => {
 			const userId = session?.user.id;
-				if (userId){
-					const org = await getOrganizationByUserId(Number(userId));
-					setUserOrg(org);
-				}
+			if (userId) {
+				const org = await getOrganizationByUserId(Number(userId));
+				setUserOrg(org);
+			}
 		}
 
 		fetchOrganizations();
@@ -179,10 +179,8 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 				? await convertFileToBase64(values.image[0].originFileObj)
 				: event?.image?.toString("base64"),
 			category_id: category ? category : 1,
-			coordinator_name: values.coordinator_name,
-			coordinator_email: values.coordinator_email,
+			coordinator_id: Number(session?.user?.id),
 			organization_id: userOrg?.affiliation?.id || 2,
-			// organization_name: userOrg?.affiliation?.name,
 			estimated_participants: parseInt(values.estimated_participants, 10), // Ensure this is an integer
 			password: values.password ? values.password : undefined,
 		};
@@ -248,7 +246,16 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 						</Form.Item>
 					</Col>
 					<Col span={6}>
-					<Form.Item
+						<Form.Item
+							name="location"
+							label="Event Location"
+							rules={[{ required: true, message: "Please enter the location" }]}
+						>
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col span={6}>
+						<Form.Item
 							name="category_id"
 							label="Category"
 							rules={[{ required: true, message: "Please select a category" }]}
@@ -267,27 +274,20 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 					</Col>
 					<Col span={6}>
 						<Form.Item
-							name="coordinator_name"
-							label="Coordinator Name"
+							name="estimated_participants"
+							label="Projected Participants"
 							rules={[
-								{ required: true, message: "Please enter the coordinator name" },
+								{
+									required: true,
+									message: "Please enter the number of participants",
+								},
 							]}
 						>
-							<Input />
-						</Form.Item>
-					</Col>
-					<Col span={6}>
-						<Form.Item
-							name="coordinator_email"
-							label="Coordinator Email"
-							rules={[
-								{ required: true, message: "Please enter the coordinator email" },
-							]}
-						>
-							<Input type="email" />
+							<Input type="number" />
 						</Form.Item>
 					</Col>
 				</Row>
+				
 				<Row gutter={16}>
 					<Col span={6}>
 						<Form.Item
@@ -352,30 +352,8 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 						</Form.Item>
 					</Col>
 				</Row>
+
 				<Row gutter={16}>
-					<Col span={6}>
-						<Form.Item
-							name="estimated_participants"
-							label="Projected Participants"
-							rules={[
-								{
-									required: true,
-									message: "Please enter the number of participants",
-								},
-							]}
-						>
-							<Input type="number" />
-						</Form.Item>
-					</Col>
-					<Col span={6}>
-						<Form.Item
-							name="location"
-							label="Event Location"
-							rules={[{ required: true, message: "Please enter the location" }]}
-						>
-							<Input />
-						</Form.Item>
-					</Col>
 					<Col span={6}>
 						<Form.Item
 							name="transit"
@@ -386,13 +364,19 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 						</Form.Item>
 					</Col>
 					<Col span={6}>
-					<Form.Item
+						<Form.Item
 							name="password"
 							label="Event Password"
 							rules={[{ required: false }]}
 						>
 							<TextArea rows={1} />
 						</Form.Item>
+					</Col>
+					<Col span={6}>
+
+					</Col>
+					<Col span={6}>
+
 					</Col>
 				</Row>
 				<Row>
@@ -406,6 +390,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 						</Form.Item>
 					</Col>
 				</Row>
+
 				<Row gutter={16}>
 					<Col span={6}>
 						<Form.Item

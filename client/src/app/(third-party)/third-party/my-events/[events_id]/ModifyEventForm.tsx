@@ -75,8 +75,8 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
 
   useEffect(() => {
     form.setFieldsValue({
-      "coordinator.name": coordinator?.name,
-      "coordinator.email": coordinator?.email,
+      coordinator_name: coordinator?.name,
+      coordinator_email: coordinator?.email,
       category: event.category_id,
       organizations: event.organization_id,
       ...event,
@@ -216,8 +216,8 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
         onFinish={handleFinish}
         initialValues={{
           ...event,
-          "coordinator.name": coordinator?.name,
-          "coordinator.email": coordinator?.email,
+          coordinator_name: coordinator?.name,
+          coordinator_email: coordinator?.email,
           estimated_participants: event.estimated_participants,
           category: event.category_id,
           organization: event.organization_id,
@@ -235,7 +235,7 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
           <Input />
         </Form.Item>
         <Form.Item
-          name="coordinator.name"
+          name="coordinator_name"
           label="Coordinator Name"
           rules={[
             { required: true, message: "Please enter the coordinator name" },
@@ -244,7 +244,7 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
           <Input />
         </Form.Item>
         <Form.Item
-          name="coordinator.email"
+          name="coordinator_email"
           label="Coordinator Email"
           rules={[
             {

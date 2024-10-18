@@ -125,7 +125,7 @@ export default function EventDetailPage() {
             At a Glance
           </Typography.Title>
           <Typography.Text style={{ fontSize: "1.2rem" }}>
-            Apply by {formatDate(event.reg_end, true)}{" "}
+            Registration Ends: {formatDate(event.reg_end, true)}{" "}
           </Typography.Text>
         </div>
         <div
