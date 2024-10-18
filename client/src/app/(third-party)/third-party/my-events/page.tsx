@@ -20,6 +20,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import DateFilter from "./DateFilter";
 import EventsBar from "./EventsBar";
+import ThirdPartyFeedback from "./Feedback";
 
 function MyEvents() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -53,8 +54,13 @@ function MyEvents() {
   );
 
   return (
-    <EventsBar/>
-    
+    <Layout>
+      <Content>
+        <EventsBar/>
+        <ThirdPartyFeedback/>
+      </Content>
+    </Layout>
+  
   );
 }
 

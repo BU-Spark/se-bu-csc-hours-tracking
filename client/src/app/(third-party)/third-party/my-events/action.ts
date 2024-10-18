@@ -168,9 +168,10 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
   }
 };
 
-export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+export const getFeedback = async (orgId: number): Promise<Feedback[] | undefined> => {
   try {
     const rawFeedback = await prisma.hourSubmission.findMany({
+      where:{event: {organization_id: orgId}},
       select: {
         id: true,
         event: true,
