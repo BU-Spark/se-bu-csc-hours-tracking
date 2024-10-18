@@ -19,9 +19,7 @@ const Dashboard: React.FC = () => {
 					const orgId = await getOrganizationByUserId(Number(userId));
 					const eventResult = await getEventsByOrganizerId(Number(orgId));
 					setEvents(eventResult);
-					console.log(eventResult);
 				}
-    
 			};
 			fetchEvents();
 		}, [session]);

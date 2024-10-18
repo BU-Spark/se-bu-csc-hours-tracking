@@ -69,7 +69,7 @@ const CustomSider: React.FC = () => {
           onClick: () => router.push("/third-party/dashboard"),
         },
         {
-          key: "my-events",
+          key: "my_events",
           label: "My Events",
           onClick: () => router.push("/third-party/my-events"),
         },
@@ -79,7 +79,7 @@ const CustomSider: React.FC = () => {
           onClick: () => router.push("/third-party/submissions"),
         },
         {
-          key: "pending-hours",
+          key: "pending_hours",
           label: "Pending Hours",
           onClick: () => router.push("/third-party/pending-hours"),
         },
