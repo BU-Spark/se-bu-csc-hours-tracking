@@ -16,7 +16,7 @@ interface SubmittedEventsProps {
 
 const SubmittedEvents: React.FC<SubmittedEventsProps> = ({ events }) => {
   return (
-    <section style={{ marginTop: "2rem", padding: "2rem" }}>
+    <section style={{ padding: "2rem" }}>
       <h2>Events Submitted to BU CSC</h2>
       <div>
         {events.map((event) => (

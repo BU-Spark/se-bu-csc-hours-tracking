@@ -86,8 +86,7 @@ const Dashboard: React.FC = () => {
             <PendingSubmissions submissions={pendingSubmissions} />
             {stats && <YourStats stats={stats} />}
           </div>
-          <div style={{ flex: 1, borderColor: "black",
-        border: "1px solid" }}>
+          <div style={{ flex: 1 }}>
             <SubmittedEvents events={submittedEvents} />
           </div>
         </div>
