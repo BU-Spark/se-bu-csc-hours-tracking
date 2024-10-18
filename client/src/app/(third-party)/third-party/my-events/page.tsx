@@ -32,19 +32,8 @@ function MyEvents() {
 
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const userId = session?.user.id;
-				if (userId){
-					const org = await getOrganizationByUserId(Number(userId));
-          const orgId = org?.affiliation?.id || 0;
-					const eventResult = await getEventsByOrganizerId(orgId);
-					setEvents(eventResult);
-          setLoading(false);
-				}
-    };
-    setLoading(true);
-    fetchEvents();
-  }, [dateFilter]);
+    
+  }, []);
 
   const handleSetDateFilter = (date: Date) => {
     setDateFilter(date);

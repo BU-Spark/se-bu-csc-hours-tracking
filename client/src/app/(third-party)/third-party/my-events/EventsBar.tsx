@@ -25,21 +25,24 @@ function EventsBar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
+  const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
   const router = useRouter();
   const [organizationId, setOrganizationId] = useState<number>(0);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
 
 
+  //not sure why session gets updated on switching tabs, but im not gonna mess w it
+  useEffect(() => {
+    if(!sessionLoaded && session?.user.id){
+      setSessionLoaded(true);
+    }
+  }, [session])
 
   useEffect(() => {
-    if (!session?.user.id) {
-      return; // Early exit if session is not yet loaded
-    }
-
     const fetchEvents = async () => {
-      console.log("fetchefvents")
       const userId = session?.user.id;
       if (userId) {
+        setLoading(true);
         const org = await getOrganizationByUserId(Number(userId));
         const orgId = org?.affiliation?.id || 0;
         const eventResult = await getEventsByOrganizerId(orgId);
@@ -47,9 +50,8 @@ function EventsBar() {
         setLoading(false);
       }
     };
-    setLoading(true);
     fetchEvents();
-  }, [dateFilter]);
+  }, [sessionLoaded]);
 
   const handleSetDateFilter = (date: Date) => {
     setDateFilter(date);
