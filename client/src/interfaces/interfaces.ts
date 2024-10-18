@@ -198,3 +198,11 @@ export interface Feedback {
   content: string | null;
   dateWritten: Date;
 }
+
+export interface ThirdPartyEventCardProps {
+  event_id: number;
+  title: string;
+  image: string;
+  event_start: Date;
+  event_end: Date;
+}

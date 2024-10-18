@@ -129,16 +129,27 @@ export async function createEvent(eventData: ExtendedEvent | any) {
   }
 }
 
-export async function getEvents() {
+// export async function getEvents() {
+//   try {
+//     const events = await prisma.event.findMany();
+//     return events.map((event) => ({
+//       ...event,
+//       image: event.image ? Buffer.from(event.image).toString("base64") : "",
+//     }));
+//   } catch (error) {
+//     console.error("Error fetching events:", error);
+//     throw error;
+//   }
+// }
+export async function getEvents(): Promise<Event[]> {
   try {
-    const events = await prisma.event.findMany();
-    return events.map((event) => ({
-      ...event,
-      image: event.image ? Buffer.from(event.image).toString("base64") : "",
-    }));
+    const events: Event[] = await prisma.event.findMany();
+    return events;
   } catch (error) {
-    console.error("Error fetching events:", error);
-    throw error;
+    console.error("Error fetching forms:", error);
+    return [];
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -217,6 +228,7 @@ export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
 };
 
 //get oganizaiton by user id - could also just store org in session data
+//access stuff w/ org?.affiliation?.id or .name, .abbreviation
 export const getOrganizationByUserId = async (id: number) => {
   try {
     const organization = prisma.person.findUnique({
