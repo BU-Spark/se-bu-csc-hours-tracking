@@ -57,6 +57,7 @@ model Event {
   form                   Form?            @relation(fields: [form_id], references: [id])
   organization           Organization?    @relation(fields: [organization_id], references: [id])
   hour_submissions       HourSubmission[]
+  approval_status        Int              @default(0)
 }
 
 model Organization {
