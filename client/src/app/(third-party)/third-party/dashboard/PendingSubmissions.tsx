@@ -29,6 +29,8 @@ const PendingSubmissions: React.FC<PendingSubmissionsProps> = ({
               display: "flex",
               alignItems: "center",
               background: accentBackground,
+              borderRadius: "15px",
+              padding: "1rem",
               marginBottom: "1rem",
             }}
           >

@@ -8,7 +8,6 @@ import convertToBase64 from "@/app/_utils/BufferToString";
 import { buRed } from "@/_common/styles";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
-// import { Event } from "@mui/icons-material";
 
 function CardGrid(props: CardGridProps) {
   const { events, filter, myEvents, view, pastEvents } = props;
@@ -63,6 +62,7 @@ function CardGrid(props: CardGridProps) {
                 span={5}
                 key={index}
                 style={{
+                  margin: "0rem 2.5rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "start",
@@ -83,6 +83,7 @@ function CardGrid(props: CardGridProps) {
           <Col
             span={5}
             style={{
+              margin: "0rem 2.5rem",
               display: "flex",
               justifyContent: "center",
               alignItems: "start",

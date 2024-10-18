@@ -37,6 +37,7 @@ const YourStats: React.FC<YourStatsProps> = ({ stats }) => {
     background: accentBackground,
     borderRadius: "15px",
     padding: "1rem",
+    marginRight: "1rem",
         }}>
           <h3>Submissions Approved</h3>
           <Progress
