@@ -1,21 +1,19 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Row, Col, Spin } from "antd";
+import React from "react";
+import { Row, Col } from "antd";
 import EventCard from "./EventCard";
-import { CardGridProps, EventImage } from "@/interfaces/interfaces";
+import { CardGridProps } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
 import convertToBase64 from "@/app/_utils/BufferToString";
-import { buRed } from "@/_common/styles";
 
 function CardGrid(props: CardGridProps) {
-  const { events, filter, myEvents, view, pastEvents } = props;
+  const { events, filter, myEvents, pastEvents } = props;
 
   let filteredEvents: Event[] = [];
 
-  if (myEvents && filter == 1) {
+  if (myEvents && filter === 1) {
     filteredEvents = myEvents;
-  } else {
-    if (events) filteredEvents = events;
+  } else if (events) {
+    filteredEvents = events;
   }
 
   if (filter instanceof Date) {
@@ -32,8 +30,6 @@ function CardGrid(props: CardGridProps) {
     const currentTime = new Date();
     filteredEvents = filteredEvents.filter((event) => {
       const regEnd = new Date(event.reg_end);
-      const eventDate = new Date(event.event_start);
-
       return regEnd > currentTime;
     });
   }
@@ -42,15 +38,14 @@ function CardGrid(props: CardGridProps) {
     (a, b) => new Date(b.reg_end).getTime() - new Date(a.reg_end).getTime()
   );
 
-  if (filteredEvents.length == 0) {
+  if (filteredEvents.length === 0) {
     return (
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          top: 0,
-          bottom: 0,
+          height: "100%",
         }}
       >
         <p>No events</p>
@@ -59,43 +54,41 @@ function CardGrid(props: CardGridProps) {
   }
 
   return (
-    <Row justify="start" style={{ marginRight: "3rem" }}>
-      {filteredEvents ? (
-        filteredEvents.map((event: Event, index: number) => {
-          // Convert image to base64 string
+    <div style={{ overflowX: "auto", padding: "1rem" }}>
+      <Row
+        gutter={16}  // Adjust gutter for horizontal and vertical spacing
+        style={{
+          display: "flex",
+          flexWrap: "nowrap",  // No wrapping
+          overflowX: "auto",   // Horizontal scrolling
+        }}
+      >
+        {filteredEvents.map((event: Event, index: number) => {
           const base64Image = event.image
             ? `data:image/jpeg;base64,${convertToBase64(event.image)}`
             : "https://picsum.photos/200/300";
 
           return (
             <Col
-              span={5}
               key={index}
+              flex="0 0 auto"
               style={{
-                margin: "0rem 2.5rem",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "start",
+                minWidth: "200px", // Adjust size to your needs
+                margin: "0.5rem 0.5rem", // Reduced horizontal margin
               }}
             >
               <EventCard
-                key={index}
                 event_id={event.id}
                 title={event.title}
                 image={base64Image}
                 event_start={event.event_start}
                 event_end={event.event_end}
-                
               />
             </Col>
           );
-        })
-      ) : (
-        <div>
-          <p>Loading events...</p>
-        </div>
-      )}
-    </Row>
+        })}
+      </Row>
+    </div>
   );
 }
 

@@ -1,31 +1,24 @@
-"use client";
 import React, { useEffect, useState } from "react";
-import Sider from "antd/es/layout/Sider";
-import { usePathname } from "next/navigation";
-// import "@/components/Sider/CustomSider.css";
+import { Layout } from "antd";
+import { Content } from "antd/es/layout/layout";
 import { Feedback } from "@/interfaces/interfaces";
 import { getFeedback } from "./action";
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import {
-  getEvents,
-  getEventsByOrganizerId,
-  getOrganizationByUserId,
-} from "./action";
+import { getOrganizationByUserId } from "./action";
 
 function ThirdPartyFeedback() {
-
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const { data: session } = useSession();
   const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    if(!sessionLoaded && session?.user.id){
+    if (!sessionLoaded && session?.user.id) {
       setSessionLoaded(true);
     }
-  }, [session])
+  }, [session]);
 
   useEffect(() => {
     const fetchFeedback = async () => {
@@ -39,7 +32,6 @@ function ThirdPartyFeedback() {
           console.error("bad response from getFeedback");
           return;
         }
-        console.log("feedback", response);
         setFeedback(response);
         setLoading(false);
       } catch (error) {
@@ -53,57 +45,56 @@ function ThirdPartyFeedback() {
 
   const FeedbackBubble = ({ feedback }: { feedback: Feedback }) => {
     return (
-      <div>
-        <div
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: "1rem",
+          borderRadius: "15px",
+          width: "90%",
+          minHeight: "4rem",
+          maxHeight: "10rem",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "start",
+          alignItems: "start",
+          marginBottom: "1rem", // Space between bubbles
+        }}
+      >
+        <p
           style={{
-            backgroundColor: "#f0f0f0",
-            padding: "1rem",
-            borderRadius: "15px",
-            width: "12rem",
-            minHeight: "4rem",
-            maxHeight: "10rem",
-            overflow: "hidden", // Ensure content beyond maxHeight is hidden
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
+            color: buRed,
+            margin: 0,
+            fontSize: "0.9rem",
+            fontWeight: "800",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
           }}
         >
-          <p
-            style={{
-              color: buRed,
-              margin: 0,
-              fontSize: "0.9rem",
-              fontWeight: "800",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "100%",
-            }}
+          <Link
+            href={`/third-party/my-events/${feedback.event.id}`}
+            style={{ color: buRed }}
           >
-            <Link
-              href={`/third-party/my-events/${feedback.event.id}`}
-              style={{ color: buRed }}
-            >
-              {feedback.event.title}
-            </Link>
-          </p>
-          <p
-            style={{
-              margin: "0.5rem 0 0 0",
-              fontSize: "0.9rem",
-              display: "-webkit-box",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 7,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {'"'}
-            {feedback.content}
-            {'"'}
-          </p>
-        </div>
+            {feedback.event.title}
+          </Link>
+        </p>
+        <p
+          style={{
+            margin: "0.5rem 0 0 0",
+            fontSize: "0.9rem",
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: 7,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {'"'}
+          {feedback.content}
+          {'"'}
+        </p>
         <div
           style={{
             display: "flex",
@@ -126,43 +117,18 @@ function ThirdPartyFeedback() {
     );
   };
 
-  return(
-    <Sider
-      width="20%"
-      style={{
-        background: "white",
-        marginTop: "0em",
-        overflow: "auto",
-        height: "100vh",
-        position: "fixed",
-        zIndex: 2,
-        right: 0,
-        top: 0,
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
-        paddingLeft: "1rem",
-      }}
-    >
-      <div
-        className="sider-content"
-        style={{
-          marginLeft: 0,
-          marginRight: 0,
-          marginTop: "5rem",
-          fontWeight: "900",
-          display: "flex",
-          alignItems: "start",
-          flexDirection: "column",
-        }}
-      >
-        <p
+  return (
+    <Layout>
+      <Content style={{ padding: '2rem', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+        <h2>Student Feedback</h2>
+        <div
           style={{
-            marginBottom: "2rem",
-            fontSize: "large",
+            maxHeight: '400px', // Set the desired maximum height
+            overflowY: 'auto', // Enable vertical scrolling
+            width: '100%', // Optional: set the width as needed
+            padding: '1rem',
           }}
         >
-          Feedback
-        </p>
-        <div style={{ fontWeight: 200, fontSize: "medium" }}>
           {loading ? (
             <p>Loading feedback...</p>
           ) : (
@@ -171,9 +137,9 @@ function ThirdPartyFeedback() {
             ))
           )}
         </div>
-      </div>
-    </Sider>
-  )
+      </Content>
+    </Layout>
+  );
 }
 
 export default ThirdPartyFeedback;

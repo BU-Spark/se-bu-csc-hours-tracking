@@ -77,12 +77,13 @@ function EventsBar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "60vw",
+        minHeight:"300px"
       }}
     >
       <Content style={{ width: "100%" }}>
-        <div style={{ margin: "2rem 0", display: "flex", alignItems: "center" }}>
-        <DateFilter setDateFilter={handleSetDateFilter} />
+        {/* Non-scrollable header section */}
+        <div style={{ margin: "0rem 0", display: "flex", alignItems: "center" }}>
+          <DateFilter setDateFilter={handleSetDateFilter} />
           <AddHoursButton
             onClick={() => router.push("/third-party/my-events/new")}
             style={{ marginRight: "1rem" }} // Optional: Add some margin to the button
@@ -93,32 +94,40 @@ function EventsBar() {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </div>
+  
+        {/* Scrollable content */}
         {loading ? (
           <div
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              top: 0,
-              bottom: 0,
+              minHeight:"200px"
             }}
           >
             <Spin />
           </div>
         ) : events ? (
-          <CardGrid
-            events={events}
-            filter={dateFilter}
-            myEvents={undefined}
-            view={"admin"}
-            pastEvents={true}
-          />
+          <div
+            style={{
+              overflowX: "auto",     // Enables horizontal scrolling
+              maxHeight: "80vh",      // Adjust height as needed to fit your layout
+            }}
+          >
+            <CardGrid
+              events={events}
+              filter={dateFilter}
+              myEvents={undefined}
+              view={"admin"}
+              pastEvents={true}
+            />
+          </div>
         ) : (
           <p>loading</p>
         )}
       </Content>
     </Layout>
-  );
+  );  
 }
 
 export default EventsBar;
