@@ -47,6 +47,9 @@ const CustomHeader: React.FC = () => {
             {session?.user.role === "ADMIN" && (
               <b style={{ marginRight: "1rem" }}>Administrator</b>
             )}
+            {session?.user.role === "ORGANIZER" && (
+              <b style={{ marginRight: "1rem" }}>Organizer</b>
+            )}
           </>
         )}
         <Pfp dimension={"2.5rem"} sessionImage={session.user.image} />
