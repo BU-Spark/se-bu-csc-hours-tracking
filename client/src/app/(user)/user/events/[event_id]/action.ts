@@ -68,19 +68,59 @@ export async function checkIfWaitlisted(
   userId: number
 ): Promise<boolean> {
   try {
-    const applied = await prisma.waitlist.findFirst({
+    const waitlisted = await prisma.waitlist.findFirst({
       where: {
         event_id: eventId,
         applicant_id: userId,
       },
     });
-    if (applied) return true;
+    if (waitlisted) return true;
     return false;
   } catch (error) {
     console.error("Error fetching events:", error);
     return false;
   } finally {
     await prisma.$disconnect();
+  }
+}
+export async function checkIfAcceptedApplication(
+  eventId: number,
+  userId: number
+): Promise<boolean> {
+  try {
+    const accepted = await prisma.application.findFirst({
+      where: {
+        event_id: eventId,
+        applicant_id: userId,
+        approval_status: 1,
+      },
+    });
+    if (accepted) return true;
+    return false;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return false;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+export async function cancelSignUp(
+  eventId: number,
+  userId: number
+): Promise<boolean> {
+  
+  try {
+    const result = await prisma.application.deleteMany({
+      where: {
+        event_id: eventId,
+        applicant_id: userId,
+        approval_status: 1
+      },
+    });
+    return result.count > 0; 
+  } catch (error) {
+    console.error("Error unsigning up:", error);
+    return false; 
   }
 }
 
