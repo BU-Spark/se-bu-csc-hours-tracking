@@ -90,7 +90,7 @@ const EventCard: React.FC<ThirdPartyEventCardProps> = ({
                 fontSize: "0.8rem",
               }}
             >
-              {`${formatDate(event_start)} - ${formatDate(event_end)}`}
+              {formatDate(event_start, event_end)}
             </p>
           </div>
         </div>
@@ -101,13 +101,15 @@ const EventCard: React.FC<ThirdPartyEventCardProps> = ({
   );
 };
 
-function formatDate(date : Date){
+function formatDate(dateStart : Date, dateEnd : Date){
   const nonTimeOptions: Intl.DateTimeFormatOptions = {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
   };
-  return date.toLocaleDateString("en-US", nonTimeOptions);
+  const date1 = dateStart.toLocaleDateString("en-US", nonTimeOptions);
+  const date2 = dateEnd.toLocaleDateString("en-US", nonTimeOptions);
+  return date1 === date2 ? date1 : `${date1} - ${date2}`
 }
 
 
