@@ -9,18 +9,21 @@ import {
   Select,
   message,
   UploadFile,
+  Row,
+  Col
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { Category, Event, Organization, Person } from "@prisma/client";
-import { getCoordinatorById } from "@/components/EventCard/action";
 import { getCategories, getOrganizations } from "../action";
 import convertToBase64 from "@/app/_utils/BufferToString";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+const { TextArea } = Input;
+
 
 const FormContainer = styled.div`
   max-width: 800px;
@@ -48,11 +51,6 @@ interface AdminEditEventFormProps {
   onCancel: () => void;
 }
 
-interface CoordinatorInput {
-  name: string;
-  email: string;
-}
-
 const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
   event,
   onUpdate,
@@ -61,22 +59,18 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
   const [form] = Form.useForm();
   const [categories, setCategories] = useState<Category[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [coordinator, setCoordinator] = useState<CoordinatorInput>();
   const [imageUploaded, setImageUploaded] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
     setLoading(true);
-    fetchCoordinator();
     fetchCategories();
     fetchOrganizations();
   }, []);
 
   useEffect(() => {
     form.setFieldsValue({
-      coordinator_name: coordinator?.name,
-      coordinator_email: coordinator?.email,
       category: event.category_id,
       organizations: event.organization_id,
       ...event,
@@ -85,26 +79,7 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
       image: event.image,
     });
     setLoading(false);
-  }, [event, form, coordinator, categories, organizations]);
-
-  const fetchCoordinator = async () => {
-    try {
-      const coordinatorResponse: Person | undefined = await getCoordinatorById(
-        event.coordinator_id
-      );
-      if (!coordinatorResponse) {
-        console.error("bad coordinatorResponse");
-        return;
-      }
-      const coordinator: CoordinatorInput = {
-        name: coordinatorResponse.name,
-        email: coordinatorResponse.email,
-      };
-      setCoordinator(coordinator);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  }, [event, form, categories, organizations]);
 
   const fetchCategories = async () => {
     try {
@@ -152,6 +127,7 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
       image: imageUploaded
         ? await convertFileToBase64(updatedValues.image[0].originFileObj)
         : event.image,
+      password: values.password ? values.password : undefined,
     };
     onUpdate(updatedEvent);
   };
@@ -161,6 +137,8 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
   const MAX_FILE_SIZE_MB = 5;
 
   const validateFileSize = (file: UploadFile) => {
+    console.log("File:", file); // Log the file object
+    console.log("File type:", typeof file); // Check the type of file
     let fileSizeMB = 1000000000;
     if (file.size) {
       fileSizeMB = file.size / 1024 / 1024;
@@ -176,6 +154,8 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
   const checkFileSize = (_: any, fileList: UploadFile[]) => {
     if (fileList.length === 0) return Promise.reject("Please upload an image");
     const file: UploadFile = fileList[0];
+    console.log("File:", file); // Log the file object
+    console.log("File type:", typeof file); // Check the type of file
     return validateFileSize(file) ? Promise.resolve() : Promise.reject();
   };
 
@@ -216,121 +196,121 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
         onFinish={handleFinish}
         initialValues={{
           ...event,
-          coordinator_name: coordinator?.name,
-          coordinator_email: coordinator?.email,
           estimated_participants: event.estimated_participants,
           category: event.category_id,
           organization: event.organization_id,
-
+          password: event.application_password,
           dates: [dayjs(event.event_start), dayjs(event.event_end)],
           registrationDates: [dayjs(event.reg_start), dayjs(event.reg_end)],
           image: event.image,
         }}
       >
-        <Form.Item
-          name="title"
-          label="Title"
-          rules={[{ required: true, message: "Please enter the event title" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="coordinator_name"
-          label="Coordinator Name"
-          rules={[
-            { required: true, message: "Please enter the coordinator name" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="coordinator_email"
-          label="Coordinator Email"
-          rules={[
-            {
-              required: true,
-              message: "Please enter the coordinator email",
-              type: "string",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="category"
-          label="Category"
-          rules={[{ required: true, message: "Please select a category" }]}
-        >
-          <Select>
-            {categories.map((category) => (
-              <Option key={category.id} value={category.id}>
-                {category.name}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {/* <Form.Item
-          name="organization"
-          label="Organization"
-          rules={[{ required: true, message: "Please select an organization" }]}
-        >
-          <Select>
-            {organizations.map((organization) => (
-              <Option key={organization.id} value={organization.id}>
-                {organization.name}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item> */}
-        <Form.Item
-          name="dates"
-          label="Event Dates"
-          rules={[{ required: true, message: "Please select the event dates" }]}
-        >
-          <RangePicker showTime />
-        </Form.Item>
-        <Form.Item
-          name="registrationDates"
-          label="Registration Dates"
-          rules={[
-            { required: true, message: "Please select the registration dates" },
-          ]}
-        >
-          <RangePicker showTime />
-        </Form.Item>
-        <Form.Item
-          name="estimated_participants"
-          label="Estimated Participants"
-          rules={[
-            {
-              required: true,
-              message: "Please enter the estimated number of participants",
-            },
-          ]}
-        >
-          <Input type="number" />
-        </Form.Item>
-        <Form.Item
-          name="location"
-          label="Location"
-          rules={[
-            { required: true, message: "Please enter the event location" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item name="transit" label="Transit">
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[
-            { required: true, message: "Please enter the event description" },
-          ]}
-        >
-          <Input.TextArea rows={4} />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Form.Item
+              name="title"
+              label="Title"
+              rules={[{ required: true, message: "Please enter the event title" }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name="location"
+              label="Location"
+              rules={[
+                { required: true, message: "Please enter the event location" },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name="category"
+              label="Category"
+              rules={[{ required: true, message: "Please select a category" }]}
+            >
+              <Select>
+                {categories.map((category) => (
+                  <Option key={category.id} value={category.id}>
+                    {category.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name="estimated_participants"
+              label="Estimated Participants"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter the estimated number of participants",
+                },
+              ]}
+            >
+              <Input type="number" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="dates"
+              label="Event Dates"
+              rules={[{ required: true, message: "Please select the event dates" }]}
+            >
+              <RangePicker showTime />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="registrationDates"
+              label="Registration Dates"
+              rules={[
+                { required: true, message: "Please select the registration dates" },
+              ]}
+            >
+              <RangePicker showTime />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Form.Item name="transit" label="Transit">
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name="password"
+              label="Event Password"
+              rules={[{ required: false }]}
+            >
+              <TextArea rows={1} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col span={24}>
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[
+                { required: true, message: "Please enter the event description" },
+              ]}
+            >
+              <Input.TextArea rows={4} />
+            </Form.Item>
+          </Col>
+          
+        </Row>
+
         <Form.Item
           name="image"
           label="Image Upload"

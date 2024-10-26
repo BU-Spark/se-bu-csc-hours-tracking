@@ -184,7 +184,6 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 			estimated_participants: parseInt(values.estimated_participants, 10), // Ensure this is an integer
 			password: values.password ? values.password : undefined,
 		};
-		// console.log("rogid = " + userOrg?.affiliation?.id)
 		onUpdate(formattedValues, isDraft);
 	};
 

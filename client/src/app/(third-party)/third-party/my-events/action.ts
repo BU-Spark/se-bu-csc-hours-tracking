@@ -31,7 +31,6 @@ export async function getEvent(eventId: number) {
 }
 
 export async function updateEvent(eventId: number, eventData: any) {
-  console.log("updating evet");
   try {
     const {
       category_id,
@@ -40,9 +39,9 @@ export async function updateEvent(eventId: number, eventData: any) {
       organization_id,
       coordinator_id,
       form_id,
+      password,
       ...data
     } = eventData;
-    console.log(eventData);
     const coordinator = await prisma.person.findFirst({
       where: { email: coordinator_email },
     });
@@ -59,6 +58,7 @@ export async function updateEvent(eventId: number, eventData: any) {
 
     const updateData: any = {
       ...data,
+      application_password: password,
       category: { connect: { id: category_id } },
       coordinator: { connect: { id: coordinator.id } },
     };
@@ -96,7 +96,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
 
     const createData: any = {
       ...data,
-      application_password: data.password,
+      application_password: password,
       category: { connect: { id: category_id } },
       coordinator: { connect: { id: coordinator_id } },
     };
