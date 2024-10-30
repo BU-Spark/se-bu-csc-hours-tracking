@@ -8,6 +8,10 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import icon from "../../public/photos/full_logo.png";
 import Image from 'next/image';
+import CustomSider from "@/components/Sider/CustomSider";
+import CustomHeader from "@/components/Header/CustomHeader";
+import { Content } from "antd/es/layout/layout";
+import Layout from "antd/es/layout/layout";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,7 +38,7 @@ export default function Home() {
         height: "100vh",
       }}
     >
-      <Image src={icon} alt="icon" width={500} height={100} className="loading-image"/>
+      <Image src={icon} alt="icon" width={500} height={100} className="loading-image" />
     </div>
   ) : !isLoggedIn ? (
     <Login />

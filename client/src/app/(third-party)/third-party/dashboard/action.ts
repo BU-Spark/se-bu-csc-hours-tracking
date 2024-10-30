@@ -218,13 +218,14 @@ export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
 //access stuff w/ org?.affiliation?.id or .name, .abbreviation
 export const getOrganizationByUserId = async (id: number) => {
   try {
-    const organization = prisma.person.findUnique({
+    const organization = await prisma.person.findUnique({
       where: { id: id },
       select: { affiliation: true }, // Only select the org_id
     });
     return organization;
   } catch (error) {
     console.error(error);
+    return null; // Explicitly return null in case of error
   }
 };
 
