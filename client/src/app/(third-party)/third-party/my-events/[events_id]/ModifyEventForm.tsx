@@ -120,6 +120,7 @@ const ModifyEventForm: React.FC<AdminEditEventFormProps> = ({
     const updatedEvent: Event = {
       ...event,
       ...updatedValues,
+      estimated_participants: Number(values.estimated_participants),
       event_start: values.dates[0].toDate(),
       event_end: values.dates[1].toDate(),
       reg_start: values.registrationDates[0].toDate(),

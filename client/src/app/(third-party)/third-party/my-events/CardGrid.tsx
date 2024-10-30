@@ -46,6 +46,7 @@ function CardGrid(props: CardGridProps) {
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
+          minHeight: "200px"
         }}
       >
         <p>No events</p>
