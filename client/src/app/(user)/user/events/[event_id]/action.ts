@@ -117,6 +117,26 @@ export async function cancelSignUp(
         approval_status: 1
       },
     });
+    const firstRow = await prisma.waitlist.findFirst();
+    if (!firstRow) {
+      throw new Error('No rows found in the source table');
+  }
+    const application = await prisma.application.create({
+      data: {
+        date_applied: new Date(),
+        reason_id: firstRow.reason_id, //FIX REASON
+        approval_status: 0,
+        applicant_id: userId,
+        event_id: eventId,
+        updated_by_id: userId,
+        updated_at: new Date(),
+      },
+    });
+    await prisma.waitlist.delete({
+      where: {
+          id: firstRow.id, 
+      },
+    });
     return result.count > 0; 
   } catch (error) {
     console.error("Error unsigning up:", error);
