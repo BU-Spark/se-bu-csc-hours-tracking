@@ -118,7 +118,13 @@ export async function cancelSignUp(
         approval_status: 1
       },
     });
-    const firstRow = await prisma.waitlist.findFirst();
+    const firstRow = await prisma.waitlist.findFirst(
+      {
+        where: {
+          event_id: eventId,
+        },
+      }
+    );
     if (!firstRow) {
       throw new Error('No rows found in the source table');
   }
@@ -127,9 +133,9 @@ export async function cancelSignUp(
         date_applied: new Date(),
         reason_id: firstRow.reason_id, //FIX REASON
         approval_status: 0,
-        applicant_id: userId,
-        event_id: eventId,
-        updated_by_id: userId,
+        applicant_id: firstRow.applicant_id,
+        event_id: firstRow.event_id,
+        updated_by_id: firstRow.applicant_id,
         updated_at: new Date(),
       },
     });
