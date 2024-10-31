@@ -18,6 +18,7 @@ export async function getEvent(eventId: number): Promise<any> {
         reg_start: true,
         reg_end: true,
         estimated_participants: true,
+        approval_status: true,
         location: true,
         transit: true,
         description: true,
