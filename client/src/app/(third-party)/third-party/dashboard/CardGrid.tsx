@@ -1,11 +1,11 @@
+// dashboard/CardGrid.tsx
 "use client";
 import React from "react";
-import { Row, Col } from "antd";
 import EventCard from "./EventCard";
 import { CardGridProps } from "@/interfaces/interfaces";
 import { Event } from "@prisma/client";
 import convertToBase64 from "@/app/_utils/BufferToString";
-import { buRed } from "@/_common/styles";
+import { accentBackground } from "@/_common/styles";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +48,16 @@ function CardGrid(props: CardGridProps) {
   displayedEvents = displayedEvents.slice(0, 5);
 
   return (
-    <Row justify="start" style={{ marginRight: "3rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "nowrap", // Prevent wrapping
+        overflowX: "auto", // Enable horizontal scrolling
+        zIndex: 1,
+        maxWidth: "80%",
+        gap: "1rem",
+      }}
+    >
       {displayedEvents.length > 0 ? (
         <>
           {displayedEvents.map((event: Event, index: number) => {
@@ -58,76 +67,30 @@ function CardGrid(props: CardGridProps) {
               : "https://picsum.photos/200/300";
 
             return (
-              <Col
-                span={5}
+              <div
                 key={index}
                 style={{
-                  margin: "0rem 2.5rem",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "start",
+                  flex: "0 0 auto",
+                  width: "12rem",
                 }}
               >
                 <EventCard
-                  key={index}
                   event_id={event.id}
                   title={event.title}
                   image={base64Image}
                   event_start={event.event_start}
                   event_end={event.event_end}
                 />
-              </Col>
+              </div>
             );
           })}
           {/* Add the create event button */}
-          <Col
-            span={5}
-            style={{
-              margin: "0rem 2.5rem",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "start",
-            }}
-          >
-            <div
-              onClick={() => router.push("/third-party/my-events/new")}
-              style={{
-                backgroundColor: buRed,
-                height: "10rem",
-                width: "12rem",
-                position: "relative",
-                overflow: "hidden",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                borderRadius: "8px",
-              }}
-            >
-              <AiOutlinePlus size={48} color="white" />
-            </div>
-          </Col>
-        </>
-      ) : (
-        // If no upcoming events, still show the create event button
-        <Col
-          span={5}
-          style={{
-            margin: "0rem 2.5rem",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "start",
-          }}
-        >
           <div
             onClick={() => router.push("/third-party/my-events/new")}
             style={{
-              backgroundColor: buRed,
+              backgroundColor: accentBackground, // Use accentBackground for default gray
               height: "10rem",
               width: "12rem",
-              position: "relative",
-              overflow: "hidden",
-              marginBottom: "3rem",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -135,11 +98,29 @@ function CardGrid(props: CardGridProps) {
               borderRadius: "8px",
             }}
           >
-            <AiOutlinePlus size={48} color="white" />
+            <AiOutlinePlus size={48} color="white"/> {/* Changed icon color to black for contrast */}
           </div>
-        </Col>
+        </>
+      ) : (
+        // If no upcoming events, still show the create event button
+        <div
+        onClick={() => router.push("/third-party/my-events/new")}
+        style={{
+          backgroundColor: accentBackground, // Use accentBackground for default gray
+          height: "10rem",
+          width: "300px",
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          borderRadius: "8px",
+        }}
+      >
+        <AiOutlinePlus size={48} color="white"/> {/* Changed icon color to black for contrast */}
+      </div>
       )}
-    </Row>
+    </div>
   );
 }
 

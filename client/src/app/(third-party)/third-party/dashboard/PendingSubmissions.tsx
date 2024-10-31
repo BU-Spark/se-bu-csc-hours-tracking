@@ -4,7 +4,7 @@ import React from "react";
 import { HourSubmission, Event, Person } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { accentBackground } from "@/_common/styles";
+import { accentBackground, buRed } from "@/_common/styles";
 
 interface PendingSubmissionsProps {
   submissions: HourSubmissionWithRelations[];
@@ -19,8 +19,12 @@ const PendingSubmissions: React.FC<PendingSubmissionsProps> = ({
   submissions,
 }) => {
   return (
-    <section style={{ marginTop: "2rem" }}>
-      <h2>Pending Submissions</h2>
+    <section style={{width: "fit-content" }}>
+      <h2
+        style={{
+          marginTop: 0,
+      }}
+      >Pending Submissions</h2>
       <div>
         {submissions.map((submission) => (
           <div
@@ -31,14 +35,10 @@ const PendingSubmissions: React.FC<PendingSubmissionsProps> = ({
               background: accentBackground,
               borderRadius: "15px",
               padding: "1rem",
-              marginBottom: "1rem",
             }}
           >
             <Image
-              src={
-                submission.volunteer.image ||
-                "/default-profile.png"
-              }
+              src={submission.volunteer.image || "/default-profile.png"}
               alt={submission.volunteer.name}
               width={50}
               height={50}
@@ -47,7 +47,11 @@ const PendingSubmissions: React.FC<PendingSubmissionsProps> = ({
             <div>
               <h3 style={{ margin: 0 }}>{submission.volunteer.name}</h3>
               <p style={{ margin: 0 }}>{submission.event.title}</p>
-              <Link href={`/hour-submissions/${submission.id}`}>See details →</Link>
+              <Link
+                style= {{color: buRed}}
+                href={`/hour-submissions/${submission.id}`}>
+                See details →
+              </Link>
             </div>
           </div>
         ))}
