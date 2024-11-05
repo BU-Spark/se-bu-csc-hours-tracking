@@ -126,8 +126,8 @@ export async function cancelSignUp(
       }
     );
     if (!firstRow) {
-      throw new Error('No rows found in the source table');
-  }
+      return result.count>0;
+    }
     const application = await prisma.application.create({
       data: {
         date_applied: new Date(),
@@ -144,6 +144,7 @@ export async function cancelSignUp(
           id: firstRow.id, 
       },
     });
+    console.log(result.count)
     return result.count > 0; 
   } catch (error) {
     console.error("Error unsigning up:", error);
