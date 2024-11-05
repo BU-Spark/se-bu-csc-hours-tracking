@@ -96,6 +96,7 @@ export default function Page() {
 
   const handleCancelSignUp = async () => {
     const success = await cancelSignUp(event_id, Number(session?.data?.user.id));
+    window.location.reload();
     if (success) {
       setCancelling(false);
       setHasAcceptedApplication(false);
