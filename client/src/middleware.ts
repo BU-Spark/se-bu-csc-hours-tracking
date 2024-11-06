@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { getAuth, clerkClient } from "@clerk/nextjs/server";
 
 export async function middleware(request: NextRequest) {
   //skip allowed paths
@@ -11,19 +11,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-  //if not logged in block all
-  if (!token) {
+  // Get auth data from Clerk
+  const { userId } = getAuth(request);
+
+  // If not logged in, redirect to login
+  if (!userId) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Fetch user data from Clerk
+  const clerk = await clerkClient();
+  const user = await clerk.users.getUser(userId);
+
+  // Extract user role
+  const role = user.publicMetadata.role;
+
   if (
     request.nextUrl.pathname.startsWith("/admin") &&
-    token &&
-    token.role !== "ADMIN"
+    role !== "ADMIN"
   ) {
     console.log("Permission not allowed");
     return NextResponse.redirect(new URL("/unauthorized", request.url));
@@ -31,8 +36,7 @@ export async function middleware(request: NextRequest) {
 
   if (
     request.nextUrl.pathname.startsWith("/user") &&
-    token &&
-    token.role !== "USER"
+    role !== "USER"
   ) {
     console.log("Permission not allowed");
     return NextResponse.redirect(new URL("/unauthorized", request.url));
