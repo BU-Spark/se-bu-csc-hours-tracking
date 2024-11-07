@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { signIn } from 'next-auth/react';
+import { SignInButton } from '@clerk/nextjs';
 import styled from 'styled-components';
 import { buRed } from "../../_common/styles";
 
@@ -18,7 +18,7 @@ const Title = styled.h1`
   margin-bottom: 20px;
 `;
 
-const SignInButton = styled.button`
+const StyledSignInButton = styled.button`
   background-color: black;
   color: white;
   border: 2px solid ${buRed};
@@ -38,8 +38,10 @@ function Login() {
     <Container>
       <div style={{ marginLeft: "-15em" }}>
         <Title>Boston University Community Service Time Log</Title>
-        <SignInButton onClick={() => signIn()}>
-          Sign in
+        <SignInButton mode="modal">
+          <StyledSignInButton>
+            Sign in
+          </StyledSignInButton>
         </SignInButton>
       </div>
     </Container>

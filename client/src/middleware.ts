@@ -1,13 +1,10 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
-import { getAuth, clerkClient } from "@clerk/nextjs/server";
+import { NextResponse, NextRequest } from "next/server";
+import { getAuth } from "@clerk/nextjs/server";
+import prisma from "./lib/prisma";
 
 export async function middleware(request: NextRequest) {
-  //skip allowed paths
-  if (
-    request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/"
-  ) {
+  // Skip allowed paths
+  if (["/sign-up","/login", "/"].includes(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
@@ -19,29 +16,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Fetch user data from Clerk
-  const clerk = await clerkClient();
-  const user = await clerk.users.getUser(userId);
+  // Fetch the Person record from your database or redirect them to the welcome apge
+  let person = await prisma.person.findUnique({
+    where: { clerk_id: userId },
+  });
 
-  // Extract user role
-  const role = user.publicMetadata.role;
+  if (!person) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
-  if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    role !== "ADMIN"
-  ) {
+  // Extract user role from the Person record
+  const role = person.role;
+
+  // Role-based access control
+  if (request.nextUrl.pathname.startsWith("/admin") && role !== "ADMIN") {
     console.log("Permission not allowed");
     return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 
-  if (
-    request.nextUrl.pathname.startsWith("/user") &&
-    role !== "USER"
-  ) {
+  if (request.nextUrl.pathname.startsWith("/user") && role !== "USER") {
     console.log("Permission not allowed");
     return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 
+  // Allow the request to proceed
   return NextResponse.next();
 }
 

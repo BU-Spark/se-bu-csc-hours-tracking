@@ -1,82 +1,57 @@
 "use server";
 
 import prisma from "../../../../lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../lib/auth";
-import { Person } from "@prisma/client";
+import { auth } from "@clerk/nextjs/server";
 
 export const checkIfNewUser = async () => {
-  const session = await getServerSession(authOptions);
+  const { userId } = await auth();
 
-  if (!session || !session.user || !session.user.email) {
+  if (!userId) {
     return { isNewUser: false };
   }
 
-  const user = await prisma.person.findUnique({
-    where: { email: session.user.email },
+  // Fetch the user's email from Clerk
+  const user = await fetchUserFromClerk(userId);
+
+  const email = user.emailAddresses[0]?.emailAddress;
+
+  if (!email) {
+    return { isNewUser: false };
+  }
+
+  // Fetch the Person record from your database
+  const person = await prisma.person.findUnique({
+    where: { email },
   });
 
-  console.log("User:", user);
+  console.log("Person:", person);
 
-  if (!user) {
+  if (!person) {
     return { isNewUser: false };
   }
 
   const isNewUser =
-    !user.phone_number ||
-    !user.bu_id ||
-    !user.college ||
-    !user.dietary_restrictions ||
-    !user.class;
+    !person.phone_number ||
+    !person.bu_id ||
+    !person.college ||
+    !person.dietary_restrictions ||
+    !person.class;
 
   return { isNewUser };
 };
 
-export const getUserDetails = async (): Promise<Person | undefined> => {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user || !session.user.email) {
-    throw new Error("Not authenticated");
-  }
-
-  const user: Person | null = await prisma.person.findUnique({
-    where: { email: session.user.email },
-  });
-
-  if (!user) {
-    console.error("user not found");
-    return;
-  }
-
-  return user;
-};
-
-export const updateUserDetails = async (details: {
-  phone_number: string;
-  bu_id: string;
-  college: string;
-  dietary_restrictions: string;
-  class: number;
-}) => {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user || !session.user.email) {
-    throw new Error("Not authenticated");
-  }
-
-
-  const user = await prisma.person.update({
-    where: { email: session.user.email },
-    data: {
-      phone_number: details.phone_number,
-      bu_id: details.bu_id,
-      college: details.college.toUpperCase(),
-      dietary_restrictions: details.dietary_restrictions,
-      class: details.class,
+// Helper function to fetch user data from Clerk
+async function fetchUserFromClerk(userId: string) {
+  const response = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
     },
   });
 
-  console.log("Updated user:", user);
+  if (!response.ok) {
+    throw new Error("Failed to fetch user from Clerk");
+  }
 
+  const user = await response.json();
   return user;
-};
+}

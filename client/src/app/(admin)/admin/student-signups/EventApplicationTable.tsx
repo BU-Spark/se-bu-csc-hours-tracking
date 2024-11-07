@@ -16,7 +16,7 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import { useSession } from "next-auth/react";
+import { useUser } from '@clerk/nextjs';
 import { getEventSpotsLeft, reviewEventApplication } from "./action";
 import { text } from "stream/consumers";
 import { buRed } from "@/_common/styles";
@@ -34,7 +34,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   const [loading, setIsLoading] = useState<boolean>(true);
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const searchInput = useRef<InputRef>(null);
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn, user } = useUser();
 
   useEffect(() => {
     if (data) {
@@ -174,10 +174,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
     record: EventApplicationsTableData,
     choice: string
   ) => {
-    if (!session?.user) {
-      console.log("session check failed");
-      return;
-    }
+
 
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.applicationId),
