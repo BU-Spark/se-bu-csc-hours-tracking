@@ -75,7 +75,7 @@ model Organization {
   state        String
   zipcode      Int
   apt          String?
-  image        String?
+  image        Bytes?
   phone_number String?
   email        String
 
