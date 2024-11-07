@@ -71,6 +71,7 @@ model Organization {
   abbreviation String
   unit         String?
   street       String
+  city         String
   state        String
   zipcode      Int
   apt          String?
