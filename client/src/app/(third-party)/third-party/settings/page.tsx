@@ -226,6 +226,16 @@ const Settings: React.FC = () => {
       email: '', 
       zipcode: '',
     });
+  const [form,setFormInfo] = useState<{
+    formName: string;
+    required: boolean;
+    notes: string;
+    file?: Buffer | Uint8Array;
+  }>({
+    formName: '',
+    required: false,
+    notes: '',
+  });
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -289,6 +299,10 @@ const Settings: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setCompanyInfo(prev => ({ ...prev, [name]: value }));
+  };
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormInfo(prev => ({ ...prev, [name]: value }));
   };
 
   const convertFileToBase64 = (file: File) => {
@@ -362,6 +376,13 @@ const Settings: React.FC = () => {
     setPhoneNumber("");
   };
 
+  const handleFormSubmit = () => {
+
+  }
+  const handleFormReset = () => {
+
+  }
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -426,6 +447,41 @@ const Settings: React.FC = () => {
                 </ButtonContainer>
             </form>
         
+        </FormContainer>
+        <FormContainer>
+        <form onSubmit={handleFormSubmit}>
+                <h2>Forms and Waivers</h2>
+                <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
+                        <Label>Name<Asterisk>*</Asterisk></Label>
+                        <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
+                        <Label>Image Upload</Label>
+                        <Input type="file" onChange={handleFileChange} />
+                    </div>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
+                    <Label>Notes</Label>
+                    <textarea name="notes" value={form.notes} onChange={handleFormChange} rows={8}
+                    style={{
+                      padding: '10px',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      width: '100%',
+                      height: '100px',
+                      boxSizing: 'border-box',
+                      border: '1px solid #ccc',
+                    }}/>
+                  </div>
+                </div>
+                <ButtonContainer>
+                    <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
+                    {contextHolder}
+                    <SubmitButton type="submit">Save</SubmitButton>
+                </ButtonContainer>
+            </form>
         </FormContainer>
     </>
   );
