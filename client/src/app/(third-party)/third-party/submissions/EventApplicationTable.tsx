@@ -247,13 +247,13 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         ),
         ...getColumnSearchProps("studentName"),
       },
-      {
-        title: "BU ID",
-        dataIndex: "buId",
-        key: "bu_id",
-        width: "10%",
-        align: "center",
-      },
+      // {
+      //   title: "BU ID",
+      //   dataIndex: "buId",
+      //   key: "bu_id",
+      //   width: "10%",
+      //   align: "center",
+      // },
       {
         title: "Event",
         dataIndex: "eventTitle",

@@ -14,13 +14,14 @@ import {
 import { CustomTableParams } from "@/interfaces/interfaces";
 import StyledButton from "@/components/StyledButton";
 import {
-  getAllPendingApplications,
   getEventApplicationsTableData,
+  
 } from "./action";
 import { Application } from "@prisma/client";
 import EventApplicationTable from "./EventApplicationTable";
+import { buRed } from "@/_common/styles";
 
-const Submissions: React.FC = () => {
+const StudentHours: React.FC = () => {
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [pendingApplications, setPendingApplications] = useState<
     EventApplicationsTableData[]
@@ -71,7 +72,7 @@ const Submissions: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "end",
-            width: "30%",
+            width: "20%",
             margin: "1rem 0",
           }}
         >
@@ -104,6 +105,12 @@ const Submissions: React.FC = () => {
             </h2>
             <p>Pending Applications</p>
           </SummaryBox>
+          <SummaryBox>
+            <h2>
+              {reviewedApplications ? reviewedApplications.length.toString() : 0}
+            </h2>
+            <p>Reviewed Applications</p>
+          </SummaryBox>
         </div>
       </SummaryContainer>
       <EventApplicationTable
@@ -117,4 +124,4 @@ const Submissions: React.FC = () => {
   );
 };
 
-export default Submissions;
+export default StudentHours;
