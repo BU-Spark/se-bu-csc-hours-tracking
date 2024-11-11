@@ -234,23 +234,23 @@ const Settings: React.FC = () => {
         if (status.isNewUser) {
           setIsNewUser(true);
         } else {
-          console.log("Hello world")
           const user: Organization | undefined = await getOrganizationDetails();
           if (user) {
             //set company info here so that it can be pulled by the form if the fields exist
             setCompanyInfo({
-              name: user.name,
-              nameofservice: user.nameofservice,
+              name: user.name || "",
+              nameofservice: user.nameofservice || "",
               unit: user.unit || "",
-              street: user.street,
-              city: user.city,
+              street: user.street || "",
+              city: user.city|| "",
               state: user.state,
               zipcode: user.zipcode +"" || "",
               apt: user.apt || "",
               image: user.image || undefined,
               phone_number: user.phone_number || "",
-              email: user.email,
+              email: user.email || "",
             });
+            setPhoneNumber(user.phone_number || "");
           }
         }
         setInitialLoadComplete(true);
@@ -277,6 +277,13 @@ const Settings: React.FC = () => {
     return (
       phoneNumber
     );
+  };
+
+  const success = (message: string) => {
+    messageApi.open({
+      type: "success",
+      content: message,
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -332,8 +339,13 @@ const Settings: React.FC = () => {
       apt: companyInfo.apt,
       image: companyInfo.image ? Buffer.from(companyInfo.image) : null, // Buffer or Uint8Array, depending on your setup
     };
-    const updatedUser = await updateOrganizerDetails(details);
-    console.log(companyInfo);
+    try {
+      await updateOrganizerDetails(details);
+      success("User settings updated");
+    }
+    catch (error) {
+      console.error("Error updating organization details:", error);
+    }
   };
   const handleReset = () => {
     setCompanyInfo({
@@ -347,12 +359,13 @@ const Settings: React.FC = () => {
       email: '',
       phone_number: '',
     });
+    setPhoneNumber("");
   };
 
   if (status === "loading") {
     return <div>Loading...</div>;
   }
-
+  console.log(companyInfo)
   return (
     <>
         <TopBar>
@@ -383,7 +396,7 @@ const Settings: React.FC = () => {
                     <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
                             <Input type="text" name="street" value={companyInfo.street} onChange={handleChange} required placeholder="Street Name" />
-                            <Input type="text" name="unit" value={companyInfo.unit} onChange={handleChange} placeholder="Apt, suite, building, unit, floor, etc." />
+                            <Input type="text" name="apt" value={companyInfo.apt} onChange={handleChange} placeholder="Apt, suite, building, unit, floor, etc." />
                             <Input type="text" name="city" value={companyInfo.city} onChange={handleChange} required placeholder="City" />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
@@ -408,6 +421,7 @@ const Settings: React.FC = () => {
 
                 <ButtonContainer>
                     <ResetButton type="button" onClick={handleReset}>Reset</ResetButton>
+                    {contextHolder}
                     <SubmitButton type="submit">Save</SubmitButton>
                 </ButtonContainer>
             </form>
