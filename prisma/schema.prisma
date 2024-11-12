@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Person {
+  id                   Int              @id @default(autoincrement())
+  name                 String
+  email                String           @unique
+  phone_number         String?          @unique
+  bu_id                String?          @unique
+  role                 Role             @default(USER)
+  class                Int?
+  affiliation_id       Int?
+  image                String?
+  college              String?          @db.VarChar(255)
+  dietary_restrictions String?
+  accounts             Account[]
+  applications         Application[]    @relation("applicant")
+  comments             Comment[]
+  events               Event[]
+  forms                Form[]
+  deleted_submissions  HourSubmission[] @relation("HourSubmissionDeleter")
+  updated_submissions  HourSubmission[] @relation("HourSubmissionUpdater")
+  hour_submissions     HourSubmission[]
+  deleted_applications Application[]    @relation("ApplicationDeleter")
+  updated_applications Application[]    @relation("ApplicationUpdater")
+  affiliation          Organization?    @relation(fields: [affiliation_id], references: [id])
+  sessions             Session[]
+}
+
+model Event {
+  id                     Int              @id @default(autoincrement())
+  title                  String           @unique
+  event_start            DateTime
+  event_end              DateTime
+  reg_start              DateTime
+  reg_end                DateTime
+  estimated_participants Int
+  location               String
+  transit                String
+  description            String
+  category_id            Int
+  coordinator_id         Int
+  form_id                Int?
+  organization_id        Int?
+  image                  Bytes
+  application_password   String?
+  applications           Application[]
+  comments               Comment[]
+  category               Category         @relation(fields: [category_id], references: [id])
+  coordinator            Person           @relation(fields: [coordinator_id], references: [id])
+  form                   Form?            @relation(fields: [form_id], references: [id])
+  organization           Organization?    @relation(fields: [organization_id], references: [id])
+  hour_submissions       HourSubmission[]
+}
+
+model Organization {
+  id           Int      @id @default(autoincrement())
+  name         String
+  abbreviation String
+  unit         String?
+  events       Event[]
+  members      Person[]
+}
+
+model Form {
+  id         Int     @id @default(autoincrement())
+  file       String
+  student_id Int?
+  type       Int     @default(autoincrement())
+  events     Event[]
+  student    Person? @relation(fields: [student_id], references: [id])
+}
+
+model Comment {
+  id           Int      @id @default(autoincrement())
+  feedback     String
+  date_written DateTime @default(now())
+  author_id    Int
+  event_id     Int
+  author       Person   @relation(fields: [author_id], references: [id])
+  event        Event    @relation(fields: [event_id], references: [id])
+}
+
+model Application {
+  id              Int       @id @default(autoincrement())
+  date_applied    DateTime
+  approval_status Int       @default(0)
+  reason_id       Int
+  applicant_id    Int
+  event_id        Int
+  updated_at      DateTime? @default(now())
+  updated_by_id   Int
+  deleted_at      DateTime?
+  deleted_by_id   Int?
+  deleted_by      Person?   @relation("ApplicationDeleter", fields: [deleted_by_id], references: [id])
+  updated_by      Person    @relation("ApplicationUpdater", fields: [updated_by_id], references: [id])
+  applicant       Person    @relation("applicant", fields: [applicant_id], references: [id])
+  event           Event     @relation(fields: [event_id], references: [id])
+  reason          Reason    @relation(fields: [reason_id], references: [id])
+}
+
+model Reason {
+  id          Int           @id @default(autoincrement())
+  meaning     String
+  Application Application[]
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  events Event[]
+}
+
+model HourSubmission {
+  id              Int       @id @default(autoincrement())
+  volunteer_id    Int
+  event_id        Int
+  hours           Float
+  feedback        String?
+  date_submitted  DateTime  @default(now())
+  approval_status Int       @default(0)
+  updated_at      DateTime? @default(now())
+  updated_by_id   Int
+  deleted_at      DateTime?
+  deleted_by_id   Int?
+  description     String
+  deleted_by      Person?   @relation("HourSubmissionDeleter", fields: [deleted_by_id], references: [id])
+  event           Event     @relation(fields: [event_id], references: [id])
+  updated_by      Person    @relation("HourSubmissionUpdater", fields: [updated_by_id], references: [id])
+  volunteer       Person    @relation(fields: [volunteer_id], references: [id])
+}
+
+model ApprovalStatusCode {
+  id      Int    @id @default(autoincrement())
+  meaning String
+}
+
+model FormCode {
+  id           Int     @id @default(autoincrement())
+  title        String
+  description  String
+  downloadable Boolean @default(false)
+  upload_link  String?
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              Person  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
