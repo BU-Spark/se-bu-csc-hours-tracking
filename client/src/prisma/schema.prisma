@@ -77,8 +77,6 @@ model Organization {
   image        Bytes?
   phone_number String?
   email        String
-
-
   events       Event[]
   members      Person[]
 }
