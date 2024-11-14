@@ -177,9 +177,3 @@ enum Role {
   ORGANIZER
   ADMIN
 }
-
-enum Role {
-  USER
-  ORGANIZER
-  ADMIN
-}
