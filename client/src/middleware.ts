@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import prisma from "./lib/prisma";
 
 export async function middleware(request: NextRequest) {
@@ -9,16 +9,16 @@ export async function middleware(request: NextRequest) {
   }
 
   // Get auth data from Clerk
-  const { userId } = getAuth(request);
+  const { userId: clerk_id } = await auth();
 
   // If not logged in, redirect to login
-  if (!userId) {
+  if (!clerk_id) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Fetch the Person record from your database or redirect them to the welcome apge
   let person = await prisma.person.findUnique({
-    where: { clerk_id: userId },
+    where: { clerk_id: clerk_id },
   });
 
   if (!person) {
