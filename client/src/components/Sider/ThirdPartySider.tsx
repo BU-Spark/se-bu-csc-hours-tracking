@@ -1,5 +1,3 @@
-// src/components/Sider/ThirdPartyEventSider.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -14,7 +12,7 @@ import { useSession } from '@clerk/clerk-react';
 
 function ThirdPartyEventSider() {
   // Session and path variables
-  const { session, isSignedIn } = useSession();
+  const { session, isSignedIn, isLoaded } = useSession();
   const path = usePathname();
 
   // Define paths where the sider should be displayed for organizers
@@ -31,21 +29,23 @@ function ThirdPartyEventSider() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isDisplayed || status !== "authenticated") return;
+    if (!isDisplayed || !isSignedIn || !isLoaded) return;
 
     const fetchEvents = async () => {
       setLoading(true);
       setError(null);
       try {
         // Get organization ID using user ID
-        const organization = await getOrganizationByUserId(Number(session?.user.id));
-        if (!organization || !organization.affiliation || !organization.affiliation.id) {
+        const user = session?.user;
+        const organization = await getOrganizationByUserId(user?.id);
+        console.log(organization);
+        if (!organization) {
           setError("Organization not found.");
           setLoading(false);
           return;
         }
 
-        const organizationId = Number(organization.affiliation.id);
+        const organizationId = Number(organization.id);
         // Fetch events by organizer ID
         const fetchedEvents = await getEventsByOrganizerId(organizationId);
         setEvents(fetchedEvents);
@@ -58,7 +58,7 @@ function ThirdPartyEventSider() {
     };
 
     fetchEvents();
-  }, [isDisplayed, session, status]);
+  }, [isDisplayed, session, isSignedIn, isLoaded]);
 
   const EventBubble: React.FC<{ event: Event }> = ({ event }) => {
     return (
@@ -112,7 +112,7 @@ function ThirdPartyEventSider() {
     );
   };
 
-  return isDisplayed && status === "authenticated" ? (
+  return isDisplayed && isSignedIn ? (
     <Sider
       width="20%"
       style={{

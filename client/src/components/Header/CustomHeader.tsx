@@ -10,12 +10,13 @@ import StyledButton from "../StyledButton";
 import { useClerk } from '@clerk/nextjs';
 import { useSession } from '@clerk/clerk-react';
 import { getPersonFromUser } from "@/lib/getPersonFromUser";
+import { useRouter } from 'next/navigation';
 
 const { Header } = Layout;
-
 const CustomHeader: React.FC = () => {
   const { session, isSignedIn } = useSession();
   const { signOut } = useClerk();
+  const router = useRouter();
   const [person, setPerson] = useState<any>(null);
 
   useEffect(() => {
@@ -53,7 +54,10 @@ const CustomHeader: React.FC = () => {
           <>
             <div style={{ marginRight: "1rem" }}>
               <StyledButton
-                onClick={() => signOut({ redirectUrl: '/login' })}
+                onClick={async () => {
+                  await signOut({ redirectUrl: '/' });
+                  window.location.reload();
+                }}
                 text="Sign out"
                 selected={false}
               />

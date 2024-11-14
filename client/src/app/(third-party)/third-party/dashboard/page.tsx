@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
       if (!session?.user?.id) return;
 
       const userId = session.user.id;
-      const person = await getOrganizationByUserId(Number(userId));
+      const person = await getOrganizationByUserId(userId);
       const orgId = person?.affiliation?.id
         ? Number(person.affiliation?.id)
         : 0;

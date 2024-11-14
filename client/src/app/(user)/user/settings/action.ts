@@ -12,19 +12,7 @@ export const checkIfNewUser = async () => {
     return { isNewUser: false };
   }
 
-  // Fetch the user's email from Clerk
-  const user = await fetchUserFromClerk(userId);
-
-  const email = user.emailAddresses[0]?.emailAddress;
-
-  if (!email) {
-    return { isNewUser: false };
-  }
-
-  // Fetch the Person record from your database
-  const person = await prisma.person.findUnique({
-    where: { email },
-  });
+  const person = await getPersonFromUser(userId);
 
   console.log("Person:", person);
 
@@ -41,22 +29,6 @@ export const checkIfNewUser = async () => {
 
   return { isNewUser };
 };
-
-// Helper function to fetch user data from Clerk
-async function fetchUserFromClerk(userId: string) {
-  const response = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch user from Clerk");
-  }
-
-  const user = await response.json();
-  return user;
-}
 
 export const getUserDetails = async (): Promise<Person | undefined> => {
   const { userId } = await auth();

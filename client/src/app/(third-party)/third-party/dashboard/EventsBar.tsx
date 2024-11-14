@@ -24,7 +24,7 @@ function EventsBar() {
       console.log("Fetching events");
       const userId = session?.user.id;
       if (userId) {
-        const org = await getOrganizationByUserId(Number(userId));
+        const org = await getOrganizationByUserId(userId);
         const orgId = org?.affiliation?.id || 0;
         const eventResult = await getEventsByOrganizerId(orgId);
         setEvents(eventResult);

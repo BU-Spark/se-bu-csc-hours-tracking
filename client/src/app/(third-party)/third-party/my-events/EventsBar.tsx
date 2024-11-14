@@ -43,7 +43,7 @@ function EventsBar() {
       const userId = session?.user.id;
       if (userId) {
         setLoading(true);
-        const org = await getOrganizationByUserId(Number(userId));
+        const org = await getOrganizationByUserId(userId);
         const orgId = org?.affiliation?.id || 0;
         const eventResult = await getEventsByOrganizerId(orgId);
         setEvents(eventResult);

@@ -13,13 +13,14 @@ import CardGrid from "@/components/CardGrid/CardGrid";
 import { Content } from "antd/es/layout/layout";
 import StyledButton from "@/components/StyledButton";
 import { useSession } from '@clerk/clerk-react'
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>();
   const [myEvents, setMyEvents] = useState<Event[]>();
   const [filter, setFilter] = useState<number>(0);
   const [showPastEvents, setShowPastEvents] = useState<boolean>(false);
-  const { session, isSignedIn } = useSession();
+  const { session } = useSession();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -33,8 +34,10 @@ function Events() {
     const fetchMyApplications = async () => {
       if (!session?.user.id) return;
 
+      const { userId } = await getPersonFromUser(session?.user.id);
+
       const userApplications = await getApplicationsByUserId(
-        Number(session.user.id)
+        userId
       ); //get all user applications
       if (userApplications) {
         const eventIds = userApplications.map(

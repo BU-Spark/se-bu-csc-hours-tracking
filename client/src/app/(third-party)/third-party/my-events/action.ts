@@ -1,9 +1,11 @@
 "use server";
 
 import { Feedback } from "@/interfaces/interfaces";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import prisma from "@/lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
+import { get } from "http";
 
 interface ExtendedEvent extends Partial<Event> {
   coordinator_name: string;
@@ -171,7 +173,7 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
 export const getFeedback = async (orgId: number): Promise<Feedback[] | undefined> => {
   try {
     const rawFeedback = await prisma.hourSubmission.findMany({
-      where:{event: {organization_id: orgId}},
+      where: { event: { organization_id: orgId } },
       select: {
         id: true,
         event: true,
@@ -211,17 +213,18 @@ export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
     return events;
   } catch (error) {
     console.error(error);
-    return []; 
+    return [];
   }
 };
 
 //get oganizaiton by user id - could also just store org in session data
 //access stuff w/ org?.affiliation?.id or .name, .abbreviation
-export const getOrganizationByUserId = async (id: number) => {
+export const getOrganizationByUserId = async (clerk_id: string) => {
   try {
-    const organization = prisma.person.findUnique({
-      where: { id: id },
-      select: { affiliation: true }, // Only select the org_id
+    const person = await getPersonFromUser(clerk_id);
+    const affiliation_id = person.affiliation_id;
+    const organization = await prisma.organization.findUnique({
+      where: { id: affiliation_id },
     });
     return organization;
   } catch (error) {

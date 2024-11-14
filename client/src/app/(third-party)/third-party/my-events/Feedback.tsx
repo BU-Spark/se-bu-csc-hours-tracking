@@ -24,8 +24,8 @@ function ThirdPartyFeedback() {
     const fetchFeedback = async () => {
       setLoading(true);
       try {
-        const userId = session?.user.id;
-        const org = await getOrganizationByUserId(Number(userId));
+        const userId = session?.user?.id as string;
+        const org = await getOrganizationByUserId(userId);
         const orgId = org?.affiliation?.id || 0;
         const response = await getFeedback(orgId);
         if (!response) {

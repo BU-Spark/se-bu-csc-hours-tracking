@@ -13,6 +13,7 @@ import {
 import { Event } from "@prisma/client";
 import { buRed } from "@/_common/styles";
 import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 function EventSider() {
   //session and path vars
@@ -32,9 +33,10 @@ function EventSider() {
     setLoading(true);
     const fetchMyApplications = async () => {
       if (!session?.user?.id) return;
+      const { userId } = await getPersonFromUser(session?.user.id);
 
       const userApplications = await getApplicationsByUserId(
-        Number(session.user.id)
+        userId
       ); //get all user applications
       if (userApplications) {
         setMyApplications(userApplications);

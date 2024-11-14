@@ -157,7 +157,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 		const fetchUserOrganizaiton = async () => {
 			const userId = session?.user.id;
 			if (userId) {
-				const org = await getOrganizationByUserId(Number(userId));
+				const org = await getOrganizationByUserId(userId);
 				setUserOrg(org);
 			}
 		}

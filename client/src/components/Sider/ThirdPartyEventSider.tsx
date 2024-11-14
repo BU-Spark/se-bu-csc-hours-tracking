@@ -40,14 +40,15 @@ function ThirdPartyEventSider() {
         const person = await getPersonFromUser(session.user.id);
         setPerson(person);
         // Get organization ID using person id
-        const organization = await getOrganizationByUserId(Number(person?.id));
-        if (!organization || !organization.affiliation || !organization.affiliation.id) {
+        const organization = await getOrganizationByUserId(person?.id);
+        console.log(organization);
+        if (!organization) {
           setError("Organization not found.");
           setLoading(false);
           return;
         }
 
-        const organizationId = Number(organization.affiliation.id);
+        const organizationId = Number(organization.id);
         // Fetch events by organizer ID
         const fetchedEvents = await getEventsByOrganizerId(organizationId);
         setEvents(fetchedEvents);
