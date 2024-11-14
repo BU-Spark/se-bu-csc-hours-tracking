@@ -1,5 +1,3 @@
-// src/components/Sider/ThirdPartyEventSider.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -10,12 +8,14 @@ import { Event } from "@prisma/client";
 import { getEventsByOrganizerId, getOrganizationByUserId } from "@/app/(third-party)/third-party/dashboard/action"; // Adjust the import path as needed
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import { useSession } from '@clerk/clerk-react';
 
 function ThirdPartyEventSider() {
   // Session and path variables
   const { session, isSignedIn } = useSession();
   const path = usePathname();
+  const [person, setPerson] = useState<any>(null);
 
   // Define paths where the sider should be displayed for organizers
   const isDisplayed =
@@ -31,14 +31,16 @@ function ThirdPartyEventSider() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isDisplayed || status !== "authenticated") return;
+    if (!isDisplayed || !isSignedIn || !session) return;
 
-    const fetchEvents = async () => {
+    const fetchPersonAndEvents = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Get organization ID using user ID
-        const organization = await getOrganizationByUserId(Number(session?.user.id));
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+        // Get organization ID using person id
+        const organization = await getOrganizationByUserId(Number(person?.id));
         if (!organization || !organization.affiliation || !organization.affiliation.id) {
           setError("Organization not found.");
           setLoading(false);
@@ -57,8 +59,8 @@ function ThirdPartyEventSider() {
       }
     };
 
-    fetchEvents();
-  }, [isDisplayed, session, status]);
+    fetchPersonAndEvents();
+  }, [isDisplayed, isSignedIn, session]);
 
   const EventBubble: React.FC<{ event: Event }> = ({ event }) => {
     return (
@@ -112,7 +114,7 @@ function ThirdPartyEventSider() {
     );
   };
 
-  return isDisplayed && status === "authenticated" ? (
+  return isDisplayed && isSignedIn ? (
     <Sider
       width="20%"
       style={{

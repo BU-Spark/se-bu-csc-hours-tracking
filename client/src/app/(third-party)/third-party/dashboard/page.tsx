@@ -1,7 +1,7 @@
 // dashboard/page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import {
   getEventsByOrganizerId,
   getOrganizationByUserId,
@@ -23,7 +23,7 @@ interface HourSubmissionWithRelations extends HourSubmission {
 const Dashboard: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [organizationId, setOrganizationId] = useState<number>(0);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [pendingSubmissions, setPendingSubmissions] = useState<
     HourSubmissionWithRelations[]
   >([]);
@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
   }, [session]);
 
   return (
-    <Layout style={{backgroundColor: "#fff" }}>
+    <Layout style={{ backgroundColor: "#fff" }}>
       {loading ? (
         <div
           style={{

@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import { checkIfNewUser } from "@/app/(user)/user/settings/action";
 
 const Dashboard: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
   const router = useRouter();
 
   useEffect(() => {

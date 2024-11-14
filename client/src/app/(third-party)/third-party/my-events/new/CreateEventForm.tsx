@@ -21,7 +21,7 @@ import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { Category, Event, Organization } from "@prisma/client";
 import { getCategories, getOrganizations } from "../action";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import {
 	getEvents,
 	getEventsByOrganizerId,
@@ -97,7 +97,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 }) => {
 	const [form] = Form.useForm();
 	const router = useRouter();
-	const { data: session } = useSession();
+	const { session } = useSession();
 	const [previewData, setPreviewData] = useState<any | null>(null);
 	const [previewVisible, setPreviewVisible] = useState(false);
 	const [organizationsDropdown, setOrganizationsDropdown] = useState<any>([]);

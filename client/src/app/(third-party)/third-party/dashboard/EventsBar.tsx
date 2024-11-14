@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Layout, Spin } from "antd";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 import {
   getEventsByOrganizerId,
   getOrganizationByUserId,
@@ -13,7 +13,7 @@ import CardGrid from "./CardGrid";
 function EventsBar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { session } = useSession();
 
   useEffect(() => {
     if (!session?.user.id) {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Button, Layout, Spin, Row, Col} from "antd";
 import { Content } from "antd/es/layout/layout";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import {
   getEvents,
   getEventsByOrganizerId,
@@ -26,7 +26,7 @@ import ThirdPartyFeedback from "./Feedback";
 function MyEvents() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
   const router = useRouter();
   const [organizationId, setOrganizationId] = useState<number>(0);

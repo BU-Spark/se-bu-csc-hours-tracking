@@ -12,14 +12,14 @@ import { Checkbox, Layout, Spin } from "antd";
 import CardGrid from "@/components/CardGrid/CardGrid";
 import { Content } from "antd/es/layout/layout";
 import StyledButton from "@/components/StyledButton";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 
 function Events() {
   const [events, setEvents] = useState<Event[]>();
   const [myEvents, setMyEvents] = useState<Event[]>();
   const [filter, setFilter] = useState<number>(0);
   const [showPastEvents, setShowPastEvents] = useState<boolean>(false);
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
 
   useEffect(() => {
     const fetchEvents = async () => {

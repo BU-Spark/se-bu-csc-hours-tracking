@@ -5,13 +5,13 @@ import { Feedback } from "@/interfaces/interfaces";
 import { getFeedback } from "./action";
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import { getOrganizationByUserId } from "./action";
 
 function ThirdPartyFeedback() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
 
   useEffect(() => {

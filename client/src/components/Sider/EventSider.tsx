@@ -12,12 +12,12 @@ import {
 } from "@/app/(user)/user/events/action";
 import { Event } from "@prisma/client";
 import { buRed } from "@/_common/styles";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 
 function EventSider() {
   //session and path vars
   const path = usePathname();
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
   const isDisplayed = path === "/user/events";
 
   //useState variables

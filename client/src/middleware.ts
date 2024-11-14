@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import prisma from "./lib/prisma";
+import { getPersonFromUser } from "./lib/getPersonFromUser";
 
 export async function middleware(request: NextRequest) {
   // Skip allowed paths
-  if (["/sign-up","/login", "/"].includes(request.nextUrl.pathname)) {
+  if (["/login", "/"].includes(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
@@ -16,10 +16,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Fetch the Person record from your database or redirect them to the welcome apge
-  let person = await prisma.person.findUnique({
-    where: { clerk_id: clerk_id },
-  });
+  // Fetch the Person record from your database or redirect them to the welcome page
+  let person = await getPersonFromUser(clerk_id);
 
   if (!person) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -39,10 +37,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 
+  if (request.nextUrl.pathname.startsWith("/third-party") && role !== "ORGANIZER") {
+    console.log("Permission not allowed");
+    return NextResponse.redirect(new URL("/unauthorized", request.url));
+  }
+
   // Allow the request to proceed
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*"],
+  matcher: ["/admin/:path*", "/user/:path*", "/third-party/:path*"],
 };
