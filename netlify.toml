@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npx prisma generate && npm run build"
   publish = ".next"
 
 [[plugins]]
@@ -7,3 +7,6 @@
 
 [functions]
   directory="netlify/functions"
+
+[functions."sendEventReminder"]
+  schedule = "0 * * * *"  # Runs at the top of every hour
