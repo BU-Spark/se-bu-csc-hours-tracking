@@ -66,8 +66,19 @@ model Event {
 model Organization {
   id           Int      @id @default(autoincrement())
   name         String
+  nameofservice String
   abbreviation String
   unit         String?
+  street       String
+  city         String
+  state        String
+  zipcode      Int
+  apt          String?
+  image        Bytes?
+  phone_number String?
+  email        String
+
+
   events       Event[]
   members      Person[]
 }
