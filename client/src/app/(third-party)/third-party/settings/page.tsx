@@ -10,6 +10,7 @@ import Select from "react-select";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { Organization, Person } from "@prisma/client";
 import { message } from "antd";
+import { Switch } from 'antd';
 
 const FormContainer = styled.div`
   max-width: 1500px;
@@ -202,6 +203,7 @@ const Settings: React.FC = () => {
     const [formChanged, setFormChanged] = useState(false);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [isFieldRequired, setIsFieldRequired] = useState(false);
   
     // Company Information state
     const [companyInfo, setCompanyInfo] = useState<{
@@ -304,6 +306,9 @@ const Settings: React.FC = () => {
     const { name, value } = e.target;
     setFormInfo(prev => ({ ...prev, [name]: value }));
   };
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFieldRequired(e.target.checked);
+  };
 
   const convertFileToBase64 = (file: File) => {
 		return new Promise<string>((resolve, reject) => {
@@ -322,11 +327,34 @@ const Settings: React.FC = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    const validFile: File = file ?? new File([], 'default.txt');
-    //fix file upload
-    const imageData = await convertFileToBase64(validFile);
-    
-    setCompanyInfo(prev => ({ ...prev, image: Buffer.from(imageData.split(',')[1], "base64") }));
+    console.log("hello" + file);
+    if (!file) {
+        // Handle the case where no file is selected
+        console.error("No file selected");
+        return;
+    }
+
+    try {
+        const imageData = await convertFileToBase64(file);
+
+        // Check if the Base64 string is in the expected format (Data URL format)
+        const base64Prefix = "data:image";
+        if (imageData.startsWith(base64Prefix)) {
+            const base64String = imageData.split(',')[1];
+            if (base64String) {
+                setCompanyInfo(prev => ({
+                    ...prev,
+                    image: Buffer.from(base64String, "base64")
+                }));
+            } else {
+                console.error("Invalid Base64 string: missing content after comma.");
+            }
+        } else {
+            console.error("Invalid Base64 string: does not start with expected prefix.");
+        }
+    } catch (error) {
+        console.error("Error converting file to Base64:", error);
+    }  
   };
 
   const handleBackButtonClick = () => {
@@ -451,29 +479,67 @@ const Settings: React.FC = () => {
         <FormContainer>
         <form onSubmit={handleFormSubmit}>
                 <h2>Forms and Waivers</h2>
-                <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                        <Label>Name<Asterisk>*</Asterisk></Label>
-                        <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                        <Label>Image Upload</Label>
-                        <Input type="file" onChange={handleFileChange} />
-                    </div>
-                </div>
                 <div>
+                  <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
+                          <Label>Name<Asterisk>*</Asterisk></Label>
+                          <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
+                          <Label>Image Upload</Label>
+                          <Input type="file" onChange={handleFileChange} />
+                      </div>
+                  </div>
+                  <div>
+                    <label>Make required?</label>
+                    <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
+                      <input
+                        type="checkbox"
+                        checked={isFieldRequired}
+                        onChange={handleSliderChange}
+                        style={{ opacity: 0, width: 0, height: 0 }}
+                      />
+                      <span className="slider" style={{
+                        position: 'absolute',
+                        cursor: 'pointer',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: isFieldRequired ? '#cc0000' : '#ccc',
+                        transition: '0.4s',
+                        borderRadius: '50px',
+                      }}></span>
+                      <span style={{
+                        position: 'absolute',
+                        content: '',
+                        height: '20px',
+                        width: '20px',
+                        borderRadius: '50%',
+                        left: '4px',
+                        bottom: '4px',
+                        backgroundColor: 'white',
+                        transition: '0.4s',
+                        transform: isFieldRequired ? 'translateX(25px)' : 'none',
+                      }}></span>
+                    </label>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
-                    <Label>Notes</Label>
-                    <textarea name="notes" value={form.notes} onChange={handleFormChange} rows={8}
-                    style={{
-                      padding: '10px',
-                      borderRadius: '8px',
-                      fontSize: '1rem',
-                      width: '100%',
-                      height: '100px',
-                      boxSizing: 'border-box',
-                      border: '1px solid #ccc',
-                    }}/>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
+                      <Label>Notes</Label>
+                      <textarea name="notes" value={form.notes} onChange={handleFormChange} rows={8}
+                      style={{
+                        padding: '10px',
+                        borderRadius: '8px',
+                        fontSize: '1rem',
+                        width: '100%',
+                        height: '100px',
+                        boxSizing: 'border-box',
+                        border: '1px solid #ccc',
+                      }}/>
+                    </div>
                   </div>
                 </div>
                 <ButtonContainer>
