@@ -21,7 +21,7 @@ export const getAllPendingApplications = async (): Promise<
   }
 };
 
-export async function getEventApplicationsTableData(): Promise<
+export async function getEventApplicationsTableData(orgId: number): Promise<
   | {
       pendingApplicationRows: EventApplicationsTableData[];
       reviewedApplicationRows: EventApplicationsTableData[];
@@ -30,7 +30,11 @@ export async function getEventApplicationsTableData(): Promise<
 > {
   try {
     const pendingApplications: any[] = await prisma.application.findMany({
-      where: { approval_status: 0 },
+      where: { approval_status: 0,
+        event: {
+          organization_id: orgId, // Match organization_id
+        },
+       },
       select: {
         event: {
           select: {
@@ -40,7 +44,11 @@ export async function getEventApplicationsTableData(): Promise<
           },
         },
         applicant: {
-          select: { name: true, college: true, class: true, bu_id: true },
+          select: { 
+            name: true,
+            college: true,
+            class: true,
+            bu_id: true },
         },
         id: true,
         date_applied: true,
@@ -50,7 +58,11 @@ export async function getEventApplicationsTableData(): Promise<
       },
     });
     const reviewedApplications: any[] = await prisma.application.findMany({
-      where: { approval_status: { not: 0 } },
+      where: {
+        approval_status: { not: 0 },
+        event: {
+          organization_id: orgId, // Match organization_id
+        }},
       select: {
         event: {
           select: {
@@ -162,6 +174,18 @@ export const getEventSpotsLeft = async (
     }
 
     return event.estimated_participants - approvedApplicants.length;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getOrganizationByUserId = async (id: number) => {
+  try {
+    const organization = prisma.person.findUnique({
+      where: { id: id },
+      select: { affiliation: true }, // Only select the org_id
+    });
+    return organization;
   } catch (error) {
     console.error(error);
   }

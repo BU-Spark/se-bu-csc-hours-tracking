@@ -1,22 +1,67 @@
-.anticon{
-    color: 'black !important'
+:root {
+  --buRed: #CC0000;
 }
-
+th.ant-table-cell{
+  background-color: var(--buRed) !important;
+  color: white !important;
+  }
+  
+td.ant-table-cell{
+background-color: #EBEBEB !important;
+font-family: 'Inter', sans-serif !important; 
+}
+th.ant-table-cell::before {
+  width: 0.2rem !important;
+  color: white !important;
+  height: 100% !important;
+}
+table.ant-table {
+  background-color: #EBEBEB !important;
+  font-family: 'Inter', sans-serif !important; 
+}
+.ant-table td.ant-table-cell {
+  border-right: 0.2rem solid white !important; 
+  border-top: 0.2rem solid white !important; 
+  border-left: 0 !important;
+  border-bottom: 0 !important;
+  
+}
+.ant-table td.ant-table-cell:last-child {
+  border-right: none !important; 
+}
+.approve-buttons{
+  border: none;
+outline: none;
+cursor: pointer;
+padding: 0.5rem 1rem; 
+border-radius: 50px;
+background-color: white; 
+color: black; 
+font-size: 14px; 
+transition: background-color 0.3s ease;
+width: 120px; 
+text-align: center; 
+display: inline-block; 
+margin-right: 10px; 
+}
+.approve-buttons:hover {
+  background-color: #f0f0f0; 
+  border: 1px solid black; 
+}
+.approve-buttons:active {
+animation: button-click 0.2s ease; 
+}
+@keyframes button-click {
+0% {
+    transform: scale(1);
+}
+50% {
+    transform: scale(0.95);
+}
+100% {
+    transform: scale(1);
+}
+}
 .ant-table-column-sorter-inner{
-    color: white !important;
-  }
-
-.anticon-search{
-    color: white !important
-  }
-
-/* EventApplicationTable.css */
-/* */
-
-/* Adjust the appearance of search and filter dropdowns */
-/* .ant-table-filter-dropdown {
-  padding: 8px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-} */
+color: white !important;
+}

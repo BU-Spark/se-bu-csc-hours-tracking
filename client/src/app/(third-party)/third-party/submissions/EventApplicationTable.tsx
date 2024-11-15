@@ -13,6 +13,7 @@ import {
   HoursTableData,
   ProcessSubmissionParams,
   SpotsLeftProps,
+  StudentDropdown
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
@@ -23,7 +24,7 @@ import { buRed } from "@/_common/styles";
 ;
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
-  data,
+  data: dataInput,
   set1,
   val1,
   set2,
@@ -37,10 +38,10 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (data) {
+    if (dataInput) {
       setIsLoading(false);
     }
-  }, [data]);
+  }, [dataInput]);
 
   // component used later for spots left column
   const SpotsLeft: React.FC<SpotsLeftProps> = ({ eventId }) => {
@@ -240,42 +241,26 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         title: "Student Name",
         dataIndex: "studentName",
         key: "student_name",
-        width: "20%",
+        width: "25%",
         align: "center",
         render: (text: string, record: EventApplicationsTableData) => (
           <strong>{text}</strong>
         ),
         ...getColumnSearchProps("studentName"),
       },
-      // {
-      //   title: "BU ID",
-      //   dataIndex: "buId",
-      //   key: "bu_id",
-      //   width: "10%",
-      //   align: "center",
-      // },
+      {
+        title: "College",
+        dataIndex: "college",
+        key: "college",
+        width: "8%",
+        align: "center",
+      },
       {
         title: "Event",
         dataIndex: "eventTitle",
-        key: "event_title",
-        width: "10%",
-        align: "center",
-        ...getColumnSearchProps("eventTitle"),
-        render: (text: string, record: EventApplicationsTableData) => {
-          return (
-            <a href={`/admin/events/${record.eventId}`}>{record.eventTitle}</a>
-          );
-        },
-      },
-      {
-        title: "Reason",
-        dataIndex: "reason",
-        key: "reason",
+        key: "eventTitle",
         width: "15%",
         align: "center",
-        render: (eventId: number, record: EventApplicationsTableData) => {
-          return <p>{record.reason.meaning}</p>;
-        },
       },
       {
         title: "Spots Left",
@@ -290,7 +275,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
         },
       },
       {
-        title: "Date Applied",
+        title: "Date Requested",
         dataIndex: "dateApplied",
         key: "date_applied",
         width: "15%",
@@ -458,10 +443,10 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
     return <p>Loading...</p>;
   }
 
-  return data ? (
+  return dataInput ? (
     <Table
       columns={eventApplicationTableCols}
-      dataSource={data}
+      dataSource={dataInput}
       rowKey={(record) => record.key}
       locale={{
         emptyText: "No records found",
