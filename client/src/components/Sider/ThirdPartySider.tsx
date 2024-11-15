@@ -5,10 +5,15 @@ import Sider from "antd/es/layout/Sider";
 import { usePathname } from "next/navigation";
 import "./CustomSider.css";
 import { Event } from "@prisma/client";
-import { getEventsByOrganizerId, getOrganizationByUserId } from "@/app/(third-party)/third-party/dashboard/action"; // Adjust the import path as needed
+import {
+  getEventsByOrganizerId,
+  getOrganizationByUserId,
+} from "@/app/(third-party)/third-party/dashboard/action"; // Adjust the import path as needed
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
-import { useSession } from '@clerk/clerk-react';
+import { useSession } from "@clerk/clerk-react";
+import { Button } from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 
 function ThirdPartyEventSider() {
   // Session and path variables
@@ -27,6 +32,9 @@ function ThirdPartyEventSider() {
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false); // Hover state
+  const siderWidth = 240; // Adjust as needed
 
   useEffect(() => {
     if (!isDisplayed || !isSignedIn || !isLoaded) return;
@@ -90,7 +98,10 @@ function ThirdPartyEventSider() {
               maxWidth: "100%",
             }}
           >
-            <Link href={`/third-party/events/${event.id}`} style={{ color: buRed }}>
+            <Link
+              href={`/third-party/events/${event.id}`}
+              style={{ color: buRed }}
+            >
               {event.title}
             </Link>
           </p>
@@ -113,55 +124,107 @@ function ThirdPartyEventSider() {
   };
 
   return isDisplayed && isSignedIn ? (
-    <Sider
-      width="20%"
-      style={{
-        background: "white",
-        marginTop: "0em",
-        overflow: "auto",
-        height: "100vh",
-        position: "fixed",
-        zIndex: 2,
-        right: 0,
-        top: 0,
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
-        paddingLeft: "1rem",
-        
-      }}
-    >
-      <div
-        className="sider-content"
+    <>
+      {/* Sider */}
+      <Sider
+        width={siderWidth}
         style={{
-          marginLeft: 0,
-          marginRight: 0,
-          marginTop: "5rem",
-          fontWeight: "900",
-          display: "flex",
-          alignItems: "start",
-          flexDirection: "column",
+          background: "white",
+          marginTop: "0em",
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
+          zIndex: 2,
+          right: 0,
+          top: 0,
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+          paddingLeft: "1rem",
+          transition: "transform 0.3s ease-in-out",
+          transform: collapsed ? "translateX(100%)" : "translateX(0)",
         }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <p
+        {/* Remove the collapse button inside the Sider */}
+        {/* Sider content */}
+        <div
+          className="sider-content"
           style={{
-            marginBottom: "2rem",
-            fontSize: "large",
+            marginLeft: 0,
+            marginRight: 0,
+            marginTop: "5rem",
+            fontWeight: "900",
+            display: "flex",
+            alignItems: "start",
+            flexDirection: "column",
           }}
         >
-          Your Recent and Upcoming Events
-        </p>
-        <div style={{ fontWeight: 200, fontSize: "medium" }}>
-          {loading ? (
-            <p>Loading upcoming events...</p>
-          ) : error ? (
-            <p style={{ color: "red" }}>{error}</p>
-          ) : events.length > 0 ? (
-            events.map((event: Event) => <EventBubble key={event.id} event={event} />)
-          ) : (
-            <p>No upcoming events found.</p>
-          )}
+          <p
+            style={{
+              marginBottom: "2rem",
+              fontSize: "large",
+            }}
+          >
+            Your Recent and Upcoming Events
+          </p>
+          <div style={{ fontWeight: 200, fontSize: "medium" }}>
+            {loading ? (
+              <p>Loading upcoming events...</p>
+            ) : error ? (
+              <p style={{ color: "red" }}>{error}</p>
+            ) : events.length > 0 ? (
+              events.map((event: Event) => (
+                <EventBubble key={event.id} event={event} />
+              ))
+            ) : (
+              <p>No upcoming events found.</p>
+            )}
+          </div>
         </div>
-      </div>
-    </Sider>
+      </Sider>
+      {/* Collapse button when Sider is open and hovered over */}
+      {!collapsed && isHovered && (
+        <div
+          style={{
+            position: "fixed",
+            right: siderWidth,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 3,
+            background: "white",
+            padding: "0.5rem",
+            borderRadius: "4px 0 0 4px",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+            cursor: "pointer",
+          }}
+          onClick={() => setCollapsed(true)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <MenuUnfoldOutlined />
+        </div>
+      )}
+      {/* Expand button when Sider is collapsed */}
+      {collapsed && (
+        <div
+          style={{
+            position: "fixed",
+            right: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 3,
+            background: "white",
+            padding: "0.5rem",
+            borderRadius: "4px 0 0 4px",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+            cursor: "pointer",
+          }}
+          onClick={() => setCollapsed(false)}
+        >
+          <MenuFoldOutlined />
+        </div>
+      )}
+    </>
   ) : null;
 }
 

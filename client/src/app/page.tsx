@@ -12,7 +12,7 @@ import { Content } from 'antd/es/layout/layout';
 import Layout from 'antd/es/layout/layout';
 
 export default function Home() {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
 
   if (!isLoaded) {
     return (
