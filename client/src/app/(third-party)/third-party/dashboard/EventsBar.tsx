@@ -22,14 +22,18 @@ function EventsBar() {
 
     const fetchEvents = async () => {
       console.log("Fetching events");
-      const userId = session?.user.id;
-      if (userId) {
-        const org = await getOrganizationByUserId(userId);
-        const orgId = org?.affiliation?.id || 0;
-        const eventResult = await getEventsByOrganizerId(orgId);
-        setEvents(eventResult);
+
+      const userId = session.user.id;
+      const org = await getOrganizationByUserId(userId);
+      const orgId = org?.id
+      if (!orgId) {
         setLoading(false);
+        throw new Error("Organization not found");
       }
+      const eventResult = await getEventsByOrganizerId(orgId);
+      setEvents(eventResult);
+      setLoading(false);
+      
     };
     setLoading(true);
     fetchEvents();

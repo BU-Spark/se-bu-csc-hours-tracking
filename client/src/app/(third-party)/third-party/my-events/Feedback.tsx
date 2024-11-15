@@ -24,9 +24,19 @@ function ThirdPartyFeedback() {
     const fetchFeedback = async () => {
       setLoading(true);
       try {
-        const userId = session?.user?.id as string;
+        setLoading(true);
+        const userId = session?.user.id;
+        if (!userId) {
+          setLoading(false);
+          throw new Error("User not found");
+        }
         const org = await getOrganizationByUserId(userId);
-        const orgId = org?.affiliation?.id || 0;
+        const orgId = org?.id
+        if (!orgId) {
+          setLoading(false);
+          throw new Error("Organization not found");
+        }
+        
         const response = await getFeedback(orgId);
         if (!response) {
           console.error("bad response from getFeedback");

@@ -27,6 +27,7 @@ import {
 	getEventsByOrganizerId,
 	getOrganizationByUserId,
 } from "../action";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 dayjs.extend(customParseFormat);
 
@@ -82,12 +83,19 @@ interface AdminEventFormProps {
 }
 
 type OrgType = {
-	affiliation: {
-		id: number;
-		name: string;
-		abbreviation: string;
-		unit: string | null;
-	} | null;
+	id: number;
+	name: string;
+	nameofservice: string;
+	abbreviation: string;
+	unit: string | null;
+	street: string;
+	city: string;
+	state: string;
+	zipcode: number;
+	apt: string | null;
+	image: Buffer | null;
+	phone_number: string | null;
+	email: string;
 } | null | undefined;
 
 const CreateEventForm: React.FC<AdminEventFormProps> = ({
@@ -155,11 +163,13 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 		};
 
 		const fetchUserOrganizaiton = async () => {
-			const userId = session?.user.id;
-			if (userId) {
-				const org = await getOrganizationByUserId(userId);
-				setUserOrg(org);
-			}
+      const userId = session?.user.id;
+      if (!userId) {
+        throw new Error("User not found");
+      }
+      const org = await getOrganizationByUserId(userId);
+			setUserOrg(org);
+			
 		}
 
 		fetchOrganizations();
@@ -168,6 +178,11 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 	}, []);
 
 	const handleFinish = async (values: any, isDraft = false) => {
+		const userId = session?.user.id;
+		if (!userId) {
+			throw new Error("User not found");
+		}
+		const person = await getPersonFromUser(userId);
 		const formattedValues = {
 			title: values.title,
 			...values,
@@ -179,8 +194,8 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 				? await convertFileToBase64(values.image[0].originFileObj)
 				: event?.image?.toString("base64"),
 			category_id: category ? category : 1,
-			coordinator_id: Number(session?.user?.id),
-			organization_id: userOrg?.affiliation?.id || 2,
+			coordinator_id: Number(person.id),
+			organization_id: userOrg?.id || 2,
 			estimated_participants: parseInt(values.estimated_participants, 10), // Ensure this is an integer
 			password: values.password ? values.password : undefined,
 		};

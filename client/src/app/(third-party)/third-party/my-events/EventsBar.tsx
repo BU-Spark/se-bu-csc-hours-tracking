@@ -40,15 +40,24 @@ function EventsBar() {
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoading(true);
       const userId = session?.user.id;
-      if (userId) {
-        setLoading(true);
-        const org = await getOrganizationByUserId(userId);
-        const orgId = org?.affiliation?.id || 0;
-        const eventResult = await getEventsByOrganizerId(orgId);
-        setEvents(eventResult);
+      if (!userId) {
         setLoading(false);
+        throw new Error("User not found");
       }
+      const org = await getOrganizationByUserId(userId);
+      const orgId = org?.id
+      if (!orgId) {
+        setLoading(false);
+        throw new Error("Organization not found");
+      }
+
+      
+      const eventResult = await getEventsByOrganizerId(orgId);
+      setEvents(eventResult);
+      setLoading(false);
+      
     };
     fetchEvents();
   }, [sessionLoaded]);

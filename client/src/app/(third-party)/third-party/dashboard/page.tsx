@@ -44,10 +44,13 @@ const Dashboard: React.FC = () => {
       if (!session?.user?.id) return;
 
       const userId = session.user.id;
-      const person = await getOrganizationByUserId(userId);
-      const orgId = person?.affiliation?.id
-        ? Number(person.affiliation?.id)
-        : 0;
+      const org = await getOrganizationByUserId(userId);
+      const orgId = org?.id
+      if (!orgId) {
+        setLoading(false);
+        throw new Error("Organization not found");
+      }
+
       setOrganizationId(orgId);
       console.log(orgId);
 
