@@ -43,6 +43,7 @@ export async function POST(request: Request) {
             name: 'Please Update Your Name',
             role,
             clerk_id: userId,
+            image: "https://i.imghippo.com/files/btJu9259QwY.webp"
           },
         });
 

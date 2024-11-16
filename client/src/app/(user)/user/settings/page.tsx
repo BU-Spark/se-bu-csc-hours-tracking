@@ -204,7 +204,7 @@ const generateClassYearOptions = () => {
 };
 
 const Settings: React.FC = () => {
-  const { isSignedIn } = useSession();
+  const { isSignedIn, isLoaded } = useSession();
   const router = useRouter();
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -315,7 +315,7 @@ const Settings: React.FC = () => {
     router.push("/user/onboarding");
   };
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
