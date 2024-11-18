@@ -152,6 +152,67 @@ export async function cancelSignUp(
   }
 }
 
+export async function getWaitlistCount(
+  eventId: number
+): Promise<boolean>{
+  const response = await prisma.waitlist.findMany(
+    {
+      where: {
+        event_id: eventId,
+      },
+    }
+  );
+  if(response.length > 0){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+export async function moveOffWaitlist(
+  eventId: number
+): Promise<boolean> {
+  try{
+    const firstRow = await prisma.waitlist.findFirst(
+      {
+        where: {
+          event_id: eventId,
+        },
+      }
+    );
+    if (!firstRow) {
+      return false;
+    }
+    const application = await prisma.application.create({
+      data: {
+        date_applied: new Date(),
+        reason_id: firstRow.reason_id, //FIX REASON
+        approval_status: 0,
+        applicant_id: firstRow.applicant_id,
+        event_id: firstRow.event_id,
+        updated_by_id: firstRow.applicant_id,
+        updated_at: new Date(),
+      },
+    });
+    await prisma.waitlist.delete({
+      where: {
+          id: firstRow.id, 
+      },
+    });
+    if (!application) {
+      return false;
+    }
+    else{
+      return true;
+    }
+  } catch (error) {
+    console.error("Error moving off waitlist:", error);
+    return false; 
+  }
+
+}
+
+
 export async function createApplication(
   event_id: number,
   userId: number,
