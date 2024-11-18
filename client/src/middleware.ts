@@ -20,23 +20,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    token &&
-    token.role !== "ADMIN"
-  ) {
-    console.log("Permission not allowed");
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
-  }
+  // if (
+  //   request.nextUrl.pathname.startsWith("/admin") &&
+  //   token &&
+  //   token.role !== "ADMIN"
+  // ) {
+  //   console.log("Permission not allowed");
+  //   return NextResponse.redirect(new URL("/unauthorized", request.url));
+  // }
 
-  if (
-    request.nextUrl.pathname.startsWith("/user") &&
-    token &&
-    token.role !== "USER"
-  ) {
-    console.log("Permission not allowed");
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
-  }
+  // if (
+  //   request.nextUrl.pathname.startsWith("/user") &&
+  //   token &&
+  //   token.role !== "USER"
+  // ) {
+  //   console.log("Permission not allowed");
+  //   return NextResponse.redirect(new URL("/unauthorized", request.url));
+  // }
 
   return NextResponse.next();
 }
