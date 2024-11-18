@@ -126,6 +126,7 @@ export interface HoursTableData {
   hours: number;
   approvalStatus: number;
   updatedBy: string;
+  eventTitle: string;
 }
 
 export interface EventApplicationsTableData {

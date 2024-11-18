@@ -43,16 +43,6 @@ export default function Home() {
   ) : !isLoggedIn ? (
     <Login />
   ) : (
-    <>
-      <Layout>
-        <CustomHeader session={session} />
-      </Layout>
-      <Layout hasSider>
-        <CustomSider session={session} />
-      </Layout>
-      <Content style={{ marginLeft: "15rem" }}>
-        <Dashboard session={session} />
-      </Content>
-    </>
+    <Dashboard />
   );
 }
