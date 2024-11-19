@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Button, Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import {
   getEvents,
   getEventsByOrganizerId,
@@ -24,7 +24,7 @@ import DateFilter from "./DateFilter";
 function EventsBar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
   const router = useRouter();
   const [organizationId, setOrganizationId] = useState<number>(0);
@@ -40,15 +40,24 @@ function EventsBar() {
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoading(true);
       const userId = session?.user.id;
-      if (userId) {
-        setLoading(true);
-        const org = await getOrganizationByUserId(Number(userId));
-        const orgId = org?.affiliation?.id || 0;
-        const eventResult = await getEventsByOrganizerId(orgId);
-        setEvents(eventResult);
+      if (!userId) {
         setLoading(false);
+        throw new Error("User not found");
       }
+      const org = await getOrganizationByUserId(userId);
+      const orgId = org?.id
+      if (!orgId) {
+        setLoading(false);
+        throw new Error("Organization not found");
+      }
+
+      
+      const eventResult = await getEventsByOrganizerId(orgId);
+      setEvents(eventResult);
+      setLoading(false);
+      
     };
     fetchEvents();
   }, [sessionLoaded]);

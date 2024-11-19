@@ -1,9 +1,9 @@
+// dashboard/EventsBar.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Layout, Spin } from "antd";
-import { Content } from "antd/es/layout/layout";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 import {
   getEventsByOrganizerId,
   getOrganizationByUserId,
@@ -13,7 +13,7 @@ import CardGrid from "./CardGrid";
 function EventsBar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { session } = useSession();
 
   useEffect(() => {
     if (!session?.user.id) {
@@ -22,14 +22,18 @@ function EventsBar() {
 
     const fetchEvents = async () => {
       console.log("Fetching events");
-      const userId = session?.user.id;
-      if (userId) {
-        const org = await getOrganizationByUserId(Number(userId));
-        const orgId = org?.affiliation?.id || 0;
-        const eventResult = await getEventsByOrganizerId(orgId);
-        setEvents(eventResult);
+
+      const userId = session.user.id;
+      const org = await getOrganizationByUserId(userId);
+      const orgId = org?.id
+      if (!orgId) {
         setLoading(false);
+        throw new Error("Organization not found");
       }
+      const eventResult = await getEventsByOrganizerId(orgId);
+      setEvents(eventResult);
+      setLoading(false);
+      
     };
     setLoading(true);
     fetchEvents();
@@ -43,32 +47,34 @@ function EventsBar() {
     <Layout
       style={{
         backgroundColor: "white",
-        display: "flex",
-        width: "60vw",
+        borderRadius: "8px", // Optional: add border radius for aesthetics
       }}
     >
-      <h1>Upcoming Events</h1>
-      <Content style={{ width: "100%" }}>
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-            }}
-          >
-            <Spin />
-          </div>
-        ) : events ? (
-          <CardGrid
-            events={events}
-            filter={filterDate} // Pass today's date to filter upcoming events
-            myEvents={undefined} // Not using 'myEvents' here
-            view={"default"} // Set view to 'default'
-            pastEvents={false} // Exclude past events
-          />
-        ) : (
-          <p>Loading...</p>
-        )}
-      </Content>
+      <h1
+        style={{
+          marginTop: "0",
+        }}
+      >Upcoming Events</h1>
+      {loading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "10rem", // Ensure spinner is centered vertically
+          }}
+        >
+          <Spin />
+        </div>
+      ) : (
+        <CardGrid
+          events={events}
+          filter={filterDate} // Pass today's date to filter upcoming events
+          myEvents={undefined} // Not using 'myEvents' here
+          view={"default"} // Set view to 'default'
+          pastEvents={false} // Exclude past events
+        />
+      )}
     </Layout>
   );
 }

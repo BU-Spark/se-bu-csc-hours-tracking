@@ -1,48 +1,49 @@
-/* eslint-disable @next/next/no-img-element */
-"use client";
+'use client';
 
-import "./page.css";
-import Dashboard from "./(user)/user/dashboard/page";
-import Login from "./login/page";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import icon from "../../public/photos/full_logo.png";
+import './page.css';
+import Dashboard from './(user)/user/dashboard/page';
+import Login from './login/page';
+import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
-import CustomSider from "@/components/Sider/CustomSider";
-import CustomHeader from "@/components/Header/CustomHeader";
-import { Content } from "antd/es/layout/layout";
-import Layout from "antd/es/layout/layout";
+import icon from '../../public/photos/full_logo.png';
+import CustomSider from '@/components/Sider/CustomSider';
+import CustomHeader from '@/components/Header/CustomHeader';
+import { Content } from 'antd/es/layout/layout';
+import Layout from 'antd/es/layout/layout';
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoaded, isSignedIn } = useUser();
 
-  const { data: session, status } = useSession();
+  if (!isLoaded) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center ',
+          height: '100vh',
+        }}
+      >
+        <Image src={icon} alt="icon" width={500} height={100} className="loading-image" />
+      </div>
+    );
+  }
 
-  // console.log('Session:', session);
-  // console.log('Status:', status);
+  if (!isSignedIn) {
+    return <Login />;
+  }
 
-  useEffect(() => {
-    if (status !== "authenticated") {
-      setIsLoggedIn(false);
-    } else {
-      setIsLoggedIn(true);
-    }
-  }, [status]);
-
-  return status === "loading" ? (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center ",
-        height: "100vh",
-      }}
-    >
-      <Image src={icon} alt="icon" width={500} height={100} className="loading-image" />
-    </div>
-  ) : !isLoggedIn ? (
-    <Login />
-  ) : (
-    <Dashboard />
+  return (
+    <>
+      <Layout>
+        <CustomHeader />
+      </Layout>
+      <Layout hasSider>
+        <CustomSider />
+      </Layout>
+      <Content style={{ marginLeft: '15rem' }}>
+        <Dashboard />
+      </Content>
+    </>
   );
 }

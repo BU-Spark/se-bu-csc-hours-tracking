@@ -1,96 +1,108 @@
 "use client";
 
 import "./CustomSider.css";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import { useRouter, usePathname } from "next/navigation";
 const { Sider } = Layout;
 import Pfp from "../Pfp";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const CustomSider: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
+  const [person, setPerson] = useState<any>(null);
+
+  useEffect(() => {
+    if (isSignedIn && session) {
+      const fetchPerson = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+      };
+      fetchPerson();
+    }
+  }, [isSignedIn, session]);
+
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] =
-  session?.user.role === "USER"
-    ? [
-        {
-          key: "my_hours",
-          label: "My Hours",
-          onClick: () => router.push("/user/my-hours"),
-        },
-        {
-          key: "events",
-          label: "Events",
-          onClick: () => router.push("/user/events"),
-        },
-        {
-          key: "forms",
-          label: "Forms",
-          onClick: () => router.push("/user/forms"),
-        },
-        {
-          key: "settings",
-          label: "Settings",
-          onClick: () => router.push("/user/settings"),
-        },
-      ]
-    : session?.user.role === "ADMIN"
-    ? [
-        {
-          key: "student_hours",
-          label: "Student Hours",
-          onClick: () => router.push("/admin/student-hours"),
-        },
-        {
-          key: "student_applications",
-          label: "Student Signups",
-          onClick: () => router.push("/admin/student-signups"),
-        },
-        {
-          key: "events",
-          label: "Events",
-          onClick: () => router.push("/admin/events"),
-        },
-        {
-          key: "forms",
-          label: "Forms",
-          onClick: () => router.push("/admin/forms"),
-        },
-      ]
-    : session?.user.role === "ORGANIZER"
-    ? [
-        {
-          key: "dashboard",
-          label: "Dashboard",
-          onClick: () => router.push("/third-party/dashboard"),
-        },
-        {
-          key: "my_events",
-          label: "My Events",
-          onClick: () => router.push("/third-party/my-events"),
-        },
-        {
-          key: "submissions",
-          label: "Submissions",
-          onClick: () => router.push("/third-party/submissions"),
-        },
-        {
-          key: "pending_hours",
-          label: "Pending Hours",
-          onClick: () => router.push("/third-party/pending-hours"),
-        },
-        {
-          key: "settings",
-          label: "Settings",
-          onClick: () => router.push("/third-party/settings"),
-        },
-      ]
-    : [];
-
+    person?.role === "USER"
+      ? [
+          {
+            key: "my_hours",
+            label: "My Hours",
+            onClick: () => router.push("/user/my-hours"),
+          },
+          {
+            key: "events",
+            label: "Events",
+            onClick: () => router.push("/user/events"),
+          },
+          {
+            key: "forms",
+            label: "Forms",
+            onClick: () => router.push("/user/forms"),
+          },
+          {
+            key: "settings",
+            label: "Settings",
+            onClick: () => router.push("/user/settings"),
+          },
+        ]
+      : person?.role === "ADMIN"
+      ? [
+          {
+            key: "student_hours",
+            label: "Student Hours",
+            onClick: () => router.push("/admin/student-hours"),
+          },
+          {
+            key: "student_applications",
+            label: "Student Signups",
+            onClick: () => router.push("/admin/student-signups"),
+          },
+          {
+            key: "events",
+            label: "Events",
+            onClick: () => router.push("/admin/events"),
+          },
+          {
+            key: "forms",
+            label: "Forms",
+            onClick: () => router.push("/admin/forms"),
+          },
+        ]
+      : person?.role === "ORGANIZER"
+      ? [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            onClick: () => router.push("/third-party/dashboard"),
+          },
+          {
+            key: "my_events",
+            label: "My Events",
+            onClick: () => router.push("/third-party/my-events"),
+          },
+          {
+            key: "submissions",
+            label: "Submissions",
+            onClick: () => router.push("/third-party/submissions"),
+          },
+          {
+            key: "pending_hours",
+            label: "Pending Hours",
+            onClick: () => router.push("/third-party/pending-hours"),
+          },
+          {
+            key: "settings",
+            label: "Settings",
+            onClick: () => router.push("/third-party/settings"),
+          },
+        ]
+      : [];
 
   const getSelectedKey = () => {
     if (pathname.startsWith("/user/my-hours")) {
@@ -135,7 +147,7 @@ const CustomSider: React.FC = () => {
     return "";
   };
 
-  return session?.user?.image ? (
+  return person?.image ? (
     <Sider
       style={{
         background: "white",
@@ -152,13 +164,13 @@ const CustomSider: React.FC = () => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp dimension={"6em"} sessionImage={session.user.image} />
+          <Pfp dimension={"6em"} sessionImage={person.image} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
-              {session?.user.name}
+              {person.name}
             </Typography.Text>
             <br />
-            <Typography.Text>{session?.user.email}</Typography.Text>
+            <Typography.Text>{person.email}</Typography.Text>
           </div>
           <Menu
             style={{

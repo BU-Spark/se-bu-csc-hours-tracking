@@ -4,7 +4,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 import {
   createNewHourSubmission,
   getAllApprovedEventsByUserId,
@@ -34,7 +34,7 @@ const AddHours: React.FC = () => {
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
 
   useEffect(() => {
     if (event && hours && feedback && description) {

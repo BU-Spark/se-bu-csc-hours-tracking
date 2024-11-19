@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Progress } from "antd";
-import { accentBackground } from "@/_common/styles";
+import { accentBackground, buRed } from "@/_common/styles";
 
 interface YourStatsProps {
   stats: {
@@ -30,7 +30,10 @@ const YourStats: React.FC<YourStatsProps> = ({ stats }) => {
 
   return (
     <section>
-      <h2>Your Stats</h2>
+      <h2
+      style={{marginTop: 0,}}
+      >Your Stats
+      </h2>
       <div style={{ display: "flex", alignItems: "start" }}>
         <div style={{
     textAlign: "center",
@@ -44,6 +47,7 @@ const YourStats: React.FC<YourStatsProps> = ({ stats }) => {
             type="circle"
             percent={submissionApprovalRate}
             format={(percent) => `${percent}%`}
+            strokeColor={buRed} // Set stroke color to red
           />
           <small></small>
         </div>
@@ -58,6 +62,7 @@ const YourStats: React.FC<YourStatsProps> = ({ stats }) => {
             type="circle"
             percent={hoursLoggedRate}
             format={(percent) => `${percent}%`}
+            strokeColor={buRed} // Set stroke color to red
           />
           <small></small>
         </div>

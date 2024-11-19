@@ -9,6 +9,7 @@ datasource db {
 
 model Person {
   id                                      Int              @id @default(autoincrement())
+  clerk_id                                String?          @unique
   name                                    String
   email                                   String           @unique
   phone_number                            String?          @unique
@@ -19,7 +20,6 @@ model Person {
   college                                 String?          @db.VarChar(255)
   dietary_restrictions                    String?
   bu_id                                   String?          @unique
-  accounts                                Account[]
   applications                            Application[]    @relation("applicant")
   deleted_applications                    Application[]    @relation("ApplicationDeleter")
   updated_applications                    Application[]    @relation("ApplicationUpdater")
@@ -30,7 +30,6 @@ model Person {
   updated_submissions                     HourSubmission[] @relation("HourSubmissionUpdater")
   hour_submissions                        HourSubmission[]
   affiliation                             Organization?    @relation(fields: [affiliation_id], references: [id])
-  sessions                                Session[]
   Waitlist_Waitlist_applicant_idToPerson  Waitlist[]       @relation("Waitlist_applicant_idToPerson")
   Waitlist_Waitlist_deleted_by_idToPerson Waitlist[]       @relation("Waitlist_deleted_by_idToPerson")
   Waitlist_Waitlist_updated_by_idToPerson Waitlist[]       @relation("Waitlist_updated_by_idToPerson")
@@ -78,8 +77,6 @@ model Organization {
   image        Bytes?
   phone_number String?
   email        String
-
-
   events       Event[]
   members      Person[]
 }
@@ -164,40 +161,6 @@ model FormCode {
   description  String
   downloadable Boolean @default(false)
   upload_link  String?
-}
-
-model Account {
-  id                Int     @id @default(autoincrement())
-  userId            Int
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              Person  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           Int      @id @default(autoincrement())
-  sessionToken String   @unique
-  userId       Int
-  expires      DateTime
-  user         Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
 
 model Waitlist {

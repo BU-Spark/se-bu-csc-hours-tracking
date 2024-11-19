@@ -3,7 +3,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import {
   getHourSubmissionsByUserEmail,
   getUpcomingHoursByUser,
@@ -38,53 +39,57 @@ const MyHours: React.FC = () => {
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); // you can't submit hours for it yet, projected amount
   const [filter, setFilter] = useState<number>(0); // 0 is pending, 1 is approved, 2 is denied, 3 is all
   const router = useRouter();
+  const { session, isSignedIn } = useSession();
+  const [person, setPerson] = useState<any>(null);
 
   useEffect(() => {
-    const fetchHours = async () => {
-      const session = await getSession();
-      if (session?.user?.email) {
-        try {
-          const data = await getHourSubmissionsByUserEmail(session.user.email);
-          setEventHours(data);
-          const approved = data.filter(
-            (hour: EventHours) => hour.approval_status === 1
-          );
+    if (isSignedIn && session) {
+      const fetchPersonAndHours = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+        if (person?.email) {
+          try {
+            const data = await getHourSubmissionsByUserEmail(person.email);
+            setEventHours(data);
+            const approved = data.filter(
+              (hour: EventHours) => hour.approval_status === 1
+            );
 
-          const denied = data.filter(
-            (hour: EventHours) => hour.approval_status === 2
-          );
+            const denied = data.filter(
+              (hour: EventHours) => hour.approval_status === 2
+            );
 
-          const approvedTotal = approved.reduce(
-            (acc: number, hour: EventHours) => acc + hour.hours,
-            0
-          );
+            const approvedTotal = approved.reduce(
+              (acc: number, hour: EventHours) => acc + hour.hours,
+              0
+            );
 
-          const deniedTotal = denied.reduce(
-            (acc: number, hour: EventHours) => acc + hour.hours,
-            0
-          );
+            const deniedTotal = denied.reduce(
+              (acc: number, hour: EventHours) => acc + hour.hours,
+              0
+            );
 
-          const submittedTotal = data.reduce(
-            (acc: number, hour: EventHours) => acc + hour.hours,
-            0
-          );
+            const submittedTotal = data.reduce(
+              (acc: number, hour: EventHours) => acc + hour.hours,
+              0
+            );
 
-          setApprovedHours(approvedTotal);
-          setDeniedHours(deniedTotal);
-          setSubmittedHours(submittedTotal - approvedTotal - deniedTotal);
+            setApprovedHours(approvedTotal);
+            setDeniedHours(deniedTotal);
+            setSubmittedHours(submittedTotal - approvedTotal - deniedTotal);
 
-          const upcoming = await getUpcomingHoursByUser(
-            Number(session.user.id)
-          );
-          if (upcoming) setUpcomingHours(upcoming);
-        } catch (error) {
-          console.error("Error fetching hours:", error);
+            const upcoming = await getUpcomingHoursByUser(
+              Number(person.id)
+            );
+            if (upcoming) setUpcomingHours(upcoming);
+          } catch (error) {
+            console.error("Error fetching hours:", error);
+          }
         }
-      }
-    };
-
-    fetchHours();
-  }, []);
+      };
+      fetchPersonAndHours();
+    }
+  }, [isSignedIn, session]);
 
   const toggleExpand = (hour: EventHours) => {
     setExpandedHour(expandedHour === hour ? null : hour);

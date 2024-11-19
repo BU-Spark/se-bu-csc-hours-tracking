@@ -5,13 +5,13 @@ import { Feedback } from "@/interfaces/interfaces";
 import { getFeedback } from "./action";
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import { getOrganizationByUserId } from "./action";
 
 function ThirdPartyFeedback() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [sessionLoaded, setSessionLoaded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,9 +24,19 @@ function ThirdPartyFeedback() {
     const fetchFeedback = async () => {
       setLoading(true);
       try {
+        setLoading(true);
         const userId = session?.user.id;
-        const org = await getOrganizationByUserId(Number(userId));
-        const orgId = org?.affiliation?.id || 0;
+        if (!userId) {
+          setLoading(false);
+          throw new Error("User not found");
+        }
+        const org = await getOrganizationByUserId(userId);
+        const orgId = org?.id
+        if (!orgId) {
+          setLoading(false);
+          throw new Error("Organization not found");
+        }
+        
         const response = await getFeedback(orgId);
         if (!response) {
           console.error("bad response from getFeedback");

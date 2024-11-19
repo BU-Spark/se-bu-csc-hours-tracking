@@ -36,7 +36,6 @@ const EventCard: React.FC<ThirdPartyEventCardProps> = ({
           width: "12rem",
           position: "relative",
           overflow: "hidden",
-          marginBottom: "3rem",
           filter: event_end < new Date() ? "grayscale(100%)" : "none",
         }}
         hoverable

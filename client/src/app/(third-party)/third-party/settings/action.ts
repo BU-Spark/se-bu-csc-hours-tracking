@@ -1,46 +1,42 @@
 "use server";
 
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import prisma from "../../../../lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../lib/auth";
+import { auth } from '@clerk/nextjs/server'
 import { Organization, Person } from "@prisma/client";
 
 export const checkIfNewUser = async () => {
-  const session = await getServerSession(authOptions);
+  const { userId } = await auth();
 
-  if (!session || !session.user || !session.user.email) {
-    return { isNewUser: false };
+  if (!userId) {
+    throw new Error("Not authenticated");
   }
 
-  const user = await prisma.person.findUnique({
-    where: { email: session.user.email },
-  });
+  const person = await getPersonFromUser(userId);
 
-  if (!user) {
+  if (!person || !person.email) {
     return { isNewUser: false };
   }
 
   const isNewUser =
-    !user.phone_number ||
-    !user.bu_id ||
-    !user.college ||
-    !user.dietary_restrictions ||
-    !user.class;
+    !person.phone_number ||
+    !person.bu_id ||
+    !person.college ||
+    !person.dietary_restrictions ||
+    !person.class;
 
   return { isNewUser };
 };
 
 export const getOrganizationDetails = async (): Promise<Organization | undefined> => {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user || !session.user.email) {
+  
+  const { userId } = await auth();
+  if (!userId) {
     throw new Error("Not authenticated");
   }
 
-  const person = await prisma.person.findUnique({
-    where: { email: session.user.email }, 
-    select: { affiliation_id: true }, 
-  });
+  const person = await getPersonFromUser(userId);
+
   if (!person || !person.affiliation_id) {
     throw new Error("No affiliation found for the user");
   }
@@ -73,15 +69,13 @@ export const updateOrganizerDetails = async (details: {
   apt?: string;
   image?: Buffer | null;
 }) => {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user || !session.user.email) {
+   const { userId } = await auth();
+  if (!userId) {
     throw new Error("Not authenticated");
   }
-  const person = await prisma.person.findUnique({
-    where: { email: session.user.email }, 
-    select: { affiliation_id: true }, 
-  });
+
+  const person = await getPersonFromUser(userId);
+  
   if (!person || !person.affiliation_id) {
     throw new Error("No affiliation found for the user");
   }

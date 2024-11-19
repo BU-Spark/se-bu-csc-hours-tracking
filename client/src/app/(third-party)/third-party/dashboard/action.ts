@@ -1,6 +1,7 @@
 "use server";
 
 import { Feedback } from "@/interfaces/interfaces";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import prisma from "@/lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
@@ -216,11 +217,12 @@ export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
 
 //get oganizaiton by user id - could also just store org in session data
 //access stuff w/ org?.affiliation?.id or .name, .abbreviation
-export const getOrganizationByUserId = async (id: number) => {
+export const getOrganizationByUserId = async (clerk_id: string) => {
   try {
-    const organization = await prisma.person.findUnique({
-      where: { id: id },
-      select: { affiliation: true }, // Only select the org_id
+    const person = await getPersonFromUser(clerk_id);
+    const affiliation_id = person.affiliation_id;
+    const organization = await prisma.organization.findUnique({
+      where: { id: affiliation_id },
     });
     return organization;
   } catch (error) {

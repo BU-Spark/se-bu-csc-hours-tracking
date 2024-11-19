@@ -18,7 +18,8 @@ import convertToBase64 from "@/app/_utils/BufferToString";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import { getEventSpotsLeft } from "@/app/(admin)/admin/student-signups/action";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import WaitlistForm from "./WaitlistForm";
@@ -34,43 +35,29 @@ export default function Page() {
   const [hasAcceptedApplication, setHasAcceptedApplication] = useState<boolean>(false);
   const [capacity, setCapacity] = useState<number>();
   const event_id: number = Number(useParams().event_id);
-  const session = useSession();
+  const { session, isSignedIn } = useSession();
+  const [person, setPerson] = useState<any>(null);
 
-  //CHECK IF USER HAS ALREADY APPLIED
   useEffect(() => {
-    const fetchCheckApplied = async () => {
-      if (session?.data?.user) {
-        const result: boolean = await checkIfApplied(
-          event_id,
-          Number(session?.data?.user.id)
-        );
-        setHasRegistered(result);
-      }
-    };
-    const fetchCheckWaitlisted = async () => {
-      if (session?.data?.user) {
-        const result: boolean = await checkIfWaitlisted(
-          event_id,
-          Number(session?.data?.user.id)
-        );
-        setHasWaitlisted(result);
-      }
-    };
-    const fetchCheckAcceptedApplication = async () => {
-      if (session?.data?.user) {
-        const result: boolean = await checkIfAcceptedApplication(
-          event_id,
-          Number(session?.data?.user.id)
-        );
-        setHasAcceptedApplication(result);
-      }
-    };
-    if (session.status != "loading") {
-      fetchCheckApplied(); 
-      fetchCheckWaitlisted();
-      fetchCheckAcceptedApplication();
+    if (isSignedIn && session) {
+      const fetchPersonAndStatus = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+
+        if (person) {
+          const resultApplied = await checkIfApplied(event_id, Number(person.id));
+          setHasRegistered(resultApplied);
+
+          const resultWaitlisted = await checkIfWaitlisted(event_id, Number(person.id));
+          setHasWaitlisted(resultWaitlisted);
+
+          const resultAccepted = await checkIfAcceptedApplication(event_id, Number(person.id));
+          setHasAcceptedApplication(resultAccepted);
+        }
+      };
+      fetchPersonAndStatus();
     }
-  }, [session.status]);
+  }, [isSignedIn, session]);
 
   // GET EVENT DETAILS
   useEffect(() => { 
@@ -102,12 +89,14 @@ export default function Page() {
   }, [event_id]);
 
   const handleCancelSignUp = async () => {
-    const success = await cancelSignUp(event_id, Number(session?.data?.user.id));
-    if (success) {
-      setCancelling(false);
-      setHasAcceptedApplication(false);
-      setHasRegistered(false);
-      setHasWaitlisted(false);
+    if (person) {
+      const success = await cancelSignUp(event_id, Number(person.id));
+      if (success) {
+        setCancelling(false);
+        setHasAcceptedApplication(false);
+        setHasRegistered(false);
+        setHasWaitlisted(false);
+      }
     }
   };
   return event ? (
@@ -301,17 +290,17 @@ export default function Page() {
             </Button>
           )}
         </div>
-        { registering && session.data?.user.id ? (capacity !== 0 ? (
+        { registering && person?.id ? (capacity !== 0 ? (
           <RegisterForm
             event={event}
-            userId={Number(session.data?.user.id)}
+            userId={Number(person.id)}
             setRegistering={setRegistering}
             setHasRegistered={setHasRegistered}
           />
         ):(
           <WaitlistForm
             event={event}
-            userId={Number(session.data?.user.id)}
+            userId={Number(person.id)}
             setRegistering={setRegistering}
             setHasWaitlisted={setHasWaitlisted}
           />

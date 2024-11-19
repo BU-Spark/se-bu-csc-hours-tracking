@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Button, Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
-import { useSession } from "next-auth/react";
 import {
   getApplicationsByUserId,
   getEvents,
@@ -25,7 +24,6 @@ function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(true);
-  const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
