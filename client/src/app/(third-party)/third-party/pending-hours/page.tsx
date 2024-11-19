@@ -10,11 +10,11 @@ import { HourSubmission } from "@prisma/client";
 import { getHourSubmissionTableData, getOrganizationByUserId } from "./action";
 import CustomTable from "./CustomTable";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
-import { useSession } from "next-auth/react";
-
+import { useSession } from '@clerk/nextjs';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const PendingHours: React.FC = () => {
-    const { data: session } = useSession();
+    const { session } = useSession();
     const [showHistory, setShowHistory] = useState<boolean>(false);
     const [pendingSubmissions, setPendingSubmissions] = useState<
         HoursTableData[]
@@ -46,7 +46,7 @@ const PendingHours: React.FC = () => {
 
     useEffect(() => {
         const fetchAllSubmissions = async () => {
-            const userId = session?.user.id;
+            const { userId } = await getPersonFromUser(String(session?.user.id));
             let org;
             if (userId) {
                 org = await getOrganizationByUserId(Number(userId));

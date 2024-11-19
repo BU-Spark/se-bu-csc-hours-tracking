@@ -5,7 +5,7 @@ import {
   SummaryBox,
 } from "@/_common/styledDivs";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/nextjs';
 import {
   EventApplicationTableParams,
   EventApplicationsTableData,
@@ -18,9 +18,10 @@ import {
 import { Application } from "@prisma/client";
 import EventApplicationTable from "./EventApplicationTable";
 import { buRed } from "@/_common/styles";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const PendingSubmissions: React.FC = () => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [pendingApplications, setPendingApplications] = useState<
     EventApplicationsTableData[]
@@ -53,7 +54,7 @@ const PendingSubmissions: React.FC = () => {
 
   useEffect(() => {
     const fetchAllApplications = async () => {
-      const userId = session?.user.id;
+      const { userId } = await getPersonFromUser(String(session?.user.id));
       // console.log("user id:", userId);
       let org;
       if (userId) {

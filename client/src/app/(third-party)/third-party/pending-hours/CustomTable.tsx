@@ -16,8 +16,9 @@ import {
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import { reviewHourSubmission } from "./action";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/nextjs';
 import { buRed } from "@/_common/styles";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const CustomTable: React.FC<CustomTableParams> = ({
   data: dataInput,
@@ -31,7 +32,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
   const [loading, setIsLoading] = useState<boolean>(true);
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const searchInput = useRef<InputRef>(null);
-  const { data: session, status } = useSession();
+  const { session } = useSession();
 
   useEffect(() => {
     if (dataInput) {
@@ -145,14 +146,16 @@ const CustomTable: React.FC<CustomTableParams> = ({
 
   // FOR APPROVING / DENYING HOURS
   const handleReview = async (record: HoursTableData, choice: string) => {
-    if (!session?.user?.name) {
+    if (!session?.user?.id) {
       console.log("session check failed");
       return;
     }
+    
+    const { userId } = await getPersonFromUser(session?.user.id);
 
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),
-      updaterId: Number(session?.user.id),
+      updaterId: Number(userId),
       approvalStatus:
         choice === "approve"
           ? 1
@@ -176,7 +179,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
       if (set1 && val1 && set2 && val2) {
         if (choice === "pending") {
           // Update record approvalStatus and move to val1
-          const updatedRecord = { ...record, approvalStatus: 0, updatedBy: session.user.name };
+          const updatedRecord = { ...record, approvalStatus: 0, updatedBy: userId};
           set1([updatedRecord, ...val1]);
           set2(val2.filter((val) => val.submissionId !== record.submissionId));
         } else if (choice === "approve" || choice === "deny") {
@@ -184,7 +187,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
           const updatedRecord = {
             ...record,
             approvalStatus: choice === "approve" ? 1 : 2,
-            updatedBy: session.user.name,
+            updatedBy: userId,
           };
           set2([
             updatedRecord,
