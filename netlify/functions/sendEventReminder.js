@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 //emails sent every hour for events within 23-24 hours from then
+//Google workplace accs restricted to 2000 emails/day
 exports.handler = async (event, context) => {
   const now = new Date();
   const in23Hours = new Date(now.getTime() + 23 * 60 * 60 * 1000); // 23 hours from now
@@ -40,6 +41,7 @@ exports.handler = async (event, context) => {
           select: {
             title: true, // Get the event title
             event_start: true, // Get the event start date
+            event_end: true
           },
         },
       },
@@ -55,6 +57,7 @@ exports.handler = async (event, context) => {
           to: email,
           eventTitle: title,
           eventStart: event_start.toLocaleString(), // Convert to a readable format if needed
+          eventEnd: event_end.toLocaleString()
         };
       });
 
@@ -72,10 +75,42 @@ exports.handler = async (event, context) => {
       const { email, name } = app.applicant;
       const { title, event_start } = app.event;
 
+      // Create ICS content
+      const eventStartISO = event_start.toISOString().replace(/[-:]/g, '').split('.')[0];
+      const eventEndISO = evnet_end.toISOString().replace(/[-:]/g, '').split('.')[0];
+
+      const icsContent = `
+        BEGIN:VCALENDAR
+        VERSION:2.0
+        CALSCALE:GREGORIAN
+        BEGIN:VEVENT
+        DTSTART:${eventStartISO}Z
+        DTEND:${eventEndISO}Z
+        SUMMARY:${title}
+        DESCRIPTION:This is a reminder for your upcoming event.
+        LOCATION:Online
+        STATUS:CONFIRMED
+        SEQUENCE:0
+        BEGIN:VALARM
+        TRIGGER:-PT15M
+        ACTION:DISPLAY
+        DESCRIPTION:Reminder
+        END:VALARM
+        END:VEVENT
+        END:VCALENDAR
+      `;
+
       const mailOptions = {
         from: process.env.GMAIL_USER,
         to: email,
         subject: `Reminder: ${title} is Coming Up!`,
+        attachments: [
+          {
+            filename: 'event.ics',
+            content: icsContent,
+            contentType: 'text/calendar',
+          },
+        ],
         html: `
           <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
           <html>
