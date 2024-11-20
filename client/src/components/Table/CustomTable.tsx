@@ -16,7 +16,7 @@ import {
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import { buRed } from "@/_common/styles";
 
 const CustomTable: React.FC<CustomTableParams> = ({
@@ -31,7 +31,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
   const [loading, setIsLoading] = useState<boolean>(true);
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const searchInput = useRef<InputRef>(null);
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
 
   useEffect(() => {
     if (dataInput) {

@@ -25,7 +25,7 @@ const StepFour: React.FC = () => {
     <StepContainer>
       <Title>Submit Your Hours</Title>
       <Description>
-        After attending the event, go to the "Log Hours" page to submit the
+        After attending the event, go to the &ldquo;Log Hours&rdquo; page to submit the
         hours you volunteered. Your submission will be reviewed and approved by
         an administrator.
       </Description>

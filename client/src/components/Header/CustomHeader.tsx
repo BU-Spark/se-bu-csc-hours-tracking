@@ -1,20 +1,35 @@
 "use client";
 
 import "./CustomHeader.css";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Layout } from "antd";
 import Image from "next/image";
 import { accentBackground, buRed } from "../../_common/styles";
 import Pfp from "../Pfp";
-import { signOut, useSession } from "next-auth/react";
 import StyledButton from "../StyledButton";
+import { useClerk } from '@clerk/nextjs';
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
+import { useRouter } from 'next/navigation';
 
 const { Header } = Layout;
-
 const CustomHeader: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
+  const { signOut } = useClerk();
+  const router = useRouter();
+  const [person, setPerson] = useState<any>(null);
 
-  return session?.user?.image ? (
+  useEffect(() => {
+    if (isSignedIn && session) {
+      const fetchPerson = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+      };
+      fetchPerson();
+    }
+  }, [isSignedIn, session]);
+
+  return person?.image ? (
     <Header
       className="fixedHeader"
       style={{
@@ -35,24 +50,27 @@ const CustomHeader: React.FC = () => {
       </span>
 
       <div className="header-right">
-        {status === "authenticated" && (
+        {isSignedIn && (
           <>
             <div style={{ marginRight: "1rem" }}>
               <StyledButton
-                onClick={() => signOut({ callbackUrl: "/login" })}
+                onClick={async () => {
+                  await signOut({ redirectUrl: '/' });
+                  window.location.reload();
+                }}
                 text="Sign out"
                 selected={false}
               />
             </div>
-            {session?.user.role === "ADMIN" && (
+            {person.role === "ADMIN" && (
               <b style={{ marginRight: "1rem" }}>Administrator</b>
             )}
-            {session?.user.role === "ORGANIZER" && (
+            {person.role === "ORGANIZER" && (
               <b style={{ marginRight: "1rem" }}>Organizer</b>
             )}
           </>
         )}
-        <Pfp dimension={"2.5rem"} sessionImage={session.user.image} />
+        <Pfp dimension={"2.5rem"} sessionImage={person.image} />
       </div>
     </Header>
   ) : (

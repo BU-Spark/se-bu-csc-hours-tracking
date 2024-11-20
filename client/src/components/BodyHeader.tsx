@@ -1,15 +1,15 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
 import { usePathname } from "next/navigation";
 
 const BodyHeader: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
   const excludedPaths = ["/unauthorized"];
   const path: string = usePathname();
   const useFormatPath = (path: string) => {
     if (path.includes("/user")) path = path.substring(5);
     if (path.includes("/admin")) path = path.substring(6);
-    if (path != null && !undefined && !path.substring(1).includes("/")) {
+    if (path != null && !isSignedIn && !path.substring(1).includes("/")) {
       if (path?.length != null && path.length > 1) {
         const pre = path.replace(
           /-(\w)/g,
