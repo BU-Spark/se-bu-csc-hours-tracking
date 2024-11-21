@@ -69,7 +69,7 @@ export const updateOrganizerDetails = async (details: {
   apt?: string;
   image?: string;
 }) => {
-   const { userId } = await auth();
+  const { userId } = await auth();
   if (!userId) {
     throw new Error("Not authenticated");
   }
@@ -103,3 +103,56 @@ export const updateOrganizerDetails = async (details: {
 
   return user;
 };
+export const createFormDetails = async (details: {
+  //This function should upload new forms when user adds new forms
+  name: string;
+  required: boolean;
+  notes: string;
+  file?: string;
+}) => {
+  //NEED TO UPDATE PRISMA SCHEMA TO HAVE ALL THE CORRECT FIELDS
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
+  const person = await getPersonFromUser(userId);
+  
+  if (!person || !person.affiliation_id) {
+    throw new Error("No affiliation found for the user");
+  }
+  const user = await prisma.formCode.create({
+    data: {
+      title: details.name,
+      description: details.notes,
+    },
+  });
+}
+
+export const updateFormDetails = async (details: {
+  // This function should update any existing form data
+  name: string;
+  required: boolean;
+  notes: string;
+  file?: string;
+}) => {
+  //NEED TO UPDATE PRISMA SCHEMA TO HAVE ALL THE CORRECT FIELDS
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Not authenticated");
+  }
+
+  const person = await getPersonFromUser(userId);
+  
+  if (!person || !person.affiliation_id) {
+    throw new Error("No affiliation found for the user");
+  }
+  const user = await prisma.formCode.update({
+    where: { id: person.affiliation_id },
+    data: {
+      title: details.name,
+      description: details.notes,
+    },
+  });
+}
+

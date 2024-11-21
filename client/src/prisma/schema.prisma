@@ -156,11 +156,13 @@ model ApprovalStatusCode {
 }
 
 model FormCode {
-  id           Int     @id @default(autoincrement())
-  title        String
-  description  String
-  downloadable Boolean @default(false)
-  upload_link  String?
+  id              Int     @id @default(autoincrement())
+  title           String
+  description     String
+  downloadable    Boolean @default(false)
+  required        Boolean @default(false)
+  organization_id Int     @default(0)
+  upload_link     String?
 }
 
 model Waitlist {

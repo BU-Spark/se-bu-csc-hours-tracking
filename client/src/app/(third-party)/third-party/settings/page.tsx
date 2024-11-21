@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
-import { checkIfNewUser, getOrganizationDetails, updateOrganizerDetails } from "./action";
+import { checkIfNewUser, createFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails } from "./action";
 import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
@@ -232,7 +232,7 @@ const Settings: React.FC = () => {
     formName: string;
     required: boolean;
     notes: string;
-    file?: Buffer | Uint8Array;
+    file?: string;
   }>({
     formName: '',
     required: false,
@@ -412,10 +412,60 @@ const Settings: React.FC = () => {
     });
     setPhoneNumber("");
   };
+  const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+        console.error("No file selected");
+        return;
+    }
 
-  const handleFormSubmit = () => {
+    try {
+        const fileData = await convertFileToBase64(file);
+        // Check if the Base64 string is in the expected format (Data URL format)
+        // NEED TO UPDATE FOR FILE INSTEAD OF IMAGE
+        const base64Prefix = "data:image";
+        if (fileData.startsWith(base64Prefix)) {
+            const base64String = fileData.split(',')[1]; // Extract Base64 part
+            setFormInfo(prev => ({
+                ...prev,
+                file: base64String // Store only the Base64 part in the state
+            }));
+        } else {
+            setFormInfo(prev => ({
+              ...prev,
+              file: fileData // Store the Base64 string
+            }));
+        }
+    } catch (error) {
+        console.error("Error converting file to Base64:", error);
+    }  
+};
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    let formString: string | undefined = undefined;
 
-  }
+    if (form.file) {
+      // Need to change to check for form file
+      const base64String = form.file.startsWith("data:image") 
+        ? form.file.split(',')[1]  // Remove the "data:image/png;base64," prefix
+        : form.file;  // Already a clean Base64 string
+      formString = base64String;
+    }
+    const details = {
+      name: form.formName,
+      required: isFieldRequired,
+      notes: form.notes,
+      file: formString, 
+    };
+    try {
+      await createFormDetails(details);
+      success("Form uploaded");
+    }
+    catch (error) {
+      console.error("Error updating organization details:", error);
+    }
+  };
   const handleFormReset = () => {
 
   }
@@ -496,11 +546,11 @@ const Settings: React.FC = () => {
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
                           <Label>File Upload</Label>
-                          <Input type="file" onChange={handleFileChange} />
+                          <Input type="file" onChange={handleFormFileChange} />
                       </div>
                   </div>
                   <div>
-                    <label>Make required?</label>
+                    <label>Make required? No</label>
                     <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
                       <input
                         type="checkbox"
@@ -532,6 +582,7 @@ const Settings: React.FC = () => {
                         transform: isFieldRequired ? 'translateX(25px)' : 'none',
                       }}></span>
                     </label>
+                    <label>Yes</label>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
                   </div>
