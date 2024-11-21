@@ -71,21 +71,15 @@ export default function Page() {
     const fetchCapacity = async () => {
       const response = await getEventSpotsLeft(event_id);
       if (response !== undefined && response !== null) {
+        const OffWaitlist = await moveOffWaitlist(event_id, response);
         setCapacity(response);
       }else if(response === undefined){
         setCapacity(0);
       }
     };
+
     fetchEvent();
     fetchCapacity();
-    const fetchWaitlist = async () => {
-      console.log("---------------Checking Waitlist-----------------");
-      const response = await getWaitlistCount(event_id);
-      if(response && capacity){
-        const OffWaitlist = await moveOffWaitlist(event_id);
-      }
-    }
-    fetchWaitlist();
   }, [event_id]);
 
   const handleCancelSignUp = async () => {

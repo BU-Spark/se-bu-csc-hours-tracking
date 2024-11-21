@@ -170,41 +170,47 @@ export async function getWaitlistCount(
 }
 
 export async function moveOffWaitlist(
-  eventId: number
+  eventId: number,
+  capacity: number
 ): Promise<boolean> {
   try{
-    const firstRow = await prisma.waitlist.findFirst(
+    const Rows = await prisma.waitlist.findMany(
       {
         where: {
           event_id: eventId,
         },
+        take: capacity
       }
     );
-    if (!firstRow) {
+    if (!Rows) {
       return false;
     }
-    const application = await prisma.application.create({
-      data: {
-        date_applied: new Date(),
-        reason_id: firstRow.reason_id, //FIX REASON
-        approval_status: 0,
-        applicant_id: firstRow.applicant_id,
-        event_id: firstRow.event_id,
-        updated_by_id: firstRow.applicant_id,
-        updated_at: new Date(),
-      },
-    });
-    await prisma.waitlist.delete({
-      where: {
-          id: firstRow.id, 
-      },
-    });
-    if (!application) {
-      return false;
+    for(const row of Rows){
+      const application = await prisma.application.createMany({
+        data: {
+          date_applied: new Date(),
+          reason_id: row.reason_id, //FIX REASON
+          approval_status: 0,
+          applicant_id: row.applicant_id,
+          event_id: row.event_id,
+          updated_by_id: row.applicant_id,
+          updated_at: new Date(),
+        },
+      });
+      await prisma.waitlist.delete({
+        where: {
+            id: row.id, 
+        },
+      });
+      if (!application) {
+        return false;
+      }
+      else{
+        return true;
+      }
     }
-    else{
-      return true;
-    }
+    return true;
+    
   } catch (error) {
     console.error("Error moving off waitlist:", error);
     return false; 
