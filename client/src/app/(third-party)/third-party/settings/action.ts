@@ -67,7 +67,7 @@ export const updateOrganizerDetails = async (details: {
   phone_number?: string;
   email: string;
   apt?: string;
-  image?: Buffer | null;
+  image?: string;
 }) => {
    const { userId } = await auth();
   if (!userId) {
@@ -79,7 +79,8 @@ export const updateOrganizerDetails = async (details: {
   if (!person || !person.affiliation_id) {
     throw new Error("No affiliation found for the user");
   }
-  
+  console.log('Image type:', typeof details.image);
+  console.log('Image:', details.image);
   //change the where statement to check the userid affiliate id is equal to the id of the organization
   const user = await prisma.organization.update({
     where: { id: person.affiliation_id },
@@ -93,7 +94,7 @@ export const updateOrganizerDetails = async (details: {
       zipcode: details.zipcode,
       phone_number: details.phone_number,
       email: details.email,
-      image: details.image
+      image: details.image ? Buffer.from(details.image, 'base64') : undefined,
       
     },
   });

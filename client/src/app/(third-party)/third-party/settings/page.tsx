@@ -215,7 +215,7 @@ const Settings: React.FC = () => {
       state: string;
       zipcode: string;
       apt?: string;
-      image?: Buffer | Uint8Array;
+      image?: string;
       phone_number: string;
       email: string;
     }>({
@@ -258,7 +258,7 @@ const Settings: React.FC = () => {
               state: user.state,
               zipcode: user.zipcode +"" || "",
               apt: user.apt || "",
-              image: user.image || undefined,
+              image: user.image ? user.image.toString('base64') : undefined,
               phone_number: user.phone_number || "",
               email: user.email || "",
             });
@@ -311,52 +311,52 @@ const Settings: React.FC = () => {
   };
 
   const convertFileToBase64 = (file: File) => {
-		return new Promise<string>((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => {
-				if (reader.result) {
-					resolve((reader.result as string).split(",")[1]);
-				} else {
-					reject("File reading failed");
-				}
-			};
-			reader.onerror = (error) => reject(error);
-		});
-	};
-
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Reads file as Data URL
+  
+      //console.log(reader);
+      reader.onload = () => {
+        if (reader.result) {
+          // Split the result at the comma and take the Base64 part
+          const base64String = (reader.result as string).split(",")[1];
+          resolve(base64String); // Resolve with just the Base64 part
+        } else {
+          reject("File reading failed");
+        }
+      };
+  
+      reader.onerror = (error) => reject(error); // Handle any errors in file reading
+    });
+  };
+  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log("hello" + file);
     if (!file) {
-        // Handle the case where no file is selected
         console.error("No file selected");
         return;
     }
 
     try {
         const imageData = await convertFileToBase64(file);
-
         // Check if the Base64 string is in the expected format (Data URL format)
         const base64Prefix = "data:image";
         if (imageData.startsWith(base64Prefix)) {
-            const base64String = imageData.split(',')[1];
-            if (base64String) {
-                setCompanyInfo(prev => ({
-                    ...prev,
-                    image: Buffer.from(base64String, "base64")
-                }));
-            } else {
-                console.error("Invalid Base64 string: missing content after comma.");
-            }
+            const base64String = imageData.split(',')[1]; // Extract Base64 part
+            setCompanyInfo(prev => ({
+                ...prev,
+                image: base64String // Store only the Base64 part in the state
+            }));
         } else {
-            console.error("Invalid Base64 string: does not start with expected prefix.");
+            setCompanyInfo(prev => ({
+              ...prev,
+              image: imageData // Store the Base64 string
+            }));
         }
     } catch (error) {
         console.error("Error converting file to Base64:", error);
     }  
-  };
-
+};
   const handleBackButtonClick = () => {
     router.push("/third-party/dashboard");
     setFormSubmitted(true);
@@ -369,6 +369,15 @@ const Settings: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission logic here
+    let imageString: string | undefined = undefined;
+
+    if (companyInfo.image) {
+      // If companyInfo.image contains a Data URL (e.g. "data:image/png;base64,...")
+      const base64String = companyInfo.image.startsWith("data:image") 
+        ? companyInfo.image.split(',')[1]  // Remove the "data:image/png;base64," prefix
+        : companyInfo.image;  // Already a clean Base64 string
+      imageString = base64String;
+    }
     const details = {
       name: companyInfo.name,
       nameofservice: companyInfo.nameofservice,
@@ -379,11 +388,11 @@ const Settings: React.FC = () => {
       phone_number: phoneNumber,
       email: companyInfo.email, 
       apt: companyInfo.apt,
-      image: companyInfo.image ? Buffer.from(companyInfo.image) : null, // Buffer or Uint8Array, depending on your setup
+      image: imageString, 
     };
     try {
       await updateOrganizerDetails(details);
-      success("User settings updated");
+      success("Organization settings updated");
     }
     catch (error) {
       console.error("Error updating organization details:", error);
@@ -414,7 +423,7 @@ const Settings: React.FC = () => {
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
-  console.log(companyInfo)
+  //console.log(companyInfo)
   return (
     <>
         <TopBar>
@@ -486,7 +495,7 @@ const Settings: React.FC = () => {
                           <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                          <Label>Image Upload</Label>
+                          <Label>File Upload</Label>
                           <Input type="file" onChange={handleFileChange} />
                       </div>
                   </div>
