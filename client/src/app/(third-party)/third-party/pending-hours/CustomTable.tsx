@@ -151,7 +151,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
       return;
     }
     
-    const { userId } = await getPersonFromUser(session?.user.id);
+    const { id: userId, name: userName } = await getPersonFromUser(session?.user.id);
 
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),
@@ -179,7 +179,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
       if (set1 && val1 && set2 && val2) {
         if (choice === "pending") {
           // Update record approvalStatus and move to val1
-          const updatedRecord = { ...record, approvalStatus: 0, updatedBy: userId};
+          const updatedRecord = { ...record, approvalStatus: 0, updatedBy: userName};
           set1([updatedRecord, ...val1]);
           set2(val2.filter((val) => val.submissionId !== record.submissionId));
         } else if (choice === "approve" || choice === "deny") {
@@ -187,7 +187,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
           const updatedRecord = {
             ...record,
             approvalStatus: choice === "approve" ? 1 : 2,
-            updatedBy: userId,
+            updatedBy: userName,
           };
           set2([
             updatedRecord,
@@ -391,7 +391,7 @@ const CustomTable: React.FC<CustomTableParams> = ({
               <b style={{ marginBottom: 0 }}>
                 {record.approvalStatus === 1 ? "Approved by:" : "Denied by:"}
               </b>
-              <b>{record.updatedBy}</b>
+              <b>{record.updatedBy || "record.updatedBy is null"}</b>
             </div>
             <button
               className="approve-buttons"
