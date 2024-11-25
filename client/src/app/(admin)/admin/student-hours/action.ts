@@ -72,6 +72,7 @@ export async function getHourSubmissionTableData(): Promise<
         hours: submission.hours,
         approvalStatus: submission.approval_status,
         updatedBy: submission.updated_by.name,
+        eventTitle: "placeHolder"
       })
     );
 
@@ -88,6 +89,7 @@ export async function getHourSubmissionTableData(): Promise<
         hours: submission.hours,
         approvalStatus: submission.approval_status,
         updatedBy: submission.updated_by.name,
+        eventTitle: "placeHolder"
       })
     );
 
