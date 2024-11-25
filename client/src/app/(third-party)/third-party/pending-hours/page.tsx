@@ -46,10 +46,13 @@ const PendingHours: React.FC = () => {
 
     useEffect(() => {
         const fetchAllSubmissions = async () => {
-            const { userId } = await getPersonFromUser(String(session?.user.id));
+            if (!session?.user?.id) {
+                throw new Error('User ID is not available');
+              }
+            const { id } = await getPersonFromUser(session.user.id);
             let org;
-            if (userId) {
-                org = await getOrganizationByUserId(Number(userId));
+            if (id) {
+                org = await getOrganizationByUserId(Number(id));
             }
             // console.log("org = ", org)
             // console.log("org aff = ", org?.affiliation)
