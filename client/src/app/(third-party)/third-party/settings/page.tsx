@@ -135,7 +135,7 @@ const AddFormButton = styled.button`
   padding: 10px;
   width: 192.452px;
   height: 35px;
-  border: 1px solid #cc0000;
+  border: 1px none #bbb;
   border-radius: 8px;
   background-color: #EBEBEB;
   border-radius: 100px;
@@ -153,6 +153,10 @@ const AddFormButton = styled.button`
   line-height: normal;
   &:hover {
     background-color: #bbb;
+  }
+  svg {
+    margin-right: 10px; 
+    vertical-align: middle;  
   }
 `;
 
