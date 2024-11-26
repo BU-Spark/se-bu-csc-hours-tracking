@@ -9,4 +9,6 @@
   directory="netlify/functions"
 
 [functions."sendEventReminder"]
-  schedule = "0 * * * *"  # Runs at the top of every hour
+  # Runs at the top of every hour
+  schedule = "0 * * * *"  
+  
