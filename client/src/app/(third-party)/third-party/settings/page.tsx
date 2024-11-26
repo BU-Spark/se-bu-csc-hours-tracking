@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
-import { checkIfNewUser, createFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails } from "./action";
+import { checkIfNewUser, createFormDetails, getFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails } from "./action";
 import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Organization, Person } from "@prisma/client";
+import { FormCode, Organization, Person } from "@prisma/client";
 import { message } from "antd";
 import { Switch } from 'antd';
 
@@ -131,6 +131,31 @@ const SubmitButton = styled.button`
   }
 `;
 
+const AddFormButton = styled.button`
+  padding: 10px;
+  width: 192.452px;
+  height: 35px;
+  border: 1px solid #cc0000;
+  border-radius: 8px;
+  background-color: #EBEBEB;
+  border-radius: 100px;
+  background: var(--Standard-Grey, #EBEBEB);
+  box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.25);
+
+  color: #cc0000;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  &:hover {
+    background-color: #bbb;
+  }
+`;
+
 const ResetButton = styled.button`
   padding: 10px;
   width: 66px;
@@ -204,7 +229,10 @@ const Settings: React.FC = () => {
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [isFieldRequired, setIsFieldRequired] = useState(false);
+    const [forms, setFormInfo] = useState<FormCode[]>([]); // State to hold multiple forms
+    const [newFormCount, setNewFormCount] = useState<number>(0);
   
+    
     // Company Information state
     const [companyInfo, setCompanyInfo] = useState<{
       name: string;
@@ -228,16 +256,16 @@ const Settings: React.FC = () => {
       email: '', 
       zipcode: '',
     });
-  const [form,setFormInfo] = useState<{
-    formName: string;
-    required: boolean;
-    notes: string;
-    file?: string;
-  }>({
-    formName: '',
-    required: false,
-    notes: '',
-  });
+  // const [form,setFormInfo] = useState<{
+  //   formName: string;
+  //   required: boolean;
+  //   notes: string;
+  //   file?: string;
+  // }>({
+  //   formName: '',
+  //   required: false,
+  //   notes: '',
+  // });
 
   useEffect(() => {
     if (isSignedIn) {
@@ -285,6 +313,18 @@ const Settings: React.FC = () => {
     };
   }, [formSubmitted, initialLoadComplete, isNewUser]);
 
+  useEffect(() => {
+    const fetchForms = async () => {
+      const data = await getFormDetails();
+      if (data) {
+        setFormInfo(data);
+      } else {
+        setFormInfo([]); // fallback to an empty array if data is undefined
+      }
+    };
+    fetchForms();
+  }, []);
+
   const validateForm = () => {
     return (
       phoneNumber
@@ -302,12 +342,19 @@ const Settings: React.FC = () => {
     const { name, value } = e.target;
     setCompanyInfo(prev => ({ ...prev, [name]: value }));
   };
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: number) => {
     const { name, value } = e.target;
-    setFormInfo(prev => ({ ...prev, [name]: value }));
+    setFormInfo(prevForms =>
+      prevForms.map(form =>
+        form.id === id ? { ...form, [name]: value } : form
+      )
+    );
   };
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsFieldRequired(e.target.checked);
+  const handleSliderChange = (id:number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedForms = forms.map(form => 
+      form.id === id ? { ...form, required: e.target.checked } : form
+    );
+    setFormInfo(updatedForms);
   };
 
   const convertFileToBase64 = (file: File) => {
@@ -412,7 +459,7 @@ const Settings: React.FC = () => {
     });
     setPhoneNumber("");
   };
-  const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const file = e.target.files?.[0];
     if (!file) {
         console.error("No file selected");
@@ -440,24 +487,83 @@ const Settings: React.FC = () => {
         console.error("Error converting file to Base64:", error);
     }  
 };
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  // Function to handle adding a new form
+  const addNewForm = () => {
+    setFormInfo([
+      ...forms,
+      {
+        id: Date.now(), title: '', description: '', required: false,
+        downloadable: false,
+        organization_id: 0,
+        upload_link: null,
+      } // Adding a new empty form
+    ]);
+    setNewFormCount((prevCount) => prevCount + 1);
+  };
+  const handleAllFormSubmits = async(e: React.FormEvent) =>{
+    let formString: string | undefined = undefined;
+    if (newFormCount > 0) {
+      handleNewFormSubmit()
+    }
+    forms.forEach(async (form) => {
+      const details = {
+        name: form.title || "",
+        required: form.required,
+        notes: form.description || "",
+        file: formString, 
+      };
+      try {
+        await updateFormDetails(details, form.id);
+        success("Form uploaded");
+      }
+      catch (error) {
+        console.error("Error updating organization details:", error);
+      }
+    });
+
+  }
+  const handleNewFormSubmit = () =>{
+    let formString: string | undefined = undefined;
+    const formsToSubmit = forms.slice(-newFormCount);
+    formsToSubmit.forEach(async (form) => {
+      const details = {
+        name: form.title,
+        required: form.required,
+        notes: form.description,
+        file: formString, 
+      };
+    
+      try {
+        await createFormDetails(details);
+        console.log(details);
+        success("Form uploaded");
+      }
+      catch (error) {
+        console.error("Error updating organization details:", error);
+      }
+    setNewFormCount(0);
+    });
+    
+
+  };
+  const handleFormSubmit = async (e: React.FormEvent, id: number) => {
     e.preventDefault();
     // Handle form submission logic here
     let formString: string | undefined = undefined;
-
-    if (form.file) {
-      // Need to change to check for form file
-      const base64String = form.file.startsWith("data:image") 
-        ? form.file.split(',')[1]  // Remove the "data:image/png;base64," prefix
-        : form.file;  // Already a clean Base64 string
-      formString = base64String;
-    }
+    const form = forms.find(f => f.id === id);
+    // if (form?.file) {
+    //   // Need to change to check for form file
+    //   const base64String = form.file.startsWith("data:image") 
+    //     ? form.file.split(',')[1]  // Remove the "data:image/png;base64," prefix
+    //     : form.file;  // Already a clean Base64 string
+    //   formString = base64String;
+    // }
     const details = {
-      name: form.formName,
-      required: isFieldRequired,
-      notes: form.notes,
-      file: formString, 
-    };
+        name: form?.title || "",
+        required: isFieldRequired,
+        notes: form?.description || "",
+        file: formString, 
+      };
     try {
       await createFormDetails(details);
       success("Form uploaded");
@@ -468,7 +574,7 @@ const Settings: React.FC = () => {
   };
   const handleFormReset = () => {
 
-  }
+  };
 
   if (!isLoaded) {
     return <div>Loading...</div>;
@@ -535,80 +641,111 @@ const Settings: React.FC = () => {
             </form>
         
         </FormContainer>
+
+
+
+
+
         <FormContainer>
-        <form onSubmit={handleFormSubmit}>
-                <h2>Forms and Waivers</h2>
-                <div>
-                  <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                          <Label>Name<Asterisk>*</Asterisk></Label>
-                          <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                          <Label>File Upload</Label>
-                          <Input type="file" onChange={handleFormFileChange} />
-                      </div>
-                  </div>
-                  <div>
-                    <label>Make required? No</label>
-                    <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
-                      <input
-                        type="checkbox"
-                        checked={isFieldRequired}
-                        onChange={handleSliderChange}
-                        style={{ opacity: 0, width: 0, height: 0 }}
-                      />
-                      <span className="slider" style={{
-                        position: 'absolute',
-                        cursor: 'pointer',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: isFieldRequired ? '#cc0000' : '#ccc',
-                        transition: '0.4s',
-                        borderRadius: '50px',
-                      }}></span>
-                      <span style={{
-                        position: 'absolute',
-                        content: '',
-                        height: '20px',
-                        width: '20px',
-                        borderRadius: '50%',
-                        left: '4px',
-                        bottom: '4px',
-                        backgroundColor: 'white',
-                        transition: '0.4s',
-                        transform: isFieldRequired ? 'translateX(25px)' : 'none',
-                      }}></span>
-                    </label>
-                    <label>Yes</label>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
-                      <Label>Notes</Label>
-                      <textarea name="notes" value={form.notes} onChange={handleFormChange} rows={8}
-                      style={{
-                        padding: '10px',
-                        borderRadius: '8px',
-                        fontSize: '1rem',
-                        width: '100%',
-                        height: '100px',
-                        boxSizing: 'border-box',
-                        border: '1px solid #ccc',
-                      }}/>
-                    </div>
-                  </div>
+        {Array.isArray(forms) && forms.length > 0 ? (
+          forms.map((form) => (
+          <div key={form.id}>
+            <form onSubmit={(e) => handleFormSubmit(e, form.id)}>
+              <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
+                  <Label>Name<Asterisk>*</Asterisk></Label>
+                  <Input
+                    type="text"
+                    name="title"
+                    value={form.title}
+                    onChange={(e) => handleFormChange(e, form.id)}
+                    required
+                  />
                 </div>
-                <ButtonContainer>
-                    <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
-                    {contextHolder}
-                    <SubmitButton type="submit">Save</SubmitButton>
-                </ButtonContainer>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
+                  <Label>File Upload </Label>
+                  <Input
+                    type="file"
+                    onChange={(e) => handleFormFileChange(e, form.id)}
+                  ></Input> 
+                </div>
+              </div>
+
+              <div>
+                <label>Make required? No</label>
+                <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
+                  <input
+                    type="checkbox"
+                    checked={form.required}
+                    onChange={(e) => handleSliderChange(form.id, e)}
+                    style={{ opacity: 0, width: 0, height: 0 }}
+                  />
+                  <span className="slider" style={{
+                    position: 'absolute',
+                    cursor: 'pointer',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: form.required ? '#cc0000' : '#ccc',
+                    transition: '0.4s',
+                    borderRadius: '50px',
+                  }}></span>
+                  <span style={{
+                    position: 'absolute',
+                    content: '',
+                    height: '20px',
+                    width: '20px',
+                    borderRadius: '50%',
+                    left: '4px',
+                    bottom: '4px',
+                    backgroundColor: 'white',
+                    transition: '0.4s',
+                    transform: form.required ? 'translateX(25px)' : 'none',
+                  }}></span>
+                </label>
+                <label>Yes</label>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
+                <Label>Notes</Label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={(e) => handleFormChange(e, form.id)}
+                  rows={8}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    width: '100%',
+                    height: '100px',
+                    boxSizing: 'border-box',
+                    border: '1px solid #ccc',
+                  }}
+                />
+              </div>
+              {/* Delete button */}
+              {/*<DeleteButton onClick={() => handleDelete(form.id)}>Delete</DeleteButton>*/}
             </form>
-        </FormContainer>
+          </div>
+        ))
+      ): (
+        <p>No forms available.</p>
+      )}
+      
+      <AddFormButton onClick={addNewForm}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="18" viewBox="0 0 27 18" fill="none">
+          <line x1="13.8558" x2="13.8558" y2="18" stroke="#CC0000"/>
+          <line y1="-0.5" x2="25.5184" y2="-0.5" transform="matrix(0.999931 -0.0117507 0.0242414 0.999706 0.595703 9.30371)" stroke="#CC0000"/>
+        </svg>
+        Add New Form
+      </AddFormButton>
+      <ButtonContainer>
+        <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
+        <SubmitButton type="submit" onClick={handleAllFormSubmits}>Save</SubmitButton>
+      </ButtonContainer>
+      </FormContainer>
     </>
   );
 };
