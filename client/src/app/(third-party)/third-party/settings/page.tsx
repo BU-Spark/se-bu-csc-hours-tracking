@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
+import { UploadOutlined } from "@ant-design/icons";
 import { checkIfNewUser, createFormDetails, getFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails, deleteForms } from "./action";
 import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
@@ -9,8 +10,7 @@ import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { FormCode, Organization, Person } from "@prisma/client";
-import { message } from "antd";
-import { Switch } from 'antd';
+import { message, Switch, Button } from "antd";
 
 const FormContainer = styled.div`
   max-width: 1500px;
@@ -196,6 +196,7 @@ const ResetButton = styled.button`
     background-color: #bbb;
   }
 `;
+
 
 const ErrorMessageContainer = styled.div`
   position: fixed;
@@ -456,19 +457,24 @@ const Settings: React.FC = () => {
       console.error("Error updating organization details:", error);
     }
   };
-  const handleReset = () => {
-    setCompanyInfo({
-      name: '',
-      nameofservice: '',
-      street: '',
-      city: '',
-      state: '',
-      zipcode: '',
-      apt: '',
-      email: '',
-      phone_number: '',
-    });
-    setPhoneNumber("");
+  const handleReset = async () => {
+    const organization: Organization | undefined = await getOrganizationDetails();
+    if (organization) {
+      setCompanyInfo({
+        name: organization.name || "",
+        nameofservice: organization.nameofservice || "",
+        unit: organization.unit || "",
+        street: organization.street || "",
+        city: organization.city|| "",
+        state: organization.state,
+        zipcode: organization.zipcode +"" || "",
+        apt: organization.apt || "",
+        image: organization.image ? Buffer.from(organization.image).toString('base64') : undefined,
+        phone_number: organization.phone_number || "",
+        email: organization.email || "",
+      });
+      setPhoneNumber(organization.phone_number || "");
+    }
   };
   const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const file = e.target.files?.[0];
@@ -592,6 +598,15 @@ const Settings: React.FC = () => {
     }
   };
   const handleFormReset = () => {
+    const fetchForms = async () => {
+      const data = await getFormDetails();
+      if (data) {
+        setFormInfo(data);
+      } else {
+        setFormInfo([]); // fallback to an empty array if data is undefined
+      }
+    };
+    fetchForms();
 
   };
 
@@ -630,7 +645,7 @@ const Settings: React.FC = () => {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
                         <Label>Image Upload</Label>
-                        <Input type="file" onChange={handleFileChange} />
+                        <Input type="file" onChange={handleFileChange}/>
                         <img src={`data:image/jpeg;base64,${companyInfo.image}`}
                           alt={companyInfo.image}
                           style={{
@@ -713,7 +728,8 @@ const Settings: React.FC = () => {
               </div>
 
               <div>
-                <label>Make required? No</label>
+                <label>Make required?</label>
+                <label style={{ marginRight: '10px', marginLeft: '50px' }}>No</label>
                 <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
                   <input
                     type="checkbox"
@@ -745,7 +761,7 @@ const Settings: React.FC = () => {
                     transform: form.required ? 'translateX(25px)' : 'none',
                   }}></span>
                 </label>
-                <label>Yes</label>
+                <label style = {{ marginLeft: '10px' }}>Yes</label>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
