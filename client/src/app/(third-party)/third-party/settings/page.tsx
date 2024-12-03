@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
-import { checkIfNewUser, createFormDetails, getFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails } from "./action";
+import { checkIfNewUser, createFormDetails, getFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails, deleteForms } from "./action";
 import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
@@ -160,6 +160,29 @@ const AddFormButton = styled.button`
   }
 `;
 
+const DeleteButton = styled.button`
+  padding: 0;
+  width: 20px; 
+  height: 20px;
+  border-radius: 50%;  
+  border: none;
+  background-color: #EBEBEB;
+  color: #cc0000; 
+  font-size: 14px;  
+  text-align: center;  
+  line-height: 20px;  
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #bbb; 
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
 const ResetButton = styled.button`
   padding: 10px;
   width: 66px;
@@ -235,6 +258,7 @@ const Settings: React.FC = () => {
     const [isFieldRequired, setIsFieldRequired] = useState(false);
     const [forms, setFormInfo] = useState<FormCode[]>([]); // State to hold multiple forms
     const [newFormCount, setNewFormCount] = useState<number>(0);
+    const [deletedForms, setDeletedForms] = useState<FormCode[]>([]);
   
     
     // Company Information state
@@ -260,16 +284,6 @@ const Settings: React.FC = () => {
       email: '', 
       zipcode: '',
     });
-  // const [form,setFormInfo] = useState<{
-  //   formName: string;
-  //   required: boolean;
-  //   notes: string;
-  //   file?: string;
-  // }>({
-  //   formName: '',
-  //   required: false,
-  //   notes: '',
-  // });
 
   useEffect(() => {
     if (isSignedIn) {
@@ -290,7 +304,7 @@ const Settings: React.FC = () => {
               state: user.state,
               zipcode: user.zipcode +"" || "",
               apt: user.apt || "",
-              image: user.image ? user.image.toString('base64') : undefined,
+              image: user.image ? Buffer.from(user.image).toString('base64') : undefined,
               phone_number: user.phone_number || "",
               email: user.email || "",
             });
@@ -420,15 +434,8 @@ const Settings: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission logic here
-    let imageString: string | undefined = undefined;
+    console.log(companyInfo.image);
 
-    if (companyInfo.image) {
-      // If companyInfo.image contains a Data URL (e.g. "data:image/png;base64,...")
-      const base64String = companyInfo.image.startsWith("data:image") 
-        ? companyInfo.image.split(',')[1]  // Remove the "data:image/png;base64," prefix
-        : companyInfo.image;  // Already a clean Base64 string
-      imageString = base64String;
-    }
     const details = {
       name: companyInfo.name,
       nameofservice: companyInfo.nameofservice,
@@ -439,7 +446,7 @@ const Settings: React.FC = () => {
       phone_number: phoneNumber,
       email: companyInfo.email, 
       apt: companyInfo.apt,
-      image: imageString, 
+      image: companyInfo.image, 
     };
     try {
       await updateOrganizerDetails(details);
@@ -518,12 +525,21 @@ const Settings: React.FC = () => {
       };
       try {
         await updateFormDetails(details, form.id);
-        success("Form uploaded");
+        console.log(details.name, details.required);
       }
       catch (error) {
         console.error("Error updating organization details:", error);
       }
     });
+    try {
+      const deletedFormIds = deletedForms.map((form) => form.id);
+      await deleteForms(deletedFormIds);
+      setDeletedForms([]);
+    }
+    catch (error) {
+      console.error("Error updating organization details:", error);
+    }
+    success("Forms updated");
 
   }
   const handleNewFormSubmit = () =>{
@@ -540,7 +556,7 @@ const Settings: React.FC = () => {
       try {
         await createFormDetails(details);
         console.log(details);
-        success("Form uploaded");
+        // success("Form uploaded");
       }
       catch (error) {
         console.error("Error updating organization details:", error);
@@ -570,7 +586,6 @@ const Settings: React.FC = () => {
       };
     try {
       await createFormDetails(details);
-      success("Form uploaded");
     }
     catch (error) {
       console.error("Error updating organization details:", error);
@@ -583,6 +598,15 @@ const Settings: React.FC = () => {
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
+  const handleDelete = (id: number) =>{
+    const deletedForm = forms.find(f => f.id === id);
+    setDeletedForms(prevDeletedForms => [...prevDeletedForms, deletedForm!]);
+    const updatedForms = forms.filter((form) => form.id !== id);
+
+    setFormInfo(updatedForms);
+
+  }
+
   //console.log(companyInfo)
   return (
     <>
@@ -607,6 +631,17 @@ const Settings: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
                         <Label>Image Upload</Label>
                         <Input type="file" onChange={handleFileChange} />
+                        <img src={`data:image/jpeg;base64,${companyInfo.image}`}
+                          alt={companyInfo.image}
+                          style={{
+                            width: '200px',      // Set a fixed width for the image
+                            height: 'auto',      // Maintain aspect ratio
+                            borderRadius: '10px', // Rounded corners
+                            border: '2px solid #ccc', // Optional border
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional shadow
+                            objectFit: 'cover',  // Ensure the image covers the space
+                          }}
+                        />
                     </div>
                 </div>
                 <div>
@@ -652,8 +687,9 @@ const Settings: React.FC = () => {
 
         <FormContainer>
         {Array.isArray(forms) && forms.length > 0 ? (
-          forms.map((form) => (
+          forms.sort((a, b) => a.id - b.id).map((form) => (
           <div key={form.id}>
+            
             <form onSubmit={(e) => handleFormSubmit(e, form.id)}>
               <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
@@ -673,6 +709,7 @@ const Settings: React.FC = () => {
                     onChange={(e) => handleFormFileChange(e, form.id)}
                   ></Input> 
                 </div>
+                <DeleteButton onClick={() => handleDelete(form.id)}>x</DeleteButton>
               </div>
 
               <div>
@@ -729,8 +766,6 @@ const Settings: React.FC = () => {
                   }}
                 />
               </div>
-              {/* Delete button */}
-              {/*<DeleteButton onClick={() => handleDelete(form.id)}>Delete</DeleteButton>*/}
             </form>
           </div>
         ))
