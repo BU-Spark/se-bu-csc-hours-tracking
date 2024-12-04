@@ -2,25 +2,46 @@
 const nodemailer = require('nodemailer');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { google } = require('googleapis');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,  // Use environment variable for email
-    pass: process.env.GMAIL_PASSWORD,  // Use environment variable for app password
-  },
-});
+const OAuth2 = google.auth.OAuth2;
+
+const createTransporter = async () => {
+  const oauth2Client = new OAuth2(
+    process.env.GMAIL_CLIENT_ID, // Client ID from GCP Console
+    process.env.GMAIL_CLIENT_SECRET, // Client Secret from GCP Console
+    process.env.GMAIL_REDIRECT_URI // Redirect URL for OAuth2
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GMAIL_REFRESH_TOKEN, // Your refresh token
+  });
+
+  const accessToken = await oauth2Client.getAccessToken();
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: process.env.GMAIL_USER,
+      clientId: process.env.GMAIL_CLIENT_ID,
+      clientSecret: process.env.GMAIL_CLIENT_SECRET,
+      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+      accessToken: accessToken.token,
+    },
+  });
+
+  return transporter;
+};
 
 //emails sent every hour for events within 23-24 hours from then
-//Google workplace accs restricted to 2000 emails/day
+//Google workplace accs restricted to 2000 emails/day?
 exports.handler = async (event, context) => {
   const now = new Date();
   const in23Hours = new Date(now.getTime() + 23 * 60 * 60 * 1000); // 23 hours from now
   const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
   const isPreview = event.queryStringParameters && event.queryStringParameters.preview === 'true';
 
-  // console.log(in23Hours)
-  // console.log(in24Hours)
   try {
     const applications = await prisma.application.findMany({
       where: {
@@ -49,6 +70,8 @@ exports.handler = async (event, context) => {
       },
     });
 
+    const transporter = await createTransporter();
+
     if (isPreview) {
       // Build an array of email details with HTML content to return in the response for preview
       const emailDetails = applications.map((app) => {
@@ -76,43 +99,10 @@ exports.handler = async (event, context) => {
     for (const app of applications) {
       const { email, name } = app.applicant;
       const { title, event_start, event_end } = app.event;
-
-      // Create ICS content
-      // const eventStartISO = event_start.toISOString().replace(/[-:]/g, '').split('.')[0];
-      // const eventEndISO = event_end.toISOString().replace(/[-:]/g, '').split('.')[0];
-
-      // const icsContent = `
-      //   BEGIN:VCALENDAR
-      //   VERSION:2.0
-      //   CALSCALE:GREGORIAN
-      //   BEGIN:VEVENT
-      //   DTSTART:${eventStartISO}Z
-      //   DTEND:${eventEndISO}Z
-      //   SUMMARY:${title}
-      //   DESCRIPTION:This is a reminder for your upcoming event.
-      //   LOCATION:Online
-      //   STATUS:CONFIRMED
-      //   SEQUENCE:0
-      //   BEGIN:VALARM
-      //   TRIGGER:-PT15M
-      //   ACTION:DISPLAY
-      //   DESCRIPTION:Reminder
-      //   END:VALARM
-      //   END:VEVENT
-      //   END:VCALENDAR
-      // `;
-
       const mailOptions = {
         from: process.env.GMAIL_USER,
         to: email,
         subject: `Reminder: ${title} is Coming Up!`,
-        // attachments: [
-        //   {
-        //     filename: 'event.ics',
-        //     content: icsContent,
-        //     contentType: 'text/calendar',
-        //   },
-        // ],
         html: `
           <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
           <html>
