@@ -1,47 +1,64 @@
-// netlify/functions/sendEventReminder.js
-const nodemailer = require('nodemailer');
+//emails sent every hour for events within 23-24 hours from then
+//Google workplace accs restricted to 2000 emails/day?
+
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { google } = require('googleapis');
 
-const OAuth2 = google.auth.OAuth2;
-
-const createTransporter = async () => {
+// Create an OAuth2 client with credentials from environment variables
+const createOAuth2Client = () => {
   const oauth2Client = new OAuth2(
-    process.env.GMAIL_CLIENT_ID, // Client ID from GCP Console
-    process.env.GMAIL_CLIENT_SECRET, // Client Secret from GCP Console
-    process.env.GMAIL_REDIRECT_URI // Redirect URL for OAuth2
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    process.env.GMAIL_REDIRECT_URI
   );
 
   oauth2Client.setCredentials({
-    refresh_token: process.env.GMAIL_REFRESH_TOKEN, // Your refresh token
+    refresh_token: process.env.GMAIL_REFRESH_TOKEN,
   });
 
-  const accessToken = await oauth2Client.getAccessToken();
+  return oauth2Client;
+};
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: process.env.GMAIL_USER,
-      clientId: process.env.GMAIL_CLIENT_ID,
-      clientSecret: process.env.GMAIL_CLIENT_SECRET,
-      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-      accessToken: accessToken.token,
+// Function to send an email
+const sendEmail = async (gmailClient, to, subject, message) => {
+
+  // Construct the raw email
+  const emailLines = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    `Content-Type: text/html; charset=utf-8`,
+    '',
+    message,
+  ];
+  const rawMessage = emailLines.join('\r\n');
+
+  // Gmail API requires base64-encoded message
+  const encodedMessage = Buffer.from(rawMessage)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, ''); // Gmail API uses URL-safe base64 encoding
+
+  // Send the email using Gmail API
+  const res = await gmailClient.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedMessage,
     },
   });
 
-  return transporter;
+  return res.data; // Return response for debugging/logging
 };
 
-//emails sent every hour for events within 23-24 hours from then
-//Google workplace accs restricted to 2000 emails/day?
-exports.handler = async (event, context) => {
+
+// Netlify Function handler
+exports.handler = async (event) => {
   const now = new Date();
   const in23Hours = new Date(now.getTime() + 23 * 60 * 60 * 1000); // 23 hours from now
   const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
   const isPreview = event.queryStringParameters && event.queryStringParameters.preview === 'true';
-
   try {
     const applications = await prisma.application.findMany({
       where: {
@@ -64,13 +81,11 @@ exports.handler = async (event, context) => {
           select: {
             title: true, // Get the event title
             event_start: true, // Get the event start date
-            event_end: true
+            event_end: true,
           },
         },
       },
     });
-
-    const transporter = await createTransporter();
 
     if (isPreview) {
       // Build an array of email details with HTML content to return in the response for preview
@@ -82,7 +97,7 @@ exports.handler = async (event, context) => {
           to: email,
           eventTitle: title,
           eventStart: event_start.toLocaleString(), // Convert to a readable format if needed
-          eventEnd: event_end.toLocaleString()
+          eventEnd: event_end.toLocaleString(),
         };
       });
 
@@ -95,15 +110,15 @@ exports.handler = async (event, context) => {
       };
     }
 
+    const oauth2Client = createOAuth2Client();
+    const gmailClient = google.gmail({ version: 'v1', auth: oauth2Client });
+
     // Send actual emails
     for (const app of applications) {
       const { email, name } = app.applicant;
       const { title, event_start, event_end } = app.event;
-      const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to: email,
-        subject: `Reminder: ${title} is Coming Up!`,
-        html: `
+      const subject = `Reminder: ${title} is Coming Up!`;
+      const body = `
           <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
           <html>
 
@@ -331,25 +346,28 @@ exports.handler = async (event, context) => {
           </body>
 
           </html>
-        `
-      };
-      
-      await transporter.sendMail(mailOptions);
-      console.log(`Email sent to: ${email}`);
-      
+        `;
+
+      try {
+        const result = await sendEmail(gmailClient, email, subject, body);
+        console.log(`Email sent to: ${email}`);
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ message: 'Email sent successfully!', data: result }),
+        };
+      } catch (err) {
+        console.error(`Failed to send email to ${app.applicant.email}:`, err.message);
+      }
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Reminders sent successfully' }),
-    };
   } catch (error) {
-    console.error('Error sending emails:', error);
-
+    console.error('Error sending email:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to send reminders' }),
+      body: JSON.stringify({ error: 'Failed to send email', details: error.message }),
     };
+  } finally {
+    await prisma.$disconnect();
   }
-};
 
+};
