@@ -16,10 +16,11 @@ import {
 } from "@/interfaces/interfaces";
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/nextjs';
 import { getEventSpotsLeft, reviewEventApplication } from "./action";
 import { text } from "stream/consumers";
 import { buRed } from "@/_common/styles";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 ;
 
 const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
@@ -34,7 +35,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
   const [loading, setIsLoading] = useState<boolean>(true);
   const [editingKey, setEditingKey] = useState<number | null>(null);
   const searchInput = useRef<InputRef>(null);
-  const { data: session, status } = useSession();
+  const { session } = useSession();
 
   useEffect(() => {
     if (data) {
@@ -174,14 +175,14 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
     record: EventApplicationsTableData,
     choice: string
   ) => {
-    if (!session?.user) {
-      console.log("session check failed");
-      return;
-    }
 
+    if (!session?.user?.id) {
+      throw new Error('User ID is not available');
+    }
+    const { userId } = await getPersonFromUser(session.user.id);
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.applicationId),
-      updaterId: Number(session?.user.id),
+      updaterId: Number(userId),
       approvalStatus:
         choice === "approve"
           ? 1

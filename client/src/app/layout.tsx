@@ -7,10 +7,12 @@ import { Content } from "antd/es/layout/layout";
 import BodyHeader from "@/components/BodyHeader";
 import EventSider from "@/components/Sider/EventSider";
 import AdminEventSider from "@/components/Sider/AdminEventSider";
+import ThirdPartySider from "@/components/Sider/ThirdPartySider";
 
 const LayoutWithSider = ({ children }: { children: ReactNode }) => {
   return (
     <>
+      <ThirdPartySider />
       <AdminEventSider />
       <CustomSider />
       {children}

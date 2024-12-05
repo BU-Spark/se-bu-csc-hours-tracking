@@ -1,39 +1,45 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import { checkIfNewUser } from "@/app/(user)/user/settings/action";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const Dashboard: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { session, isSignedIn, isLoaded } = useSession();
   const router = useRouter();
+  const [person, setPerson] = useState<any>(null);
 
   useEffect(() => {
-    const checkFirstTimeLogin = async () => {
-      try {
-        const response = await checkIfNewUser();
-        if (response.isNewUser && session?.user.role == "USER") {
-          router.push("/user/onboarding");
-        } else {
-          if (session?.user.role == "USER") {
-            router.push("/user/my-hours");
+    if (isSignedIn && session?.user) {
+      const fetchPersonAndCheck = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+        try {
+          const response = await checkIfNewUser();
+          if (response.isNewUser && person?.role === "USER") {
+            router.push("/user/onboarding");
+          } else {
+            if (person?.role === "USER") {
+              router.push("/user/my-hours");
+            }
+            if (person?.role === "ADMIN") {
+              router.push("/admin/student-hours");
+            }
+            if (person?.role === "ORGANIZER") {
+              router.push("/third-party/dashboard");
+            }
           }
-          if (session?.user.role == "ADMIN") {
-            router.push("/admin/student-hours");
-          }
+        } catch (error) {
+          console.error("Error checking if new user:", error);
         }
-      } catch (error) {
-        console.error("Error checking if new user:", error);
-      }
-    };
-
-    if (status === "authenticated" && session?.user) {
-      checkFirstTimeLogin();
+      };
+      fetchPersonAndCheck();
     }
-  }, [status, session, router]);
+  }, [isSignedIn, session, router]);
 
-  if (status === "loading") {
+  if (isLoaded) {
     return <div>Loading...</div>;
   }
 

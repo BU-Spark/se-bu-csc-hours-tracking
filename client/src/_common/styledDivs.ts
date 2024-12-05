@@ -1,5 +1,6 @@
 import { InputNumber, Upload } from "antd";
 import styled from "styled-components";
+import {buRed} from './styles';
 
 export const HeaderOffset = styled.div`
   margin-top: 70px;
@@ -20,6 +21,8 @@ export const SummaryContainer = styled.div`
 export const SummaryBox = styled.div`
   background-color: #fff;
   border-radius: 10px;
+  border-style: solid;
+  border-color: #CC0000;
   padding: 20px;
   text-align: center;
   font-weight: bold;
@@ -28,6 +31,8 @@ export const SummaryBox = styled.div`
   align-items: center;
   width: 150px;
   margin: 10px;
+
+  border: 2px solid ${buRed};
 
   h2 {
     color: rgba(204, 0, 0, 1);

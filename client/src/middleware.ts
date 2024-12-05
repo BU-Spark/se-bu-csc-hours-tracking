@@ -1,46 +1,60 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { clerkMiddleware } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+import { getPersonFromUser } from './lib/getPersonFromUser';
 
-export async function middleware(request: NextRequest) {
-  //skip allowed paths
-  if (
-    request.nextUrl.pathname === "/login" ||
-    request.nextUrl.pathname === "/"
-  ) {
+const isPublicRoute = (path: string): boolean => [
+  '/login', 
+  '/',
+  '/api/get-person',
+  '/auth/sso-callback',
+  'welcome',
+].includes(path);
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId } = await auth();
+
+  if (isPublicRoute(req.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-  //if not logged in block all
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!userId) {
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  // if (
-  //   request.nextUrl.pathname.startsWith("/admin") &&
-  //   token &&
-  //   token.role !== "ADMIN"
-  // ) {
-  //   console.log("Permission not allowed");
-  //   return NextResponse.redirect(new URL("/unauthorized", request.url));
-  // }
+  if (req.nextUrl.pathname.startsWith('/api/get-person') || 
+      req.nextUrl.pathname.startsWith('/api/create-new-person')) {
+    return NextResponse.next();
+  }
 
-  // if (
-  //   request.nextUrl.pathname.startsWith("/user") &&
-  //   token &&
-  //   token.role !== "USER"
-  // ) {
-  //   console.log("Permission not allowed");
-  //   return NextResponse.redirect(new URL("/unauthorized", request.url));
-  // }
+  const person = await getPersonFromUser(userId);
+
+  if (!person) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+  const { role } = person;
+  const path = req.nextUrl.pathname;
+
+  if (path.startsWith('/admin') && role !== 'ADMIN') {
+    return NextResponse.redirect(new URL('/unauthorized', req.url));
+  }
+
+  if (path.startsWith('/user') && role !== 'USER') {
+    return NextResponse.redirect(new URL('/unauthorized', req.url));
+  }
+
+  if (path.startsWith('/third-party') && role !== 'ORGANIZER') {
+    return NextResponse.redirect(new URL('/unauthorized', req.url));
+  }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/admin/:path*", "/user/:path*"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    '/admin/:path*', '/user/:path*', '/third-party/:path*'],
 };

@@ -25,7 +25,7 @@ const StepThree: React.FC = () => {
     <StepContainer>
       <Title>Agree to Event Terms</Title>
       <Description>
-        Once you've found an event you'd like to attend, click on it to see the
+        Once you&apos;ve found an event you&apos;d like to attend, click on it to see the
         details. Make sure to read and agree to the event terms before
         registering.
       </Description>
