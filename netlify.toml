@@ -10,5 +10,5 @@
 
 [functions."sendEventReminder"]
   # Runs at the top of every hour
-  # schedule = "0 * * * *"  
+  schedule = "0 * * * *"  
   
