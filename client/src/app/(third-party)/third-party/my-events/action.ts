@@ -44,15 +44,16 @@ export async function updateEvent(eventId: number, eventData: any) {
       password,
       ...data
     } = eventData;
-    const coordinator = await prisma.person.findFirst({
-      where: { email: coordinator_email },
-    });
+ 
+    // const coordinator = await prisma.person.findFirst({
+    //   where: { email: coordinator_email },
+    // });
 
-    if (!coordinator) {
-      throw new Error(
-        `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
-      );
-    }
+    // if (!coordinator) {
+    //   throw new Error(
+    //     `Coordinator with name ${coordinator_name} and email ${coordinator_email} not found`
+    //   );
+    // }
 
     if (data.image && typeof data.image === "string") {
       data.image = Buffer.from(data.image, "base64");
@@ -62,7 +63,7 @@ export async function updateEvent(eventId: number, eventData: any) {
       ...data,
       application_password: password,
       category: { connect: { id: category_id } },
-      coordinator: { connect: { id: coordinator.id } },
+      // coordinator: { connect: { id: coordinator.id } },
     };
 
     if (organization_id) {
