@@ -16,7 +16,7 @@ import {
 import { isHoursTableData } from "@/app/_utils/typeChecker";
 import { formatDate } from "@/app/_utils/DateFormatters";
 import { reviewHourSubmission } from "./action";
-import { useSession } from "next-auth/react";
+import { useSession } from "@clerk/clerk-react";
 import { buRed } from "@/_common/styles";
 
 const CustomTable: React.FC<CustomTableParams> = ({

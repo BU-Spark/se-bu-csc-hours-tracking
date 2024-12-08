@@ -10,7 +10,7 @@ import { HourSubmission } from "@prisma/client";
 import { getHourSubmissionTableData, getOrganizationByUserId } from "./action";
 import CustomTable from "./CustomTable";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
-import { useSession } from "next-auth/react";
+import { useSession } from "@clerk/clerk-react";
 
 
 const PendingHours: React.FC = () => {
