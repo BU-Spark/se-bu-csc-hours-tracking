@@ -262,7 +262,6 @@ const Settings: React.FC = () => {
     const [deletedForms, setDeletedForms] = useState<FormCode[]>([]);
   
     
-    // Company Information state
     const [companyInfo, setCompanyInfo] = useState<{
       name: string;
       nameofservice: string;
@@ -295,7 +294,6 @@ const Settings: React.FC = () => {
         } else {
           const user: Organization | undefined = await getOrganizationDetails();
           if (user) {
-            //set company info here so that it can be pulled by the form if the fields exist
             setCompanyInfo({
               name: user.name || "",
               nameofservice: user.nameofservice || "",
@@ -338,7 +336,7 @@ const Settings: React.FC = () => {
       if (data) {
         setFormInfo(data);
       } else {
-        setFormInfo([]); // fallback to an empty array if data is undefined
+        setFormInfo([]); 
       }
     };
     fetchForms();
@@ -379,14 +377,12 @@ const Settings: React.FC = () => {
   const convertFileToBase64 = (file: File) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file); // Reads file as Data URL
-  
-      //console.log(reader);
+      reader.readAsDataURL(file);
+
       reader.onload = () => {
         if (reader.result) {
-          // Split the result at the comma and take the Base64 part
           const base64String = (reader.result as string).split(",")[1];
-          resolve(base64String); // Resolve with just the Base64 part
+          resolve(base64String); 
         } else {
           reject("File reading failed");
         }
@@ -422,7 +418,7 @@ const Settings: React.FC = () => {
     } catch (error) {
         console.error("Error converting file to Base64:", error);
     }  
-};
+  };
   const handleBackButtonClick = () => {
     router.push("/third-party/dashboard");
     setFormSubmitted(true);
@@ -434,7 +430,6 @@ const Settings: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log(companyInfo.image);
 
     const details = {
@@ -503,8 +498,7 @@ const Settings: React.FC = () => {
     } catch (error) {
         console.error("Error converting file to Base64:", error);
     }  
-};
-  // Function to handle adding a new form
+  };
   const addNewForm = () => {
     setFormInfo([
       ...forms,
@@ -562,7 +556,6 @@ const Settings: React.FC = () => {
       try {
         await createFormDetails(details);
         console.log(details);
-        // success("Form uploaded");
       }
       catch (error) {
         console.error("Error updating organization details:", error);
@@ -574,16 +567,11 @@ const Settings: React.FC = () => {
   };
   const handleFormSubmit = async (e: React.FormEvent, id: number) => {
     e.preventDefault();
-    // Handle form submission logic here
     let formString: string | undefined = undefined;
     const form = forms.find(f => f.id === id);
-    // if (form?.file) {
-    //   // Need to change to check for form file
-    //   const base64String = form.file.startsWith("data:image") 
-    //     ? form.file.split(',')[1]  // Remove the "data:image/png;base64," prefix
-    //     : form.file;  // Already a clean Base64 string
-    //   formString = base64String;
-    // }
+    
+    // Need to process form file here
+
     const details = {
         name: form?.title || "",
         required: isFieldRequired,
@@ -603,7 +591,7 @@ const Settings: React.FC = () => {
       if (data) {
         setFormInfo(data);
       } else {
-        setFormInfo([]); // fallback to an empty array if data is undefined
+        setFormInfo([]); 
       }
     };
     fetchForms();
@@ -622,7 +610,6 @@ const Settings: React.FC = () => {
 
   }
 
-  //console.log(companyInfo)
   return (
     <>
         <TopBar>
@@ -649,12 +636,12 @@ const Settings: React.FC = () => {
                         <img src={`data:image/jpeg;base64,${companyInfo.image}`}
                           alt={companyInfo.image}
                           style={{
-                            width: '200px',      // Set a fixed width for the image
-                            height: 'auto',      // Maintain aspect ratio
-                            borderRadius: '10px', // Rounded corners
-                            border: '2px solid #ccc', // Optional border
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional shadow
-                            objectFit: 'cover',  // Ensure the image covers the space
+                            width: '200px',      
+                            height: 'auto',      
+                            borderRadius: '10px',
+                            border: '2px solid #ccc', 
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+                            objectFit: 'cover',  
                           }}
                         />
                     </div>
@@ -695,8 +682,6 @@ const Settings: React.FC = () => {
             </form>
         
         </FormContainer>
-
-
 
 
 

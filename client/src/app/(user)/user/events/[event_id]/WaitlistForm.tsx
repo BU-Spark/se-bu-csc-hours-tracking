@@ -83,7 +83,6 @@ const WaitlistForm: React.FC<WaitlistFormProps> = ({
         values.password === event?.application_password,
         values.password
       );
-      // console.log(false, event?.event_start);
       error(errorReason);
     }
   };

@@ -30,7 +30,6 @@ export async function getEvent(eventId: number): Promise<any> {
         application_password: true, // Ensure this field is included
       },
     });
-    // console.log("event", event?.application_password);
     if (event) return event;
     else {
       console.error("No event found");

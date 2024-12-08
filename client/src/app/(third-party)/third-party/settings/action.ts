@@ -40,10 +40,11 @@ export const getOrganizationDetails = async (): Promise<Organization | undefined
   if (!person || !person.affiliation_id) {
     throw new Error("No affiliation found for the user");
   }
+  
   const user: Organization | null = await prisma.organization.findUnique({
     where: { id: person.affiliation_id },
-    //change the where statement to check the userid affiliate id is equal to the id of the organization
   });
+
   if (!user) {
     throw new Error("Organization not found for this affiliation ID");
   }
@@ -95,12 +96,11 @@ export const updateOrganizerDetails = async (details: {
       
     },
   });
-  
+
   return user;
 };
 
 export const getFormDetails = async (): Promise<FormCode[] | undefined> => {
-  // Get all the active forms uploaded for the organization
   const { userId } = await auth();
   if (!userId) {
     throw new Error("Not authenticated");
@@ -113,7 +113,6 @@ export const getFormDetails = async (): Promise<FormCode[] | undefined> => {
   }
   const forms: FormCode[] | null = await prisma.formCode.findMany({
     where: { organization_id: person.affiliation_id },
-    //change the where statement to check the userid affiliate id is equal to the id of the organization
   });
   if (!forms) {
     throw new Error("No forms found for this affiliation ID");
@@ -179,7 +178,7 @@ export const updateFormDetails = async (details: {
       title: details.name,
       description: details.notes,
       required: details.required,
-      organization_id: person.affiliation_id
+      organization_id: Number(person.affiliation_id)
     },
   });
 }
