@@ -21,6 +21,8 @@ export const SummaryContainer = styled.div`
 export const SummaryBox = styled.div`
   background-color: #fff;
   border-radius: 10px;
+  border-style: solid;
+  border-color: #CC0000;
   padding: 20px;
   text-align: center;
   font-weight: bold;
