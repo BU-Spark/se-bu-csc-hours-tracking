@@ -54,13 +54,14 @@ const PendingSubmissions: React.FC = () => {
 
   useEffect(() => {
     const fetchAllApplications = async () => {
-      const { userId } = await getPersonFromUser(String(session?.user.id));
-      // console.log("user id:", userId);
-      let org;
-      if (userId) {
+      if (!session?.user?.id) {
+        throw new Error('User ID is not available');
+    }
+    const { id: userId } = await getPersonFromUser(session.user.id);
+    let org;
+    if (userId) {
         org = await getOrganizationByUserId(Number(userId));
-      }
-      console.log(org);
+    }
 
       if (org?.affiliation?.id) {
         const response = await getEventApplicationsTableData(org.affiliation.id);
