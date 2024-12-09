@@ -18,6 +18,8 @@ import { formatDate } from "@/app/_utils/DateFormatters";
 import { reviewHourSubmission } from "@/app/(admin)/admin/student-hours/action";
 import { useSession } from '@clerk/clerk-react';
 import { buRed } from "@/_common/styles";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
+
 
 const CustomTable: React.FC<CustomTableParams> = ({
   data: dataInput,
@@ -145,14 +147,14 @@ const CustomTable: React.FC<CustomTableParams> = ({
 
   // FOR APPROVING / DENYING HOURS
   const handleReview = async (record: HoursTableData, choice: string) => {
-    if (!session?.user) {
-      console.log("session check failed");
-      return;
+    if (!session?.user?.id) {
+      throw new Error('User ID is not available');
     }
+    const { id } = await getPersonFromUser(session.user.id);
 
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),
-      updaterId: Number(session?.user.id),
+      updaterId: Number(id),
       approvalStatus:
         choice === "approve"
           ? 1

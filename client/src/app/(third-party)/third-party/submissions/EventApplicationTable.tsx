@@ -179,7 +179,7 @@ const EventApplicationTable: React.FC<EventApplicationTableParams> = ({
     if (!session?.user?.id) {
       throw new Error('User ID is not available');
     }
-    const { userId } = await getPersonFromUser(session.user.id);
+    const { id: userId } = await getPersonFromUser(session?.user.id);
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.applicationId),
       updaterId: Number(userId),

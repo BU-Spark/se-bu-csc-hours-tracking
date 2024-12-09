@@ -12,6 +12,8 @@ import CustomTable from "./CustomTable";
 import { CustomTableParams, HoursTableData } from "@/interfaces/interfaces";
 import { useSession } from '@clerk/nextjs';
 import { getPersonFromUser } from "@/lib/getPersonFromUser";
+import { Layout, Spin } from "antd";
+
 
 const PendingHours: React.FC = () => {
     const { session } = useSession();
@@ -46,7 +48,10 @@ const PendingHours: React.FC = () => {
 
     useEffect(() => {
         const fetchAllSubmissions = async () => {
-            const { userId } = await getPersonFromUser(String(session?.user.id));
+            if (!session?.user?.id) {
+                throw new Error('User ID is not available');
+            }
+            const { id: userId } = await getPersonFromUser(session.user.id);
             let org;
             if (userId) {
                 org = await getOrganizationByUserId(Number(userId));
@@ -86,74 +91,91 @@ const PendingHours: React.FC = () => {
         fetchAllSubmissions();
     }, []);
     return (
-        <div>
-            <div
-                style={{
-                    display: "flex",
-                    width: "100%",
-                }}
-            >
-                <SummaryBox>
-                    <h2>
-                        {pendingSubmissions ? filterTableDataByEvent(pendingSubmissions).length.toString() : 0}
-                    </h2>
-                    <p>Pending Approvals</p>
-                </SummaryBox>
-                <SummaryBox>
-                    <h2>
-                        {reviewedSubmissions
-                            ? filterTableDataByEvent(reviewedSubmissions).reduce((accumulator, current) => {
-                                if (current.approvalStatus === 1) {
-                                    return accumulator + current.hours;
-                                } else {
-                                    return accumulator;
-                                }
-                            }, 0)
-                            : 0}
-                    </h2>{" "}
-                    <p>Approved Hours</p>
-                </SummaryBox>
-            </div>
-
-            <div style={{ display: "flex", margin: "1rem 0", gap: "16px",}} >
-            <StyledButton
-                    text="Pending"
-                    onClick={() => {
-                        setShowHistory(false);
-                    }}
-                    selected={showHistory == false}
-                />
-                <StyledButton
-                    text="History"
-                    onClick={() => {
-                        setShowHistory(true);
-                    }}
-                    selected={showHistory == true}
-                />
-            </div>
-
-            <div style={{ display: "flex", margin: "1rem 0", gap: "16px",}} >
-                {Array.from(eventTitles).map((title) => (
-                    <StyledButton
-                        key={title} // Make sure to provide a unique key for each button
-                        text={title}
-                        onClick={() => {
-                            setSelectedEvent(title); // Set the selected event
+        <Layout style={{ backgroundColor: "#fff" }}>
+            {loading ?
+                (
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "100vh", // Ensure spinner is centered vertically
                         }}
-                        selected={selectedEvent === title} // Compare to highlight the selected button
-                    />
-                ))}
+                    >
+                        <Spin />
+                    </div>
+                ) : (
+                    <div>
+                        <div
+                            style={{
+                                display: "flex",
+                                width: "100%",
+                            }}
+                        >
+                            <SummaryBox>
+                                <h2>
+                                    {pendingSubmissions ? filterTableDataByEvent(pendingSubmissions).length.toString() : 0}
+                                </h2>
+                                <p>Pending Approvals</p>
+                            </SummaryBox>
+                            <SummaryBox>
+                                <h2>
+                                    {reviewedSubmissions
+                                        ? filterTableDataByEvent(reviewedSubmissions).reduce((accumulator, current) => {
+                                            if (current.approvalStatus === 1) {
+                                                return accumulator + current.hours;
+                                            } else {
+                                                return accumulator;
+                                            }
+                                        }, 0)
+                                        : 0}
+                                </h2>{" "}
+                                <p>Approved Hours</p>
+                            </SummaryBox>
+                        </div>
 
-            </div>
-            
-            <CustomTable
-                data={input.data}
-                set1={input.set1}
-                val1={input.val1}
-                set2={input.set2}
-                val2={input.val2}
-            />
-        </div>
+                        <div style={{ display: "flex", margin: "1rem 0", gap: "16px", }} >
+                            <StyledButton
+                                text="Pending"
+                                onClick={() => {
+                                    setShowHistory(false);
+                                }}
+                                selected={showHistory == false}
+                            />
+                            <StyledButton
+                                text="History"
+                                onClick={() => {
+                                    setShowHistory(true);
+                                }}
+                                selected={showHistory == true}
+                            />
+                        </div>
+
+                        <div style={{ display: "flex", margin: "1rem 0", gap: "16px", }} >
+                            {Array.from(eventTitles).map((title) => (
+                                <StyledButton
+                                    key={title} // Make sure to provide a unique key for each button
+                                    text={title}
+                                    onClick={() => {
+                                        setSelectedEvent(title); // Set the selected event
+                                    }}
+                                    selected={selectedEvent === title} // Compare to highlight the selected button
+                                />
+                            ))}
+
+                        </div>
+
+                        <CustomTable
+                            data={input.data}
+                            set1={input.set1}
+                            val1={input.val1}
+                            set2={input.set2}
+                            val2={input.val2}
+                        />
+                    </div>
+                )
+            }
+        </Layout>
     );
 };
 
