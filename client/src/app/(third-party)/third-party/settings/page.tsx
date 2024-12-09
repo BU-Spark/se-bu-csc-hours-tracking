@@ -503,7 +503,7 @@ const Settings: React.FC = () => {
     setFormInfo([
       ...forms,
       {
-        id: Date.now(), title: '', description: '', required: false,
+        id: forms[forms.length - 1].id+1, title: '', description: '', required: false,
         downloadable: false,
         organization_id: 0,
         upload_link: null,
@@ -516,6 +516,7 @@ const Settings: React.FC = () => {
     if (newFormCount > 0) {
       handleNewFormSubmit()
     }
+    console.log(forms);
     forms.forEach(async (form) => {
       const details = {
         name: form.title || "",
