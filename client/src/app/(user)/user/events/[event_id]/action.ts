@@ -30,7 +30,6 @@ export async function getEvent(eventId: number): Promise<any> {
         application_password: true, // Ensure this field is included
       },
     });
-    // console.log("event", event?.application_password);
     if (event) return event;
     else {
       console.error("No event found");
@@ -151,6 +150,73 @@ export async function cancelSignUp(
     return false; 
   }
 }
+
+export async function getWaitlistCount(
+  eventId: number
+): Promise<boolean>{
+  const response = await prisma.waitlist.findMany(
+    {
+      where: {
+        event_id: eventId,
+      },
+    }
+  );
+  if(response.length > 0){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+export async function moveOffWaitlist(
+  eventId: number,
+  capacity: number
+): Promise<boolean> {
+  try{
+    const Rows = await prisma.waitlist.findMany(
+      {
+        where: {
+          event_id: eventId,
+        },
+        take: capacity
+      }
+    );
+    if (!Rows) {
+      return false;
+    }
+    for(const row of Rows){
+      const application = await prisma.application.createMany({
+        data: {
+          date_applied: new Date(),
+          reason_id: row.reason_id, //FIX REASON
+          approval_status: 0,
+          applicant_id: row.applicant_id,
+          event_id: row.event_id,
+          updated_by_id: row.applicant_id,
+          updated_at: new Date(),
+        },
+      });
+      await prisma.waitlist.delete({
+        where: {
+            id: row.id, 
+        },
+      });
+      if (!application) {
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
+    return true;
+    
+  } catch (error) {
+    console.error("Error moving off waitlist:", error);
+    return false; 
+  }
+
+}
+
 
 export async function createApplication(
   event_id: number,

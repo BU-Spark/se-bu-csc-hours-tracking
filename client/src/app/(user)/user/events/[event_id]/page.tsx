@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { checkIfApplied, checkIfWaitlisted, checkIfAcceptedApplication, cancelSignUp, getEvent } from "./action";
+import { checkIfApplied, checkIfWaitlisted, checkIfAcceptedApplication, cancelSignUp, getEvent, getWaitlistCount, moveOffWaitlist } from "./action";
 import { Event } from "@prisma/client";
 import { Button, Typography } from "antd";
 import {
@@ -60,8 +60,7 @@ export default function Page() {
   }, [isSignedIn, session]);
 
   // GET EVENT DETAILS
-  useEffect(() => {
-    console.log("hello")
+  useEffect(() => { 
     const fetchEvent = async () => {
       const response = await getEvent(Number(event_id));
       if (response) {
@@ -72,11 +71,13 @@ export default function Page() {
     const fetchCapacity = async () => {
       const response = await getEventSpotsLeft(event_id);
       if (response !== undefined && response !== null) {
+        const OffWaitlist = await moveOffWaitlist(event_id, response);
         setCapacity(response);
       }else if(response === undefined){
         setCapacity(0);
       }
     };
+
     fetchEvent();
     fetchCapacity();
   }, [event_id]);

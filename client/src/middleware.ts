@@ -39,9 +39,9 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/unauthorized', req.url));
   }
 
-  if (path.startsWith('/user') && role !== 'USER') {
-    return NextResponse.redirect(new URL('/unauthorized', req.url));
-  }
+  // if (path.startsWith('/user') && role !== 'USER') {
+  //   return NextResponse.redirect(new URL('/unauthorized', req.url));
+  // }
 
   if (path.startsWith('/third-party') && role !== 'ORGANIZER') {
     return NextResponse.redirect(new URL('/unauthorized', req.url));

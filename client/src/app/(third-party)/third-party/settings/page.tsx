@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import "react-phone-input-2/lib/style.css";
 import styled from "styled-components";
-import { checkIfNewUser, getOrganizationDetails, updateOrganizerDetails } from "./action";
+import { UploadOutlined } from "@ant-design/icons";
+import { checkIfNewUser, createFormDetails, getFormDetails, getOrganizationDetails, updateFormDetails, updateOrganizerDetails, deleteForms } from "./action";
 import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Organization, Person } from "@prisma/client";
-import { message } from "antd";
+import { FormCode, Organization, Person } from "@prisma/client";
+import { message, Switch, Button } from "antd";
 
 const FormContainer = styled.div`
   max-width: 1500px;
@@ -130,6 +131,58 @@ const SubmitButton = styled.button`
   }
 `;
 
+const AddFormButton = styled.button`
+  padding: 10px;
+  width: 192.452px;
+  height: 35px;
+  border: 1px none #bbb;
+  border-radius: 8px;
+  background-color: #EBEBEB;
+  border-radius: 100px;
+  background: var(--Standard-Grey, #EBEBEB);
+  box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.25);
+
+  color: #cc0000;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  font-family: Inter;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  &:hover {
+    background-color: #bbb;
+  }
+  svg {
+    margin-right: 10px; 
+    vertical-align: middle;  
+  }
+`;
+
+const DeleteButton = styled.button`
+  padding: 0;
+  width: 20px; 
+  height: 20px;
+  border-radius: 50%;  
+  border: none;
+  background-color: #EBEBEB;
+  color: #cc0000; 
+  font-size: 14px;  
+  text-align: center;  
+  line-height: 20px;  
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #bbb; 
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
 const ResetButton = styled.button`
   padding: 10px;
   width: 66px;
@@ -143,6 +196,7 @@ const ResetButton = styled.button`
     background-color: #bbb;
   }
 `;
+
 
 const ErrorMessageContainer = styled.div`
   position: fixed;
@@ -202,8 +256,12 @@ const Settings: React.FC = () => {
     const [formChanged, setFormChanged] = useState(false);
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [isFieldRequired, setIsFieldRequired] = useState(false);
+    const [forms, setFormInfo] = useState<FormCode[]>([]); // State to hold multiple forms
+    const [newFormCount, setNewFormCount] = useState<number>(0);
+    const [deletedForms, setDeletedForms] = useState<FormCode[]>([]);
   
-    // Company Information state
+    
     const [companyInfo, setCompanyInfo] = useState<{
       name: string;
       nameofservice: string;
@@ -213,7 +271,7 @@ const Settings: React.FC = () => {
       state: string;
       zipcode: string;
       apt?: string;
-      image?: Buffer | Uint8Array;
+      image?: string;
       phone_number: string;
       email: string;
     }>({
@@ -226,16 +284,6 @@ const Settings: React.FC = () => {
       email: '', 
       zipcode: '',
     });
-  const [form,setFormInfo] = useState<{
-    formName: string;
-    required: boolean;
-    notes: string;
-    file?: Buffer | Uint8Array;
-  }>({
-    formName: '',
-    required: false,
-    notes: '',
-  });
 
   useEffect(() => {
     if (isSignedIn) {
@@ -246,7 +294,6 @@ const Settings: React.FC = () => {
         } else {
           const user: Organization | undefined = await getOrganizationDetails();
           if (user) {
-            //set company info here so that it can be pulled by the form if the fields exist
             setCompanyInfo({
               name: user.name || "",
               nameofservice: user.nameofservice || "",
@@ -256,7 +303,7 @@ const Settings: React.FC = () => {
               state: user.state,
               zipcode: user.zipcode +"" || "",
               apt: user.apt || "",
-              image: user.image || undefined,
+              image: user.image ? Buffer.from(user.image).toString('base64') : undefined,
               phone_number: user.phone_number || "",
               email: user.email || "",
             });
@@ -283,6 +330,18 @@ const Settings: React.FC = () => {
     };
   }, [formSubmitted, initialLoadComplete, isNewUser]);
 
+  useEffect(() => {
+    const fetchForms = async () => {
+      const data = await getFormDetails();
+      if (data) {
+        setFormInfo(data);
+      } else {
+        setFormInfo([]); 
+      }
+    };
+    fetchForms();
+  }, []);
+
   const validateForm = () => {
     return (
       phoneNumber
@@ -300,35 +359,66 @@ const Settings: React.FC = () => {
     const { name, value } = e.target;
     setCompanyInfo(prev => ({ ...prev, [name]: value }));
   };
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: number) => {
     const { name, value } = e.target;
-    setFormInfo(prev => ({ ...prev, [name]: value }));
+    setFormInfo(prevForms =>
+      prevForms.map(form =>
+        form.id === id ? { ...form, [name]: value } : form
+      )
+    );
+  };
+  const handleSliderChange = (id:number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedForms = forms.map(form => 
+      form.id === id ? { ...form, required: e.target.checked } : form
+    );
+    setFormInfo(updatedForms);
   };
 
   const convertFileToBase64 = (file: File) => {
-		return new Promise<string>((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => {
-				if (reader.result) {
-					resolve((reader.result as string).split(",")[1]);
-				} else {
-					reject("File reading failed");
-				}
-			};
-			reader.onerror = (error) => reject(error);
-		});
-	};
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
 
+      reader.onload = () => {
+        if (reader.result) {
+          const base64String = (reader.result as string).split(",")[1];
+          resolve(base64String); 
+        } else {
+          reject("File reading failed");
+        }
+      };
+  
+      reader.onerror = (error) => reject(error); // Handle any errors in file reading
+    });
+  };
+  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    const validFile: File = file ?? new File([], 'default.txt');
-    //fix file upload
-    const imageData = await convertFileToBase64(validFile);
-    
-    setCompanyInfo(prev => ({ ...prev, image: Buffer.from(imageData.split(',')[1], "base64") }));
-  };
+    if (!file) {
+        console.error("No file selected");
+        return;
+    }
 
+    try {
+        const imageData = await convertFileToBase64(file);
+        // Check if the Base64 string is in the expected format (Data URL format)
+        const base64Prefix = "data:image";
+        if (imageData.startsWith(base64Prefix)) {
+            const base64String = imageData.split(',')[1]; // Extract Base64 part
+            setCompanyInfo(prev => ({
+                ...prev,
+                image: base64String // Store only the Base64 part in the state
+            }));
+        } else {
+            setCompanyInfo(prev => ({
+              ...prev,
+              image: imageData // Store the Base64 string
+            }));
+        }
+    } catch (error) {
+        console.error("Error converting file to Base64:", error);
+    }  
+  };
   const handleBackButtonClick = () => {
     router.push("/third-party/dashboard");
     setFormSubmitted(true);
@@ -340,7 +430,8 @@ const Settings: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
+    console.log(companyInfo.image);
+
     const details = {
       name: companyInfo.name,
       nameofservice: companyInfo.nameofservice,
@@ -351,42 +442,174 @@ const Settings: React.FC = () => {
       phone_number: phoneNumber,
       email: companyInfo.email, 
       apt: companyInfo.apt,
-      image: companyInfo.image ? Buffer.from(companyInfo.image) : null, // Buffer or Uint8Array, depending on your setup
+      image: companyInfo.image, 
     };
     try {
       await updateOrganizerDetails(details);
-      success("User settings updated");
+      success("Organization settings updated");
     }
     catch (error) {
       console.error("Error updating organization details:", error);
     }
   };
-  const handleReset = () => {
-    setCompanyInfo({
-      name: '',
-      nameofservice: '',
-      street: '',
-      city: '',
-      state: '',
-      zipcode: '',
-      apt: '',
-      email: '',
-      phone_number: '',
+  const handleReset = async () => {
+    const organization: Organization | undefined = await getOrganizationDetails();
+    if (organization) {
+      setCompanyInfo({
+        name: organization.name || "",
+        nameofservice: organization.nameofservice || "",
+        unit: organization.unit || "",
+        street: organization.street || "",
+        city: organization.city|| "",
+        state: organization.state,
+        zipcode: organization.zipcode +"" || "",
+        apt: organization.apt || "",
+        image: organization.image ? Buffer.from(organization.image).toString('base64') : undefined,
+        phone_number: organization.phone_number || "",
+        email: organization.email || "",
+      });
+      setPhoneNumber(organization.phone_number || "");
+    }
+  };
+  const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+        console.error("No file selected");
+        return;
+    }
+
+    try {
+        const fileData = await convertFileToBase64(file);
+        // Check if the Base64 string is in the expected format (Data URL format)
+        // NEED TO UPDATE FOR FILE INSTEAD OF IMAGE
+        const base64Prefix = "data:image";
+        if (fileData.startsWith(base64Prefix)) {
+            const base64String = fileData.split(',')[1]; // Extract Base64 part
+            setFormInfo(prev => ({
+                ...prev,
+                file: base64String // Store only the Base64 part in the state
+            }));
+        } else {
+            setFormInfo(prev => ({
+              ...prev,
+              file: fileData // Store the Base64 string
+            }));
+        }
+    } catch (error) {
+        console.error("Error converting file to Base64:", error);
+    }  
+  };
+  const addNewForm = () => {
+    setFormInfo([
+      ...forms,
+      {
+        id: Date.now(), title: '', description: '', required: false,
+        downloadable: false,
+        organization_id: 0,
+        upload_link: null,
+      } // Adding a new empty form
+    ]);
+    setNewFormCount((prevCount) => prevCount + 1);
+  };
+  const handleAllFormSubmits = async(e: React.FormEvent) =>{
+    let formString: string | undefined = undefined;
+    if (newFormCount > 0) {
+      handleNewFormSubmit()
+    }
+    forms.forEach(async (form) => {
+      const details = {
+        name: form.title || "",
+        required: form.required,
+        notes: form.description || "",
+        file: formString, 
+      };
+      try {
+        await updateFormDetails(details, form.id);
+        console.log(details.name, details.required);
+      }
+      catch (error) {
+        console.error("Error updating organization details:", error);
+      }
     });
-    setPhoneNumber("");
+    try {
+      const deletedFormIds = deletedForms.map((form) => form.id);
+      await deleteForms(deletedFormIds);
+      setDeletedForms([]);
+    }
+    catch (error) {
+      console.error("Error updating organization details:", error);
+    }
+    success("Forms updated");
+
+  }
+  const handleNewFormSubmit = () =>{
+    let formString: string | undefined = undefined;
+    const formsToSubmit = forms.slice(-newFormCount);
+    formsToSubmit.forEach(async (form) => {
+      const details = {
+        name: form.title,
+        required: form.required,
+        notes: form.description,
+        file: formString, 
+      };
+    
+      try {
+        await createFormDetails(details);
+        console.log(details);
+      }
+      catch (error) {
+        console.error("Error updating organization details:", error);
+      }
+    setNewFormCount(0);
+    });
+    
+
+  };
+  const handleFormSubmit = async (e: React.FormEvent, id: number) => {
+    e.preventDefault();
+    let formString: string | undefined = undefined;
+    const form = forms.find(f => f.id === id);
+    
+    // Need to process form file here
+
+    const details = {
+        name: form?.title || "",
+        required: isFieldRequired,
+        notes: form?.description || "",
+        file: formString, 
+      };
+    try {
+      await createFormDetails(details);
+    }
+    catch (error) {
+      console.error("Error updating organization details:", error);
+    }
+  };
+  const handleFormReset = () => {
+    const fetchForms = async () => {
+      const data = await getFormDetails();
+      if (data) {
+        setFormInfo(data);
+      } else {
+        setFormInfo([]); 
+      }
+    };
+    fetchForms();
+
   };
 
-  const handleFormSubmit = () => {
-
-  }
-  const handleFormReset = () => {
-
-  }
-
-  if (isLoaded) {
+  if (!isLoaded) {
     return <div>Loading...</div>;
   }
-  console.log(companyInfo)
+  const handleDelete = (id: number) =>{
+    const deletedForm = forms.find(f => f.id === id);
+    setDeletedForms(prevDeletedForms => [...prevDeletedForms, deletedForm!]);
+    const updatedForms = forms.filter((form) => form.id !== id);
+
+    setFormInfo(updatedForms);
+
+  }
+
   return (
     <>
         <TopBar>
@@ -409,7 +632,18 @@ const Settings: React.FC = () => {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
                         <Label>Image Upload</Label>
-                        <Input type="file" onChange={handleFileChange} />
+                        <Input type="file" onChange={handleFileChange}/>
+                        <img src={`data:image/jpeg;base64,${companyInfo.image}`}
+                          alt={companyInfo.image}
+                          style={{
+                            width: '200px',      
+                            height: 'auto',      
+                            borderRadius: '10px',
+                            border: '2px solid #ccc', 
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+                            objectFit: 'cover',  
+                          }}
+                        />
                     </div>
                 </div>
                 <div>
@@ -448,41 +682,110 @@ const Settings: React.FC = () => {
             </form>
         
         </FormContainer>
+
+
+
         <FormContainer>
-        <form onSubmit={handleFormSubmit}>
-                <h2>Forms and Waivers</h2>
-                <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                        <Label>Name<Asterisk>*</Asterisk></Label>
-                        <Input type="text" name="formName" value={form.formName} onChange={handleFormChange} required />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                        <Label>Image Upload</Label>
-                        <Input type="file" onChange={handleFileChange} />
-                    </div>
+        {Array.isArray(forms) && forms.length > 0 ? (
+          forms.sort((a, b) => a.id - b.id).map((form) => (
+          <div key={form.id}>
+            
+            <form onSubmit={(e) => handleFormSubmit(e, form.id)}>
+              <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
+                  <Label>Name<Asterisk>*</Asterisk></Label>
+                  <Input
+                    type="text"
+                    name="title"
+                    value={form.title}
+                    onChange={(e) => handleFormChange(e, form.id)}
+                    required
+                  />
                 </div>
-                <div>
-                  <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
-                    <Label>Notes</Label>
-                    <textarea name="notes" value={form.notes} onChange={handleFormChange} rows={8}
-                    style={{
-                      padding: '10px',
-                      borderRadius: '8px',
-                      fontSize: '1rem',
-                      width: '100%',
-                      height: '100px',
-                      boxSizing: 'border-box',
-                      border: '1px solid #ccc',
-                    }}/>
-                  </div>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
+                  <Label>File Upload </Label>
+                  <Input
+                    type="file"
+                    onChange={(e) => handleFormFileChange(e, form.id)}
+                  ></Input> 
                 </div>
-                <ButtonContainer>
-                    <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
-                    {contextHolder}
-                    <SubmitButton type="submit">Save</SubmitButton>
-                </ButtonContainer>
+                <DeleteButton onClick={() => handleDelete(form.id)}>x</DeleteButton>
+              </div>
+
+              <div>
+                <label>Make required?</label>
+                <label style={{ marginRight: '10px', marginLeft: '50px' }}>No</label>
+                <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
+                  <input
+                    type="checkbox"
+                    checked={form.required}
+                    onChange={(e) => handleSliderChange(form.id, e)}
+                    style={{ opacity: 0, width: 0, height: 0 }}
+                  />
+                  <span className="slider" style={{
+                    position: 'absolute',
+                    cursor: 'pointer',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: form.required ? '#cc0000' : '#ccc',
+                    transition: '0.4s',
+                    borderRadius: '50px',
+                  }}></span>
+                  <span style={{
+                    position: 'absolute',
+                    content: '',
+                    height: '20px',
+                    width: '20px',
+                    borderRadius: '50%',
+                    left: '4px',
+                    bottom: '4px',
+                    backgroundColor: 'white',
+                    transition: '0.4s',
+                    transform: form.required ? 'translateX(25px)' : 'none',
+                  }}></span>
+                </label>
+                <label style = {{ marginLeft: '10px' }}>Yes</label>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
+                <Label>Notes</Label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={(e) => handleFormChange(e, form.id)}
+                  rows={8}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    width: '100%',
+                    height: '100px',
+                    boxSizing: 'border-box',
+                    border: '1px solid #ccc',
+                  }}
+                />
+              </div>
             </form>
-        </FormContainer>
+          </div>
+        ))
+      ): (
+        <p>No forms available.</p>
+      )}
+      
+      <AddFormButton onClick={addNewForm}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="18" viewBox="0 0 27 18" fill="none">
+          <line x1="13.8558" x2="13.8558" y2="18" stroke="#CC0000"/>
+          <line y1="-0.5" x2="25.5184" y2="-0.5" transform="matrix(0.999931 -0.0117507 0.0242414 0.999706 0.595703 9.30371)" stroke="#CC0000"/>
+        </svg>
+        Add New Form
+      </AddFormButton>
+      <ButtonContainer>
+        <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
+        <SubmitButton type="submit" onClick={handleAllFormSubmits}>Save</SubmitButton>
+      </ButtonContainer>
+      </FormContainer>
     </>
   );
 };
