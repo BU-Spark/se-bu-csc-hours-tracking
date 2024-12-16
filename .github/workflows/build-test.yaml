@@ -32,4 +32,4 @@ jobs:
         working-directory: ./client
         run: npm run build
         env:
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'dummy-value'
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_bGlrZWQtdGFoci00NS5jbGVyay5hY2NvdW50cy5kZXYk'
