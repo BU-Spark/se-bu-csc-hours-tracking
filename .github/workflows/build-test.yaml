@@ -31,3 +31,5 @@ jobs:
       - name: Run Build
         working-directory: ./client
         run: npm run build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'dummy-value'
