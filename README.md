@@ -50,15 +50,9 @@ Also make sure to have a .env file with secrets from the project Google doc. Pla
 
 `npm install`
 
-`docker compose up`: spin up a local instance of postgres to avoid using the production database
-
 `npx prisma migrate deploy` (run `npx prisma studio` if you want to see the contents)
 
 `npm run dev`
-
-**To build the frontend for deployment**:
-
-`npm run build`
 
 ---
 
