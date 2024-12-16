@@ -18,6 +18,9 @@ It aims to address streamlining the volunteering process by providing a platform
 
 ## **Technical Architecture**
 
+<!-- link the image from the public folder -->
+![Architecture Diagram](client/public/technical-architecture.png)
+
 ### Tech Stack
 
 * Frontend: Next.js  
