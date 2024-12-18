@@ -66,9 +66,11 @@ Also make sure to have a .env file with secrets from the Project Description Goo
 
 ## **Signing in using different views**
 
-After signing in for the first time, you will have an account created (gmails will be considered third praty users and bu emails will be considered student volunteers). Currently, the only way to change the type of user your are is to directly modify the database. Here are some sql queries you can use to do so and test our the differet views (the middleware will automatically redirect you to the correct view based on your role):
+1. Sign in with your bu.edu email using OAuth
+2. After signing in for the first time, you will have an account created (gmails will be considered third praty users and bu emails will be considered student volunteers). Currently, the only way to change the type of user your are is to directly modify the database. Here are some sql queries you can use to do so and test our the differet views (the middleware will automatically redirect you to the correct view based on your role):
 
-1. **Admin**: Sign in with your bu.edu email using OAuth
+
+3. **Admin**:
 
 Run the following SQL query on the database to make your account an admin:
 
@@ -78,7 +80,7 @@ SET role = 'ADMIN'
 WHERE email = 'your-email-address'
 ```
 
-2. **Student Volunteer**: Sign in with your bu.edu email using OAuth
+4. **Student Volunteer**:
 
 ```sql
 UPDATE "Person"
@@ -86,7 +88,7 @@ SET role = 'USER'
 WHERE email = 'your-email-address'
 ```
 
-3. **Third-party**: Sign in with your Google email using OAuth
+1. **Third-party**:
 
 ```sql
 UPDATE "Person"
