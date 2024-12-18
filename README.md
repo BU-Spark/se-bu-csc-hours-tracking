@@ -78,7 +78,7 @@ SET role = 'ADMIN'
 WHERE email = 'your-email-address'
 ```
 
-1. **Student Volunteer**:
+4. **Student Volunteer**:
 
 ```sql
 UPDATE "Person"
@@ -86,7 +86,7 @@ SET role = 'USER'
 WHERE email = 'your-email-address'
 ```
 
-1. **Third-party**:
+5. **Third-party**:
 
 ```sql
 UPDATE "Person"
