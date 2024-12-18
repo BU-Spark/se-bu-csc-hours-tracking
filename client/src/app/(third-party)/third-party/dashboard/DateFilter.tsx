@@ -43,6 +43,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ setDateFilter }) => {
       <Button
         style={{ fontSize: "x-large", margin: "0 1rem", border: "none" }}
         onClick={decrementMonth}
+        data-testid="decrement-button"
       >
         {" "}
         {"<"}
@@ -53,6 +54,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ setDateFilter }) => {
       <Button
         style={{ fontSize: "x-large", margin: "0 1rem", border: "none" }}
         onClick={incrementMonth}
+        data-testid="increment-button"
       >
         {">"}
       </Button>
