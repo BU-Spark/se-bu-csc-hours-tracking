@@ -1,10 +1,13 @@
-module.exports = {
+// jest.config.js
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './', // path to your Next.js app
+});
+
+const customJestConfig = {
   testEnvironment: 'jsdom',
-  transform: {
-    "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
-  },
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1"
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  // Add any custom configuration as needed
 };
+
+module.exports = createJestConfig(customJestConfig);
