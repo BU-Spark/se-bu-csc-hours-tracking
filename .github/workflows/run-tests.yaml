@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: 'node'
           cache: 'npm'
+          cache-dependency-path: ./client/package-lock.json
 
       - name: Install Dependencies
         working-directory: ./client
