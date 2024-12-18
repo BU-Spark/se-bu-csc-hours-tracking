@@ -45,17 +45,54 @@ Optional
 
 * pgAdmin (or any postgres database client)
 
-Also make sure to have a .env file with secrets from the project Google doc. Place it in /client.
+Also make sure to have a .env file with secrets from the Project Description Google doc. Place it in /client.
 
 ### **Running the Application Locally**
 
+1. Change to the root directory of the project
 `cd client`
 
+2. Install the dependencies
 `npm install`
 
-`npx prisma migrate deploy` (run `npx prisma studio` if you want to see the contents)
+3. Migrate any changes to the database
+`npx prisma migrate deploy`
 
+4. View the database in Prisma Studio (optional)
+`npx prisma studio`
+
+5. Run the Next.js development server
 `npm run dev`
+
+## **Signing in using different views**
+
+After signing in for the first time, you will have an account created (gmails will be considered third praty users and bu emails will be considered student volunteers). Currently, the only way to change the type of user your are is to directly modify the database. Here are some sql queries you can use to do so and test our the differet views (the middleware will automatically redirect you to the correct view based on your role):
+
+1. **Admin**: Sign in with your bu.edu email using OAuth
+
+Run the following SQL query on the database to make your account an admin:
+
+```sql
+UPDATE "Person"
+SET role = 'ADMIN'
+WHERE email = 'your-email-address'
+```
+
+2. **Student Volunteer**: Sign in with your bu.edu email using OAuth
+
+```sql
+UPDATE "Person"
+SET role = 'USER'
+WHERE email = 'your-email-address'
+```
+
+3. **Third-party**: Sign in with your Google email using OAuth
+
+```sql
+UPDATE "Person"
+SET role = 'ORGANIZER', affiliation_id = 17, name = 'insert-your-name'
+WHERE email = 'your-email-address'
+```
 
 ---
 
