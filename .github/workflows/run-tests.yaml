@@ -31,4 +31,3 @@ jobs:
       - name: Run Tests
         working-directory: ./client
         run: npm run test
-        env:
