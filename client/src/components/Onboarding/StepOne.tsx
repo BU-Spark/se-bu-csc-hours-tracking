@@ -25,7 +25,7 @@ const StepOne: React.FC = () => {
     <StepContainer>
       <Title>Welcome to BU Community Service Time Log!</Title>
       <Description>
-        We are excited to have you here. Let's start by setting up your profile.
+        We are excited to have you here. Let&apos;s start by setting up your profile.
         Please provide your phone number, college, class year, and any dietary
         restrictions.
       </Description>

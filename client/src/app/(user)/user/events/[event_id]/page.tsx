@@ -3,7 +3,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { checkIfApplied, getEvent } from "./action";
+import { checkIfApplied, checkIfWaitlisted, checkIfAcceptedApplication, cancelSignUp, getEvent, getWaitlistCount, moveOffWaitlist } from "./action";
 import { Event } from "@prisma/client";
 import { Button, Typography } from "antd";
 import {
@@ -18,36 +18,49 @@ import convertToBase64 from "@/app/_utils/BufferToString";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import RegisterForm from "./RegisterForm";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import { getEventSpotsLeft } from "@/app/(admin)/admin/student-signups/action";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import WaitlistForm from "./WaitlistForm";
 
 dayjs.extend(customParseFormat);
 
 export default function Page() {
   const [event, setEvent] = useState<Event>();
   const [registering, setRegistering] = useState<boolean>(false);
+  const [cancelling, setCancelling] = useState<boolean>(false);
   const [hasRegistered, setHasRegistered] = useState<boolean>(false);
+  const [hasWaitlisted, setHasWaitlisted] = useState<boolean>(false);
+  const [hasAcceptedApplication, setHasAcceptedApplication] = useState<boolean>(false);
   const [capacity, setCapacity] = useState<number>();
   const event_id: number = Number(useParams().event_id);
-  const session = useSession();
+  const { session, isSignedIn } = useSession();
+  const [person, setPerson] = useState<any>(null);
 
-  //CHECK IF USER HAS ALREADY APPLIED
   useEffect(() => {
-    const fetchCheckApplied = async () => {
-      if (session?.data?.user) {
-        const result: boolean = await checkIfApplied(
-          event_id,
-          Number(session?.data?.user.id)
-        );
-        setHasRegistered(result);
-      }
-    };
-    if (session.status != "loading") fetchCheckApplied();
-  }, [session.status]);
+    if (isSignedIn && session) {
+      const fetchPersonAndStatus = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+
+        if (person) {
+          const resultApplied = await checkIfApplied(event_id, Number(person.id));
+          setHasRegistered(resultApplied);
+
+          const resultWaitlisted = await checkIfWaitlisted(event_id, Number(person.id));
+          setHasWaitlisted(resultWaitlisted);
+
+          const resultAccepted = await checkIfAcceptedApplication(event_id, Number(person.id));
+          setHasAcceptedApplication(resultAccepted);
+        }
+      };
+      fetchPersonAndStatus();
+    }
+  }, [isSignedIn, session]);
 
   // GET EVENT DETAILS
-  useEffect(() => {
+  useEffect(() => { 
     const fetchEvent = async () => {
       const response = await getEvent(Number(event_id));
       if (response) {
@@ -57,15 +70,29 @@ export default function Page() {
 
     const fetchCapacity = async () => {
       const response = await getEventSpotsLeft(event_id);
-      if (response) {
+      if (response !== undefined && response !== null) {
+        const OffWaitlist = await moveOffWaitlist(event_id, response);
         setCapacity(response);
+      }else if(response === undefined){
+        setCapacity(0);
       }
     };
+
     fetchEvent();
     fetchCapacity();
   }, [event_id]);
 
-
+  const handleCancelSignUp = async () => {
+    if (person) {
+      const success = await cancelSignUp(event_id, Number(person.id));
+      if (success) {
+        setCancelling(false);
+        setHasAcceptedApplication(false);
+        setHasRegistered(false);
+        setHasWaitlisted(false);
+      }
+    }
+  };
   return event ? (
     <div
       style={{
@@ -199,7 +226,7 @@ export default function Page() {
                 {capacity} / {event.estimated_participants} spots
               </p>
             ) : (
-              <></>
+              <p>{0} / {event.estimated_participants} spots</p>
             )}
           </div>
           <div
@@ -223,8 +250,23 @@ export default function Page() {
             justifyContent: "center",
           }}
         >
-          {hasRegistered ? (
+          { hasAcceptedApplication ? (
+            <Button
+              style={{
+                borderRadius: "30px",
+                marginBottom: "1rem",
+                width: "10rem",
+                color: buRed,
+                borderColor: buRed,
+              }}
+              onClick={handleCancelSignUp}
+            >
+              {"Cancel Registration"}
+            </Button>
+          )  : hasRegistered ? (
             <p style={{ color: buRed }}>Applied!</p>
+          ) : hasWaitlisted ? (
+            <p style={{ color: buRed }}>Waitlisted!</p>
           ) : event.reg_end < new Date() ? (
             <p style={{ color: buRed }}>Registration Ended</p>
           ) : (
@@ -238,18 +280,25 @@ export default function Page() {
               }}
               onClick={() => setRegistering(!registering)}
             >
-              {registering ? "Close" : "Apply"}
+              {registering ? "Close" : (capacity == 0 ? "Waitlist":"Apply")}
             </Button>
           )}
         </div>
-        {registering && session.data?.user.id ? (
+        { registering && person?.id ? (capacity !== 0 ? (
           <RegisterForm
             event={event}
-            userId={Number(session.data?.user.id)}
+            userId={Number(person.id)}
             setRegistering={setRegistering}
             setHasRegistered={setHasRegistered}
           />
-        ) : (
+        ):(
+          <WaitlistForm
+            event={event}
+            userId={Number(person.id)}
+            setRegistering={setRegistering}
+            setHasWaitlisted={setHasWaitlisted}
+          />
+        )) : (
           <div className="description">{event.description}</div>
         )}
       </div>
