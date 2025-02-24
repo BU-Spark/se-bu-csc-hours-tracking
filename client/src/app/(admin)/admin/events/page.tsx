@@ -3,12 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Button, Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css"; 
 import {
   getApplicationsByUserId,
   getEvents,
   getEventsByApplicationEventIds,
 } from "@/app/(user)/user/events/action";
 import CardGrid from "@/components/CardGrid/CardGrid";
+
 import {
   AddHoursButton,
   PlusCircle,
@@ -24,7 +27,9 @@ function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(true);
+  const [date, setDate] = useState(new Date());
   const router = useRouter();
+  
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -84,6 +89,21 @@ function Events() {
             <p>Upcoming Events</p>
           </SummaryBox>
         </SummaryContainer>
+
+        {/* Static Calendar */}
+        <div style={{ marginTop: "2rem", textAlign: "center" }}>
+          <h2>Event Calendar</h2>
+          <Calendar
+            onChange={(value) => {
+              if (value instanceof Date) {
+                setDate(value);
+              }
+            }}
+            value={date}
+          />
+        </div>
+
+
         <DateFilter setDateFilter={handleSetDateFilter} />
         {loading ? (
           <div
