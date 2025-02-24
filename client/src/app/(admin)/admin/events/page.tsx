@@ -11,6 +11,7 @@ import {
   getEventsByApplicationEventIds,
 } from "@/app/(user)/user/events/action";
 import CardGrid from "@/components/CardGrid/CardGrid";
+
 import {
   AddHoursButton,
   PlusCircle,
