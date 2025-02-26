@@ -22,6 +22,7 @@ export const checkIfNewUser = async () => {
 
   const isNewUser =
     !person.phone_number ||
+    !person.name ||
     !person.bu_id ||
     !person.college ||
     !person.dietary_restrictions ||
@@ -46,6 +47,7 @@ export const getUserDetails = async (): Promise<Person | undefined> => {
 
 export const updateUserDetails = async (details: {
   phone_number: string;
+  name: string;
   bu_id: string;
   college: string;
   class: number;
@@ -65,6 +67,7 @@ export const updateUserDetails = async (details: {
     where: { id: person.id },
     data: {
       phone_number: details.phone_number,
+      name: details.name,
       bu_id: details.bu_id,
       college: details.college,
       class: details.class,
