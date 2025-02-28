@@ -365,3 +365,72 @@ export const SubmitButton = styled.button`
 export const FileUpload = styled(Upload)`
   ${CommonInputStyle}
 `;
+
+export const CalendarContainer = styled.div`
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  flex: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+export const CalendarHeader = styled.div`
+  display: flex;
+  width: 100%;
+  background-color: #cc0000;
+  border-radius: 10px 10px 0 0;
+  height: 36px;
+`;
+
+export const DayHeader = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter-Medium', Helvetica;
+  font-weight: 500;
+  color: white;
+  font-size: 15px;
+`;
+
+export const CalendarButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #cc0000;
+  font-size: 20px;
+
+  &:hover {
+    color: #b30000;
+  }
+`;
+
+export const CalendarBody = styled.div`
+  background-color: #f0f0f0;
+  border-radius: 0 0 10px 10px;
+  height: 522px;
+  position: relative;
+  overflow: auto;
+`;
+
+export const EventContent = styled.div`
+  background-color: #cc0000;
+  color: white;
+  border-radius: 5px;
+  padding: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+`;
+
+export const DayCell = styled.div`
+  color: #cc0000;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+`;

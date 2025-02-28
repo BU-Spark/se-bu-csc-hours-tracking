@@ -3,43 +3,63 @@ import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
 import { Button, Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; 
 import {
   getApplicationsByUserId,
   getEvents,
   getEventsByApplicationEventIds,
 } from "@/app/(user)/user/events/action";
 import CardGrid from "@/components/CardGrid/CardGrid";
-
 import {
   AddHoursButton,
   PlusCircle,
   Rectangle,
   SummaryBox,
   SummaryContainer,
+  CalendarContainer,
+  CalendarHeader,
+  CalendarButton,
+  EventContent,
+  DayCell,
+  DayHeader,
+  CalendarBody,
 } from "@/_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import DateFilter from "./DataFilter";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import { EventInput } from "@fullcalendar/core";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>([]);
+  const [dbEvents, setDbEvents] = useState<Event[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<EventInput[]>([]);
   const [dateFilter, setDateFilter] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(true);
-  const [date, setDate] = useState(new Date());
   const router = useRouter();
-  
 
   useEffect(() => {
     const fetchEvents = async () => {
       const eventResult = await getEvents();
-      setEvents(eventResult);
+      setDbEvents(eventResult);
+
+      const formattedEvents: EventInput[] = eventResult.map((event) => ({
+        id: event.id.toString(),
+        title: event.title,
+        start: event.event_start,
+        end: event.event_end,
+        allDay: true,
+      }));
+      setCalendarEvents(formattedEvents);
       setLoading(false);
     };
     setLoading(true);
     fetchEvents();
-  }, [dateFilter]); // Fetch events whenever dateFilter changes
+  }, []);
 
   const handleSetDateFilter = (date: Date) => {
     setDateFilter(date);
@@ -89,45 +109,70 @@ function Events() {
             <p>Upcoming Events</p>
           </SummaryBox>
         </SummaryContainer>
-
-        {/* Static Calendar */}
-        <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <h2>Event Calendar</h2>
-          <Calendar
-            onChange={(value) => {
-              if (value instanceof Date) {
-                setDate(value);
-              }
-            }}
-            value={date}
-          />
-        </div>
-
-
         <DateFilter setDateFilter={handleSetDateFilter} />
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              top: 0,
-              bottom: 0,
-            }}
-          >
-            <Spin />
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
+          <CalendarHeader>
+            <CalendarButton onClick={() => {/* Handle previous month */}}>
+              <ChevronLeft />
+            </CalendarButton>
+            <div style={{ flex: 1, textAlign: "center" }}>
+              <h2>Event Calendar</h2>
+            </div>
+            <CalendarButton onClick={() => {/* Handle next month */}}>
+              <ChevronRight />
+            </CalendarButton>
+          </CalendarHeader>
+          <div>
+            <CalendarButton onClick={() => (document.querySelector(".fc-dayGridMonth-button") as HTMLElement)?.click()}>
+              Month
+            </CalendarButton>
+            <CalendarButton onClick={() => (document.querySelector(".fc-timeGridWeek-button") as HTMLElement)?.click()}>
+              Week
+            </CalendarButton>
+            <CalendarButton onClick={() => (document.querySelector(".fc-timeGridDay-button") as HTMLElement)?.click()}>
+              Day
+            </CalendarButton>
           </div>
-        ) : events ? (
-          <CardGrid
-            events={events}
-            filter={dateFilter}
-            myEvents={undefined}
-            view={"admin"}
-            pastEvents={true}
-          />
-        ) : (
-          <p>loading</p>
-        )}
+        </div>
+        <CalendarContainer>
+          {loading ? (
+            <div style={{ textAlign: "center", marginTop: "2rem" }}>
+              <Spin />
+            </div>
+          ) : (
+            <>
+              <div className="flex w-full">
+                {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day, index) => (
+                  <DayHeader key={index}>{day}</DayHeader>
+                ))}
+              </div>
+
+              <CalendarBody>
+                <FullCalendar
+                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+                  initialView="dayGridMonth"
+                  events={calendarEvents}
+                  eventClick={(info) => {
+                    const eventId = info.event.id;
+                    router.push(`/admin/events/${eventId}`);
+                  }}
+                  height="auto"
+                  selectable={true}
+                  eventContent={(eventInfo) => (
+                    <EventContent>{eventInfo.event.title}</EventContent>
+                  )}
+                  dayCellContent={(arg) => (
+                    <DayCell>{arg.dayNumberText}</DayCell>
+                  )}
+                  dayCellDidMount={(info) => {
+                    info.el.style.backgroundColor = "#f9f9f9";
+                    info.el.style.border = "1px solid #ccc";
+                  }}
+                />
+              </CalendarBody>
+            </>
+          )}
+        </CalendarContainer>
       </Content>
     </Layout>
   );
