@@ -209,6 +209,7 @@ const Settings: React.FC = () => {
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [buId, setBuId] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [college, setCollege] = useState<string[]>([]);
   const [classYear, setClassYear] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
@@ -229,6 +230,7 @@ const Settings: React.FC = () => {
           if (user) {
             setPhoneNumber(user.phone_number || "");
             setBuId(user.bu_id || "");
+            setUserName(user.name || "");
             setCollege(user.college ? user.college.split(",") : []);
             setClassYear(user.class?.toString() || "");
             setDietaryRestrictions(
@@ -261,6 +263,7 @@ const Settings: React.FC = () => {
   const validateForm = () => {
     return (
       phoneNumber &&
+      userName &&
       buId &&
       college.length > 0 &&
       classYear &&
@@ -293,6 +296,7 @@ const Settings: React.FC = () => {
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
+        name: userName,
         bu_id: buId,
         college: college.join(","),
         class: Number(classYear),
@@ -356,6 +360,22 @@ const Settings: React.FC = () => {
             paddingLeft: "50px",
           }}
           containerStyle={{ marginBottom: "20px" }}
+        />
+        <Label>
+          Name <Asterisk>*</Asterisk>
+          {formSubmitted && !userName && (
+              <ErrorMessage>BU ID is required</ErrorMessage>
+          )}
+        </Label>
+        <Input
+            type="text"
+            placeholder="Your Name"
+            value={userName}
+            onChange={(e) => {
+              setUserName(e.target.value);
+              handleInputChange();
+            }}
+            required
         />
         <Label>
           BU ID<Asterisk>*</Asterisk>
