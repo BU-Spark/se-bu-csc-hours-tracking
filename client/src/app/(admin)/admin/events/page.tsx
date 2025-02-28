@@ -33,6 +33,11 @@ function Events() {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
+  const monthYear = currentDate.toLocaleString('default', { 
+    month: 'long', 
+    year: 'numeric' 
+  });
+
   useEffect(() => {
     const fetchEvents = async () => {
       const eventResult = await getEvents();
@@ -155,7 +160,9 @@ function Events() {
         <CalendarWrapper>
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
-              <MonthYearDisplay>Event Calendar</MonthYearDisplay>
+              <MonthYearDisplay>
+                {monthYear}
+              </MonthYearDisplay>
               <div className="flex gap-2">
                 <NavigationButton onClick={handlePrevMonth}>
                   <ChevronLeft className="w-2.5 h-4" />
@@ -195,17 +202,17 @@ function Events() {
                     >
                       {day.date.getDate()}
                       {event && (
-                        <EventIndicator>
+                        <EventIndicator
+                          onClick={() => router.push(`/admin/events/${event.id}`)}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <EventDot />
                           <EventLabel>
                             <span className="time">
-                              {new Date(event.event_start).toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                },
-                              )}
+                              {new Date(event.event_start).toLocaleTimeString([], {
+                                hour: "numeric",
+                                minute: "2-digit",
+                              })}
                             </span>
                             <span className="event"> {event.title}</span>
                           </EventLabel>
