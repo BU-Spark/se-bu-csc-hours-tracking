@@ -372,7 +372,7 @@ const Settings: React.FC = () => {
             placeholder="Your Name"
             value={userName}
             onChange={(e) => {
-              setName(e.target.value);
+              setUserName(e.target.value);
               handleInputChange();
             }}
             required
