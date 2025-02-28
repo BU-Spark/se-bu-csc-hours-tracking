@@ -209,7 +209,7 @@ const Settings: React.FC = () => {
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [buId, setBuId] = useState<string>("");
-  const [userName, setName] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [college, setCollege] = useState<string[]>([]);
   const [classYear, setClassYear] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
@@ -230,7 +230,7 @@ const Settings: React.FC = () => {
           if (user) {
             setPhoneNumber(user.phone_number || "");
             setBuId(user.bu_id || "");
-            setName(user.name || "");
+            setUserName(user.name || "");
             setCollege(user.college ? user.college.split(",") : []);
             setClassYear(user.class?.toString() || "");
             setDietaryRestrictions(
