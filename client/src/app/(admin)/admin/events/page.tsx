@@ -19,7 +19,6 @@ import {
   EventIndicator,
   EventDot,
   EventLabel,
-  AddEventButton,
   CalendarWrapper,
   MonthYearDisplay,
   NavigationButton,
@@ -172,15 +171,6 @@ function Events() {
               <CalendarButton variant="filled">Month</CalendarButton>
             </div>
           </div>
-
-          <AddEventButton>
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/d444ba2e-c739-453e-9d83-f2693fcfed1a?placeholderIfAbsent=true&apiKey=7d881e0539ab4a4a95fff82ac7844ccb"
-              alt="Add"
-              className="object-contain shrink-0 my-auto aspect-square stroke-[1px] stroke-red-700 w-[11px]"
-            />
-            Add Events
-          </AddEventButton>
 
           <CalendarContainer>
             {loading ? (

@@ -371,14 +371,12 @@ export const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 3px;
-  padding-top: 2.5px;
-  padding-bottom: 20px;
-  margin-top: 5px;
   max-width: full;
-  font-medium;
-  min-height: 525px;
   width: 656px;
-  background: url("https://cdn.builder.io/api/v1/image/assets/TEMP/7c04422658cfcff31b78070c0b1974950dee2937da31bcc3486fc7844c4c5723?placeholderIfAbsent=true&apiKey=7d881e0539ab4a4a95fff82ac7844ccb") center/cover no-repeat;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden; /* This ensures content respects rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const CalendarHeader = styled.div`
@@ -431,10 +429,21 @@ export const NavigationButton = styled.button`
 
 export const DayHeader = styled.div`
   text-align: center;
-  color: white;
   font-size: 16px;
-  font-weight: 500;
-  padding: 8px;
+  font-weight: 600;
+  padding: 10px 0;
+  background-color: #D32F2F;
+  color: white;
+  width: 100%; /* Forces headers to fill the column */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:first-child {
+    border-top-left-radius: 10px;
+  }
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
 `;
 
 export const DayCell = styled.div<{ isToday?: boolean; isCurrentMonth?: boolean }>`
@@ -469,7 +478,6 @@ export const DayCell = styled.div<{ isToday?: boolean; isCurrentMonth?: boolean 
   `}
 `;
 
-
 export const EventIndicator = styled.div`
   display: flex;
   align-items: center;
@@ -498,36 +506,18 @@ export const EventLabel = styled.span`
   }
 `;
 
-export const AddEventButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: #f2f2f2;
-  border-radius: 100px;
-  border: none;
-  color: ${buRed};
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  img {
-    width: 11px;
-    height: 11px;
-  }
-`;
-
 export const CalendarGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Ensure exactly 7 columns */
-  grid-template-rows: repeat(6, 1fr); /* Always 6 rows */
-  gap: 0px; /* Remove unwanted gaps */
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0px;
   width: 100%;
-  min-height: 500px; /* Adjust to fit evenly */
-  border-collapse: collapse; /* Ensures no extra borders */
+  min-height: 500px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-radius: 0 0 10px 10px; /* Round bottom corners */
+  overflow: hidden; /* Ensure child elements respect border radius */
 `;
-
-
 
 export const CalendarWrapper = styled.div`
   position: relative;
