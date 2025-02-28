@@ -437,19 +437,23 @@ export const DayHeader = styled.div`
   padding: 8px;
 `;
 
-export const DayCell = styled.div<{
-  isToday?: boolean;
-  isCurrentMonth?: boolean;
-}>`
-  position: relative;
+export const DayCell = styled.div<{ isToday?: boolean; isCurrentMonth?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   padding: 8px;
-  text-align: center;
+  min-height: 80px; /* Ensures equal height */
+  width: 100%; /* Prevents cell shrinking */
   font-size: 16px;
-  color: ${(props) => (props.isCurrentMonth ? "#1A1A1A" : "#999")};
+  border: none; /* Remove unintended borders */
+  background: ${(props) => (props.isCurrentMonth ? "#F8F9FA" : "#E0E0E0")}; /* Match colors */
 
   ${(props) =>
     props.isToday &&
     `
+    position: relative;
+    color: white;
     &::after {
       content: '';
       position: absolute;
@@ -458,13 +462,13 @@ export const DayCell = styled.div<{
       transform: translate(-50%, -50%);
       width: 26px;
       height: 26px;
-      background-color: ${buRed};
+      background-color: #D32F2F;
       border-radius: 50%;
       z-index: -1;
     }
-    color: white;
   `}
 `;
+
 
 export const EventIndicator = styled.div`
   display: flex;
@@ -515,11 +519,15 @@ export const AddEventButton = styled.button`
 
 export const CalendarGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background-color: transparent;
-  padding: 1px;
+  grid-template-columns: repeat(7, 1fr); /* Ensure exactly 7 columns */
+  grid-template-rows: repeat(6, 1fr); /* Always 6 rows */
+  gap: 0px; /* Remove unwanted gaps */
+  width: 100%;
+  min-height: 500px; /* Adjust to fit evenly */
+  border-collapse: collapse; /* Ensures no extra borders */
 `;
+
+
 
 export const CalendarWrapper = styled.div`
   position: relative;

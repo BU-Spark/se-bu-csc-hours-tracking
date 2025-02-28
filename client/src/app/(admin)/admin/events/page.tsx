@@ -60,43 +60,46 @@ function Events() {
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const firstDayOfWeek = firstDay.getDay() || 7; // Convert Sunday (0) to 7
-
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+  
+    // Adjust Sunday (0) to align with Monday as first day
+    let firstDayIndex = firstDayOfMonth.getDay();
+    firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+  
     const days = [];
-
-    // Add days from previous month
-    const prevMonthDays = firstDayOfWeek - 1;
-    const prevMonth = new Date(year, month - 1);
+  
+    // Fill previous month days for correct alignment
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = prevMonthDays - 1; i >= 0; i--) {
+    for (let i = firstDayIndex; i > 0; i--) {
       days.push({
-        date: new Date(year, month - 1, prevMonthLastDay - i),
+        date: new Date(year, month - 1, prevMonthLastDay - i + 1),
         isCurrentMonth: false,
       });
     }
-
-    // Add days from current month
+  
+    // Fill current month days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({
         date: new Date(year, month, i),
         isCurrentMonth: true,
       });
     }
-
-    // Add days from next month
-    const remainingDays = 42 - days.length; // 6 weeks * 7 days
-    for (let i = 1; i <= remainingDays; i++) {
+  
+    // Fill next month days to ensure exactly 42 cells (6 rows)
+    while (days.length < 42) {
       days.push({
-        date: new Date(year, month + 1, i),
+        date: new Date(year, month + 1, days.length - daysInMonth - firstDayIndex + 1),
         isCurrentMonth: false,
       });
     }
-
+  
     return days;
   };
+  
+  
+  
 
   const handlePrevMonth = () => {
     setCurrentDate(
