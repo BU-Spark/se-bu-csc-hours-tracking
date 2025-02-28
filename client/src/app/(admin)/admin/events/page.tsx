@@ -1,14 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
-import { Button, Layout, Spin } from "antd";
+import { Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
-import {
-  getApplicationsByUserId,
-  getEvents,
-  getEventsByApplicationEventIds,
-} from "@/app/(user)/user/events/action";
-import CardGrid from "@/components/CardGrid/CardGrid";
+import { getEvents } from "@/app/(user)/user/events/action";
 import {
   AddHoursButton,
   PlusCircle,
@@ -18,52 +13,36 @@ import {
   CalendarContainer,
   CalendarHeader,
   CalendarButton,
-  EventContent,
   DayCell,
   DayHeader,
-  CalendarBody,
+  CalendarGrid,
+  EventIndicator,
+  EventDot,
+  EventLabel,
+  AddEventButton,
+  CalendarWrapper,
+  MonthYearDisplay,
+  NavigationButton,
 } from "@/_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
-import DateFilter from "./DataFilter";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import { EventInput } from "@fullcalendar/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [dbEvents, setDbEvents] = useState<Event[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<EventInput[]>([]);
-  const [dateFilter, setDateFilter] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchEvents = async () => {
       const eventResult = await getEvents();
-      setDbEvents(eventResult);
-
-      const formattedEvents: EventInput[] = eventResult.map((event) => ({
-        id: event.id.toString(),
-        title: event.title,
-        start: event.event_start,
-        end: event.event_end,
-        allDay: true,
-      }));
-      setCalendarEvents(formattedEvents);
+      setEvents(eventResult);
       setLoading(false);
     };
     setLoading(true);
     fetchEvents();
   }, []);
-
-  const handleSetDateFilter = (date: Date) => {
-    setDateFilter(date);
-  };
 
   const today = new Date();
   const isToday = (date: Date) =>
@@ -72,11 +51,71 @@ function Events() {
     date.getFullYear() === today.getFullYear();
 
   const eventsToday = events.filter((event) =>
-    isToday(new Date(event.event_start))
+    isToday(new Date(event.event_start)),
   );
   const upcomingEvents = events.filter(
-    (event) => new Date(event.event_start) > today
+    (event) => new Date(event.event_start) > today,
   );
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const firstDayOfWeek = firstDay.getDay() || 7; // Convert Sunday (0) to 7
+
+    const days = [];
+
+    // Add days from previous month
+    const prevMonthDays = firstDayOfWeek - 1;
+    const prevMonth = new Date(year, month - 1);
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = prevMonthDays - 1; i >= 0; i--) {
+      days.push({
+        date: new Date(year, month - 1, prevMonthLastDay - i),
+        isCurrentMonth: false,
+      });
+    }
+
+    // Add days from current month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({
+        date: new Date(year, month, i),
+        isCurrentMonth: true,
+      });
+    }
+
+    // Add days from next month
+    const remainingDays = 42 - days.length; // 6 weeks * 7 days
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push({
+        date: new Date(year, month + 1, i),
+        isCurrentMonth: false,
+      });
+    }
+
+    return days;
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1),
+    );
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1),
+    );
+  };
+
+  const getEventForDate = (date: Date) => {
+    return events.find(
+      (event) =>
+        new Date(event.event_start).toDateString() === date.toDateString(),
+    );
+  };
 
   return (
     <Layout
@@ -97,6 +136,7 @@ function Events() {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </div>
+
         <SummaryContainer
           style={{ alignItems: "start", justifyContent: "start" }}
         >
@@ -109,70 +149,82 @@ function Events() {
             <p>Upcoming Events</p>
           </SummaryBox>
         </SummaryContainer>
-        <DateFilter setDateFilter={handleSetDateFilter} />
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
-          <CalendarHeader>
-            <CalendarButton onClick={() => {/* Handle previous month */}}>
-              <ChevronLeft />
-            </CalendarButton>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              <h2>Event Calendar</h2>
-            </div>
-            <CalendarButton onClick={() => {/* Handle next month */}}>
-              <ChevronRight />
-            </CalendarButton>
-          </CalendarHeader>
-          <div>
-            <CalendarButton onClick={() => (document.querySelector(".fc-dayGridMonth-button") as HTMLElement)?.click()}>
-              Month
-            </CalendarButton>
-            <CalendarButton onClick={() => (document.querySelector(".fc-timeGridWeek-button") as HTMLElement)?.click()}>
-              Week
-            </CalendarButton>
-            <CalendarButton onClick={() => (document.querySelector(".fc-timeGridDay-button") as HTMLElement)?.click()}>
-              Day
-            </CalendarButton>
-          </div>
-        </div>
-        <CalendarContainer>
-          {loading ? (
-            <div style={{ textAlign: "center", marginTop: "2rem" }}>
-              <Spin />
-            </div>
-          ) : (
-            <>
-              <div className="flex w-full">
-                {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day, index) => (
-                  <DayHeader key={index}>{day}</DayHeader>
-                ))}
-              </div>
 
-              <CalendarBody>
-                <FullCalendar
-                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-                  initialView="dayGridMonth"
-                  events={calendarEvents}
-                  eventClick={(info) => {
-                    const eventId = info.event.id;
-                    router.push(`/admin/events/${eventId}`);
-                  }}
-                  height="auto"
-                  selectable={true}
-                  eventContent={(eventInfo) => (
-                    <EventContent>{eventInfo.event.title}</EventContent>
-                  )}
-                  dayCellContent={(arg) => (
-                    <DayCell>{arg.dayNumberText}</DayCell>
-                  )}
-                  dayCellDidMount={(info) => {
-                    info.el.style.backgroundColor = "#f9f9f9";
-                    info.el.style.border = "1px solid #ccc";
-                  }}
-                />
-              </CalendarBody>
-            </>
-          )}
-        </CalendarContainer>
+        <CalendarWrapper>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-4">
+              <MonthYearDisplay>Event Calendar</MonthYearDisplay>
+              <div className="flex gap-2">
+                <NavigationButton onClick={handlePrevMonth}>
+                  <ChevronLeft className="w-2.5 h-4" />
+                </NavigationButton>
+                <NavigationButton onClick={handleNextMonth}>
+                  <ChevronRight className="w-2.5 h-4" />
+                </NavigationButton>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <CalendarButton variant="outline">Day</CalendarButton>
+              <CalendarButton variant="outline">Week</CalendarButton>
+              <CalendarButton variant="filled">Month</CalendarButton>
+            </div>
+          </div>
+
+          <AddEventButton>
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/d444ba2e-c739-453e-9d83-f2693fcfed1a?placeholderIfAbsent=true&apiKey=7d881e0539ab4a4a95fff82ac7844ccb"
+              alt="Add"
+              className="object-contain shrink-0 my-auto aspect-square stroke-[1px] stroke-red-700 w-[11px]"
+            />
+            Add Events
+          </AddEventButton>
+
+          <CalendarContainer>
+            {loading ? (
+              <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <Spin />
+              </div>
+            ) : (
+              <CalendarGrid>
+                {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(
+                  (day) => (
+                    <DayHeader key={day}>{day}</DayHeader>
+                  ),
+                )}
+
+                {getDaysInMonth(currentDate).map((day, index) => {
+                  const event = getEventForDate(day.date);
+                  return (
+                    <DayCell
+                      key={index}
+                      isToday={isToday(day.date)}
+                      isCurrentMonth={day.isCurrentMonth}
+                    >
+                      {day.date.getDate()}
+                      {event && (
+                        <EventIndicator>
+                          <EventDot />
+                          <EventLabel>
+                            <span className="time">
+                              {new Date(event.event_start).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </span>
+                            <span className="event"> {event.title}</span>
+                          </EventLabel>
+                        </EventIndicator>
+                      )}
+                    </DayCell>
+                  );
+                })}
+              </CalendarGrid>
+            )}
+          </CalendarContainer>
+        </CalendarWrapper>
       </Content>
     </Layout>
   );
