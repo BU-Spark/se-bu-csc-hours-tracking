@@ -18,7 +18,9 @@ export const SummaryContainer = styled.div`
   }
 `;
 
+
 export const SummaryBox = styled.div`
+  min-width: 100px;
   background-color: #fff;
   border-radius: 10px;
   border-style: solid;
@@ -29,26 +31,65 @@ export const SummaryBox = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  width: 150px;
+  margin: 10px;
+  border: 2px solid ${buRed};
+
+  h2 {
+    color: rgba(204, 0, 0, 1);
+    font-size: calc(9px + 2.5vw);
+    margin: 0 10px 0 0;
+  }
+
+  p {
+    font-size: calc(5px + 1.05vw);;
+    color: #000;
+    text-align: right;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 50%;
+    h2 {
+      margin: 0 0 10px 0;
+    }
+    p{
+      text-align: center;
+    }
+  }
+`;
+
+export const SummaryBoxUser = styled.div`
+  width: 20%;
+  background-color: #fff;
+  border-radius: 10px;
+  border-style: solid;
+  border-color: #CC0000;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
   margin: 10px;
 
   border: 2px solid ${buRed};
 
   h2 {
     color: rgba(204, 0, 0, 1);
-    font-size: 2rem;
+    font-size: calc(9px + 2.5vw);
     margin: 0 10px 0 0;
   }
 
   p {
-    font-size: 1rem;
+    font-size: calc(8px + 1vw);;
     color: #000;
     margin: 0;
   }
 
   @media (max-width: 768px) {
     flex-direction: column;
-    width: auto;
+    width: 50%;
     h2 {
       margin: 0 0 10px 0;
     }
