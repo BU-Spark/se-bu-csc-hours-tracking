@@ -4,7 +4,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 import {
   createNewHourSubmission,
   getAllApprovedEventsByUserId,
@@ -23,18 +23,21 @@ import {
   SubmitButton,
   TextArea,
 } from "@/_common/styledDivs";
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
+
 const { Option } = Select;
+
 
 const AddHours: React.FC = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
-  const [hours, setHours] = useState<number | string>();
+  const [hours, setHours] = useState<number>();
   const [feedback, setFeedback] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
 
   useEffect(() => {
     if (event && hours && feedback && description) {
@@ -46,9 +49,12 @@ const AddHours: React.FC = () => {
 
   useEffect(() => {
     const fetchValidEvents = async () => {
-      if (!session?.user.id) return;
+      if (!session?.user?.id) {
+        throw new Error('User ID is not available');
+      }
+      const { id } = await getPersonFromUser(session.user.id);
       const validEvents: Event[] | undefined =
-        await getAllApprovedEventsByUserId(Number(session?.user.id));
+        await getAllApprovedEventsByUserId(id);
       if (!validEvents) return;
 
       setEventOptions(validEvents);
@@ -66,9 +72,13 @@ const AddHours: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!event) return;
+    if (!session?.user?.id) {
+      throw new Error('User ID is not available');
+    }
+    const { id } = await getPersonFromUser(session.user.id);
     const body: CreateNewHourSubmissionParams = {
       eventId: Number(event),
-      userId: Number(session?.user.id),
+      userId: Number(id),
       hours: Number(hours),
       feedback: feedback,
       description: description,

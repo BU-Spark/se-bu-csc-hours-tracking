@@ -1,21 +1,34 @@
 "use client";
 
 import "./CustomSider.css";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, MenuProps, Typography } from "antd";
 import { useRouter, usePathname } from "next/navigation";
 const { Sider } = Layout;
 import Pfp from "../Pfp";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react';
+import { getPersonFromUser } from "@/lib/getPersonFromUser";
 
 const CustomSider: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { session, isSignedIn } = useSession();
+  const [person, setPerson] = useState<any>(null);
+
+  useEffect(() => {
+    if (isSignedIn && session) {
+      const fetchPerson = async () => {
+        const person = await getPersonFromUser(session.user.id);
+        setPerson(person);
+      };
+      fetchPerson();
+    }
+  }, [isSignedIn, session]);
+
   type MenuItem = Required<MenuProps>["items"][number];
 
   const items: MenuItem[] =
-    session?.user.role === "USER"
+    person?.role === "USER"
       ? [
           {
             key: "my_hours",
@@ -38,7 +51,7 @@ const CustomSider: React.FC = () => {
             onClick: () => router.push("/user/settings"),
           },
         ]
-      : session?.user.role === "ADMIN"
+      : person?.role === "ADMIN"
       ? [
           {
             key: "student_hours",
@@ -59,6 +72,34 @@ const CustomSider: React.FC = () => {
             key: "forms",
             label: "Forms",
             onClick: () => router.push("/admin/forms"),
+          },
+        ]
+      : person?.role === "ORGANIZER"
+      ? [
+          {
+            key: "dashboard",
+            label: "Dashboard",
+            onClick: () => router.push("/third-party/dashboard"),
+          },
+          {
+            key: "my_events",
+            label: "My Events",
+            onClick: () => router.push("/third-party/my-events"),
+          },
+          {
+            key: "submissions",
+            label: "Submissions",
+            onClick: () => router.push("/third-party/submissions"),
+          },
+          {
+            key: "pending_hours",
+            label: "Pending Hours",
+            onClick: () => router.push("/third-party/pending-hours"),
+          },
+          {
+            key: "settings",
+            label: "Settings",
+            onClick: () => router.push("/third-party/settings"),
           },
         ]
       : [];
@@ -88,10 +129,25 @@ const CustomSider: React.FC = () => {
     if (pathname.startsWith("/admin/forms")) {
       return "forms";
     }
+    if (pathname.startsWith("/third-party/dashboard")) {
+      return "dashboard";
+    }
+    if (pathname.startsWith("/third-party/my-events")) {
+      return "my_events";
+    }
+    if (pathname.startsWith("/third-party/submissions")) {
+      return "submissions";
+    }
+    if (pathname.startsWith("/third-party/pending-hours")) {
+      return "pending_hours";
+    }
+    if (pathname.startsWith("/third-party/settings")) {
+      return "settings";
+    }
     return "";
   };
 
-  return session?.user?.image ? (
+  return person?.image ? (
     <Sider
       style={{
         background: "white",
@@ -108,13 +164,13 @@ const CustomSider: React.FC = () => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp dimension={"6em"} sessionImage={session.user.image} />
+          <Pfp dimension={"6em"} sessionImage={person.image} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
-              {session?.user.name}
+              {person.name}
             </Typography.Text>
             <br />
-            <Typography.Text>{session?.user.email}</Typography.Text>
+            <Typography.Text>{person.email}</Typography.Text>
           </div>
           <Menu
             style={{

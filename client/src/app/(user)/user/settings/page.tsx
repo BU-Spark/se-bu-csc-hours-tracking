@@ -4,7 +4,7 @@ import "react-phone-input-2/lib/style.css";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { checkIfNewUser, getUserDetails, updateUserDetails } from "./action";
-import { useSession } from "next-auth/react";
+import { useSession } from '@clerk/clerk-react'
 import { useRouter } from "next/navigation";
 import PhoneInput from "react-phone-input-2";
 import Select from "react-select";
@@ -204,7 +204,7 @@ const generateClassYearOptions = () => {
 };
 
 const Settings: React.FC = () => {
-  const { status } = useSession();
+  const { isSignedIn, isLoaded } = useSession();
   const router = useRouter();
   const [isNewUser, setIsNewUser] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -219,7 +219,7 @@ const Settings: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (isSignedIn) {
       const fetchUserStatus = async () => {
         const status = await checkIfNewUser();
         if (status.isNewUser) {
@@ -243,7 +243,7 @@ const Settings: React.FC = () => {
 
       fetchUserStatus();
     }
-  }, [status]);
+  }, [isSignedIn]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -315,7 +315,7 @@ const Settings: React.FC = () => {
     router.push("/user/onboarding");
   };
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return <div>Loading...</div>;
   }
 

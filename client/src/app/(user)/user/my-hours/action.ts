@@ -57,8 +57,7 @@ export const getHourSubmissionsByUserEmail = async (
         eventName: event.title,
         location: event.location,
         date: submission.date_submitted.toString(),
-        reviewer:
-          submission.updated_by_id !== user.id ? reviewerPerson.name : "N/A",
+        reviewer: reviewerPerson.name || "N/A",
         hours: submission.hours,
         description: submission.description,
         organization: organization.name,

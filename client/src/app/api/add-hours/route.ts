@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/prisma';
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@clerk/nextjs/server'
+import { getPersonFromUser } from '@/lib/getPersonFromUser';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { event, hours, feedback, description, editorId } = body;
-    const token = await getToken({ req });
+    const { userId } = await auth()
+    const person = await getPersonFromUser(userId as string);
 
-    if (!token || !token.email) {
+    if (!person || !person.email) {
       console.error("Unauthorized: No token or email found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userEmail = token.email;
+    const userEmail = person.email;
     const user = await prisma.person.findUnique({
       where: { email: userEmail },
     });

@@ -2,7 +2,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getToken } from "next-auth/jwt";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event, HourSubmission } from "@prisma/client";
 import { assert } from "console";
