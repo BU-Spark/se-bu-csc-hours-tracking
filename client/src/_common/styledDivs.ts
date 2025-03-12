@@ -484,11 +484,6 @@ export const EventIndicator = styled.div`
   gap: 4px;
   padding: 4px 8px;
   margin-top: 4px;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.7;
-  }
 `;
 
 export const EventDot = styled.div`

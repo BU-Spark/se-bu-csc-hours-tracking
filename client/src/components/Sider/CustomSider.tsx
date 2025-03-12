@@ -31,6 +31,11 @@ const CustomSider: React.FC = () => {
     person?.role === "USER"
       ? [
           {
+            key: "dashboard",
+            label: "Dashboard",
+            onClick: () => router.push("/user/dashboard"),
+          },
+          {
             key: "my_hours",
             label: "My Hours",
             onClick: () => router.push("/user/my-hours"),

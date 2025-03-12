@@ -160,17 +160,16 @@ function Events() {
         <CalendarWrapper>
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
+              <NavigationButton onClick={handlePrevMonth}>
+                <ChevronLeft className="w-2.5 h-4" />
+              </NavigationButton>
+              <h2>Event Calendar</h2>
               <MonthYearDisplay>
                 {monthYear}
               </MonthYearDisplay>
-              <div className="flex gap-2">
-                <NavigationButton onClick={handlePrevMonth}>
-                  <ChevronLeft className="w-2.5 h-4" />
-                </NavigationButton>
-                <NavigationButton onClick={handleNextMonth}>
-                  <ChevronRight className="w-2.5 h-4" />
-                </NavigationButton>
-              </div>
+              <NavigationButton onClick={handleNextMonth}>
+                <ChevronRight className="w-2.5 h-4" />
+              </NavigationButton>
             </div>
             <div className="flex gap-2">
               <CalendarButton variant="outline">Day</CalendarButton>
