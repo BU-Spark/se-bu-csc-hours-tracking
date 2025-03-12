@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
             router.push("/user/onboarding");
           } else {
             if (person?.role === 'USER') {
-              router.push("/user/dashboard");
+              router.push("/user/my-hours");
             }
             if (person?.role === 'ADMIN') {
               router.push("/admin/student-hours");
