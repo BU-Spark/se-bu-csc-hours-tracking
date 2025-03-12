@@ -1,4 +1,4 @@
-import { FormCode, HourSubmission, Reason, Role, Event } from "@prisma/client";
+import { FormCode, HourSubmission, Reason, Role, Event, Application } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import { Buffer } from "buffer";
 
@@ -83,6 +83,11 @@ export interface Person {
   class?: number;
   affiliation_id?: number;
   image?: string;
+  college?:string;
+  dietary_restrictions?:string;
+  applications:Application[];
+  events:Event[];
+
 }
 
 export interface GroupedEvents {

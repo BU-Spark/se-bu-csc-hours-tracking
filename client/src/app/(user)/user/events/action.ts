@@ -17,6 +17,26 @@ export async function getEvents(): Promise<Event[]> {
   }
 }
 
+export async function getEventsByUserId(userId: number): Promise<Event[]> {
+  try {
+    const events: Event[] = await prisma.event.findMany({
+      where: {
+        applications: {
+          some: {
+            applicant_id: userId
+          }
+        }
+      },
+    });
+    return events;
+  } catch (error) {
+    console.error("Error fetching events for user:", error);
+    return [];
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 // export async function createEvent(eventData: EventInput): Promise<Event> {
 //   try {
 //     const createdEvent = await prisma.event.create({
