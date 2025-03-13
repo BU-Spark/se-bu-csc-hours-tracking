@@ -10,6 +10,7 @@ import { Spin } from "antd";
 import { getHourSubmissionsByUserEmail, getUpcomingHoursByUser } from "../my-hours/action";
 import UserCalendar from "@/components/UserCalendar";
 import styles from './Dashboard.module.css';
+import EventSider from "@/components/Sider/EventSider";
 
 const Dashboard: React.FC = () => {
   const { session, isSignedIn } = useSession();
@@ -158,6 +159,7 @@ const Dashboard: React.FC = () => {
 
         <UserCalendar />
       </section>
+      <EventSider />
     </HeaderOffset>
   );
 };

@@ -1,7 +1,7 @@
 .mainContent {
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: calc(100% - 300px); /* Subtract sidebar width */
+  margin: 0 auto 0 0; /* Align to left instead of center */
   background: #f5f5f5;
 }
 
