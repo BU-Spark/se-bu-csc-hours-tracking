@@ -5,10 +5,11 @@ import { useSession } from '@clerk/clerk-react';
 import { useRouter } from "next/navigation";
 import { checkIfNewUser } from "@/app/(user)/user/settings/action";
 import { getPersonFromUser } from "@/lib/getPersonFromUser";
-import { HeaderOffset, SummaryContainer, SummaryBox } from "@/_common/styledDivs";
+import { HeaderOffset } from "@/_common/styledDivs";
 import { Spin } from "antd";
 import { getHourSubmissionsByUserEmail, getUpcomingHoursByUser } from "../my-hours/action";
 import UserCalendar from "@/components/UserCalendar";
+import styles from './Dashboard.module.css';
 
 const Dashboard: React.FC = () => {
   const { session, isSignedIn } = useSession();
@@ -74,39 +75,89 @@ const Dashboard: React.FC = () => {
 
   return (
     <HeaderOffset>
-      <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
-        Welcome back, {person?.name}!
-      </h1>
-      
-      <SummaryContainer>
-        <SummaryBox>
-          <h2>{stats.approvedHours}</h2>
-          <p>Approved Hours</p>
-        </SummaryBox>
-        <SummaryBox>
-          <h2>{stats.pendingHours}</h2>
-          <p>Pending Hours</p>
-        </SummaryBox>
-        <SummaryBox>
-          <h2>{stats.upcomingHours}</h2>
-          <p>Upcoming Hours</p>
-        </SummaryBox>
-        <SummaryBox>
-          <h2>{stats.totalEvents}</h2>
-          <p>Total Events</p>
-        </SummaryBox>
-      </SummaryContainer>
+      <section className={styles.mainContent}>
+        <header className={styles.header}>
+          <div>
+            <h1 className={styles.greeting}>Hey, {person?.name}</h1>
+            <p className={styles.date}>
+              Today is {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric' 
+              })}
+            </p>
+          </div>
+          <div className={styles.notificationIcon}>
+            <img src="/notification-icon.png" alt="Notifications" />
+          </div>
+        </header>
 
-      <div style={{ marginTop: "2rem", padding: "0 2rem" }}>
+        <div className={styles.featuredCards}>
+          <div className={styles.card}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/a79c10b2df66d06f7d3afd2a1fb0673833d6e9120738075e3f0ec116a0ce9b6b" alt="CSC Programs" className={styles.cardImage} />
+            <div className={styles.cardContent}>
+              <h3 className={styles.cardTitle}>CSC Programs</h3>
+              <a href="#" className={styles.cardLink}>Learn More</a>
+            </div>
+          </div>
+          <div className={styles.card}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/824021eddd5d093bf5256b71a125e5b62b481665715b72c63f8ac770f3fcb06b" alt="Join the CSC" className={styles.cardImage} />
+            <div className={styles.cardContent}>
+              <h3 className={styles.cardTitle}>Join the CSC</h3>
+              <a href="#" className={styles.cardLink}>Learn More</a>
+            </div>
+          </div>
+          <div className={styles.card}>
+            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/b45508b446396513217812dc9ed04a322366668c0644f412be05d0d877cab59b" alt="Newsletter" className={styles.cardImage} />
+            <div className={styles.cardContent}>
+              <h3 className={styles.cardTitle}>Newsletter</h3>
+              <a href="#" className={styles.cardLink}>Sign Up</a>
+            </div>
+          </div>
+        </div>
+
+        <section className={styles.statsSection}>
+          <div className={styles.statsGrid}>
+            <div className={styles.statsCard}>
+              <h3>You Completed</h3>
+              <p className={styles.statValue}>{stats.approvedHours}h</p>
+              <p className={styles.statLabel}>this semester</p>
+            </div>
+            <div className={styles.statsCard}>
+              <h3>You Attended</h3>
+              <p className={styles.statValue}>{stats.totalEvents}</p>
+              <p className={styles.statLabel}>Events this semester</p>
+            </div>
+            <div className={styles.statsCard}>
+              <h3>You Submitted</h3>
+              <p className={styles.statValue}>{stats.pendingHours}</p>
+              <p className={styles.statLabel}>Service Opportunities</p>
+            </div>
+          </div>
+
+          <div className={styles.progressSection}>
+            <h3 className={styles.progressTitle}>Current Progress</h3>
+            <div className={styles.progressCard}>
+              <p className={styles.progressText}>
+                Your are {90 - stats.approvedHours} hours away from your goals for this semester.
+              </p>
+              <div className={styles.progressBarContainer}>
+                <div 
+                  className={styles.progressBar} 
+                  style={{ width: `${(stats.approvedHours / 90) * 100}%` }} 
+                />
+              </div>
+              <div className={styles.progressLabels}>
+                <span>0%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <UserCalendar />
-      </div>
-
-      {/* You can add more sections here like:
-          - Recent activity
-          - Upcoming events
-          - Quick actions
-          - Important announcements
-      */}
+      </section>
     </HeaderOffset>
   );
 };
