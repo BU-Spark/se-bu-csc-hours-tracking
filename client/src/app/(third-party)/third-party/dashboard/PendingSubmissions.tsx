@@ -54,7 +54,7 @@ const PendingSubmissions: React.FC<PendingSubmissionsProps> = ({
               </Link>
             </div>
           </div>
-        ))}
+        ))p
       </div>
     </section>
   );
