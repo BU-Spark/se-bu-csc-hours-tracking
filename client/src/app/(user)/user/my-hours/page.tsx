@@ -41,6 +41,11 @@ const MyHours: React.FC = () => {
   const router = useRouter();
   const { session, isSignedIn } = useSession();
   const [person, setPerson] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (isSignedIn && session) {
