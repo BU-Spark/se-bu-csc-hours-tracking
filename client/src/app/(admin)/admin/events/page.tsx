@@ -1,35 +1,42 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
-import { Button, Layout, Spin } from "antd";
+import { Layout, Spin } from "antd";
 import { Content } from "antd/es/layout/layout";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; 
-import {
-  getApplicationsByUserId,
-  getEvents,
-  getEventsByApplicationEventIds,
-} from "@/app/(user)/user/events/action";
-import CardGrid from "@/components/CardGrid/CardGrid";
-
+import { getEvents } from "@/app/(user)/user/events/action";
 import {
   AddHoursButton,
   PlusCircle,
   Rectangle,
   SummaryBox,
   SummaryContainer,
+  CalendarContainer,
+  CalendarHeader,
+  CalendarButton,
+  DayCell,
+  DayHeader,
+  CalendarGrid,
+  EventIndicator,
+  EventDot,
+  EventLabel,
+  CalendarWrapper,
+  MonthYearDisplay,
+  NavigationButton,
 } from "@/_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
-import DateFilter from "./DataFilter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [dateFilter, setDateFilter] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(true);
-  const [date, setDate] = useState(new Date());
   const router = useRouter();
-  
+
+  const monthYear = currentDate.toLocaleString('default', { 
+    month: 'long', 
+    year: 'numeric' 
+  });
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -39,11 +46,7 @@ function Events() {
     };
     setLoading(true);
     fetchEvents();
-  }, [dateFilter]); // Fetch events whenever dateFilter changes
-
-  const handleSetDateFilter = (date: Date) => {
-    setDateFilter(date);
-  };
+  }, []);
 
   const today = new Date();
   const isToday = (date: Date) =>
@@ -52,11 +55,74 @@ function Events() {
     date.getFullYear() === today.getFullYear();
 
   const eventsToday = events.filter((event) =>
-    isToday(new Date(event.event_start))
+    isToday(new Date(event.event_start)),
   );
   const upcomingEvents = events.filter(
-    (event) => new Date(event.event_start) > today
+    (event) => new Date(event.event_start) > today,
   );
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+  
+    // Adjust Sunday (0) to align with Monday as first day
+    let firstDayIndex = firstDayOfMonth.getDay();
+    firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+  
+    const days = [];
+  
+    // Fill previous month days for correct alignment
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = firstDayIndex; i > 0; i--) {
+      days.push({
+        date: new Date(year, month - 1, prevMonthLastDay - i + 1),
+        isCurrentMonth: false,
+      });
+    }
+  
+    // Fill current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({
+        date: new Date(year, month, i),
+        isCurrentMonth: true,
+      });
+    }
+  
+    // Fill next month days to ensure exactly 42 cells (6 rows)
+    while (days.length < 42) {
+      days.push({
+        date: new Date(year, month + 1, days.length - daysInMonth - firstDayIndex + 1),
+        isCurrentMonth: false,
+      });
+    }
+  
+    return days;
+  };
+  
+  
+  
+
+  const handlePrevMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1),
+    );
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1),
+    );
+  };
+
+  const getEventForDate = (date: Date) => {
+    return events.find(
+      (event) =>
+        new Date(event.event_start).toDateString() === date.toDateString(),
+    );
+  };
 
   return (
     <Layout
@@ -77,6 +143,7 @@ function Events() {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </div>
+
         <SummaryContainer
           style={{ alignItems: "start", justifyContent: "start" }}
         >
@@ -90,44 +157,74 @@ function Events() {
           </SummaryBox>
         </SummaryContainer>
 
-        {/* Static Calendar */}
-        <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <h2>Event Calendar</h2>
-          <Calendar
-            onChange={(value) => {
-              if (value instanceof Date) {
-                setDate(value);
-              }
-            }}
-            value={date}
-          />
-        </div>
-
-
-        <DateFilter setDateFilter={handleSetDateFilter} />
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              top: 0,
-              bottom: 0,
-            }}
-          >
-            <Spin />
+        <CalendarWrapper>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-4">
+              <MonthYearDisplay>
+                {monthYear}
+              </MonthYearDisplay>
+              <div className="flex gap-2">
+                <NavigationButton onClick={handlePrevMonth}>
+                  <ChevronLeft className="w-2.5 h-4" />
+                </NavigationButton>
+                <NavigationButton onClick={handleNextMonth}>
+                  <ChevronRight className="w-2.5 h-4" />
+                </NavigationButton>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <CalendarButton variant="outline">Day</CalendarButton>
+              <CalendarButton variant="outline">Week</CalendarButton>
+              <CalendarButton variant="filled">Month</CalendarButton>
+            </div>
           </div>
-        ) : events ? (
-          <CardGrid
-            events={events}
-            filter={dateFilter}
-            myEvents={undefined}
-            view={"admin"}
-            pastEvents={true}
-          />
-        ) : (
-          <p>loading</p>
-        )}
+
+          <CalendarContainer>
+            {loading ? (
+              <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <Spin />
+              </div>
+            ) : (
+              <CalendarGrid>
+                {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(
+                  (day) => (
+                    <DayHeader key={day}>{day}</DayHeader>
+                  ),
+                )}
+
+                {getDaysInMonth(currentDate).map((day, index) => {
+                  const event = getEventForDate(day.date);
+                  return (
+                    <DayCell
+                      key={index}
+                      isToday={isToday(day.date)}
+                      isCurrentMonth={day.isCurrentMonth}
+                    >
+                      {day.date.getDate()}
+                      {event && (
+                        <EventIndicator
+                          onClick={() => router.push(`/admin/events/${event.id}`)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <EventDot />
+                          <EventLabel>
+                            <span className="time">
+                              {new Date(event.event_start).toLocaleTimeString([], {
+                                hour: "numeric",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            <span className="event"> {event.title}</span>
+                          </EventLabel>
+                        </EventIndicator>
+                      )}
+                    </DayCell>
+                  );
+                })}
+              </CalendarGrid>
+            )}
+          </CalendarContainer>
+        </CalendarWrapper>
       </Content>
     </Layout>
   );
