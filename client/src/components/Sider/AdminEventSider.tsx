@@ -7,6 +7,7 @@ import { Feedback } from "@/interfaces/interfaces";
 import { getFeedback } from "@/app/(admin)/admin/events/[events_id]/action";
 import { buRed } from "@/_common/styles";
 import Link from "next/link";
+import SemesterFilter from "@/components/SemesterFilter/SemesterFilter";
 
 function AdminEventSider() {
   //session and path vars
@@ -16,13 +17,14 @@ function AdminEventSider() {
   //useState variables
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [semester, setSemester] = useState<string>("");
 
   useEffect(() => {
     if (!isDisplayed) return;
     const fetchFeedback = async () => {
       setLoading(true);
       try {
-        const response = await getFeedback();
+        const response = await getFeedback(semester);
         if (!response) {
           console.error("bad response from getFeedback");
           return;
@@ -37,7 +39,7 @@ function AdminEventSider() {
       }
     };
     fetchFeedback();
-  }, [isDisplayed]);
+  }, [isDisplayed, semester]);
 
   const FeedbackBubble = ({ feedback }: { feedback: Feedback }) => {
     return (
@@ -150,6 +152,7 @@ function AdminEventSider() {
         >
           Feedback
         </p>
+        <SemesterFilter setSemester={setSemester} />
         <div style={{ fontWeight: 200, fontSize: "medium" }}>
           {loading ? (
             <p>Loading feedback...</p>

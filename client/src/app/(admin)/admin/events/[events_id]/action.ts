@@ -170,7 +170,7 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
   }
 };
 
-export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+export const getFeedback = async (semester: string): Promise<Feedback[] | undefined> => {
   try {
     const rawFeedback = await prisma.hourSubmission.findMany({
       select: {
@@ -189,7 +189,24 @@ export const getFeedback = async (): Promise<Feedback[] | undefined> => {
       console.error("erroring retrieving feedback");
       return;
     }
-    const feedback: Feedback[] = rawFeedback.map((item) => ({
+    const feedback: Feedback[] = rawFeedback
+    .filter((item) => {
+      const date = new Date(item.date_submitted);
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      let itemSemester = "";
+
+      if (month >= 1 && month <= 5) {
+        itemSemester = `Spring ${year}`;
+      } else if (month >= 6 && month <= 8) {
+        itemSemester = `Summer ${year}`;
+      } else if (month >= 9 && month <= 12) {
+        itemSemester = `Fall ${year}`;
+      }
+
+      return itemSemester === semester; 
+    })
+    .map((item) => ({
       id: item.id || 1,
       author: { id: item.volunteer.id, name: item.volunteer.name }, // Assuming volunteer matches Person type
       event: item.event, // Assuming event matches Event type
