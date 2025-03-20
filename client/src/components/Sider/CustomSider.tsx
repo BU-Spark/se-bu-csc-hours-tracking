@@ -110,6 +110,9 @@ const CustomSider: React.FC = () => {
       : [];
 
   const getSelectedKey = () => {
+    if (pathname.startsWith("/user/dashboard")) {
+      return "dashboard";
+    }
     if (pathname.startsWith("/user/my-hours")) {
       return "my_hours";
     }
