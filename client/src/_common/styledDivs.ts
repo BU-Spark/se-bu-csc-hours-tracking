@@ -81,7 +81,8 @@ export const SummaryBoxUser = styled.div`
   }
 
   p {
-    font-size: calc(8px + 1vw);;
+    font-size: calc(8px + 1vw);
+    text-align: right;
     color: #000;
     margin: 0;
   }
