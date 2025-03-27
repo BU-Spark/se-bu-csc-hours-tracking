@@ -3,6 +3,7 @@ import PendingCori from '../dashboard/PendingCori';
 import FeedbackCard from '../dashboard/FeedbackCard';
 import prisma from '@/lib/prisma';
 import VolunteerChart from './VolunteerChart';
+import VolunteerGraph from './VolunteerGraph'; 
 
 export default async function Dashboard() {
   const people = await prisma.person.findMany({
@@ -146,6 +147,7 @@ export default async function Dashboard() {
           <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
             # Of Student Volunteers
           </strong>
+          <VolunteerGraph/>
         </div>
       </div>
     </>
