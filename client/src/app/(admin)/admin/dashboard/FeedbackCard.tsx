@@ -13,12 +13,14 @@ export default function FeedbackCard({ title, date, description, imageLink, auth
   return (
     <div style={{ marginTop: '1em', maxWidth: '30em' }}>
       <Card
-        style={{
+        style ={{
           backgroundColor: '#EBEBEB',
           borderRadius: '1rem',
         }}
-        bodyStyle={{
-          padding: '0.75rem 1rem 0.75rem 1rem',
+        styles={{
+          body : {
+            padding: '0.75rem 1rem 0.75rem 1rem',
+          }
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>

@@ -58,20 +58,19 @@ export default function VolunteerChart() {
         </div>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ marginTop: '1rem' }}>
           <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#CC0000' }}>302</div>
           <div style={{ textDecoration: 'underline', color: 'black', fontSize: '0.95rem' }}>total hrs</div>
         </div>
-
-        <div style={{ height: '10rem', position: 'relative' }}>
+        <div style={{ height: '16.5rem', position: 'relative' }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart data={data} margin = {{ bottom : 24}} >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="name"
-                tick={{ fill: 'white', fontSize: '0.75rem' }}
-                axisLine={{ stroke: 'transparent' }}
+                tick={{ fill: 'black', fontSize: '0.75rem' }}
+                axisLine={{ stroke: 'transparent', color : 'black' }}
                 tickLine={false}
               />
               <YAxis hide />
