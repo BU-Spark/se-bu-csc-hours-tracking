@@ -1,9 +1,9 @@
-import PendingCard from '../dashboard/PendingCard';
-import PendingCori from '../dashboard/PendingCori';
-import FeedbackCard from '../dashboard/FeedbackCard';
+import PendingCard from './components/PendingCard';
+import PendingCori from './components/PendingCori';
+import FeedbackCard from './components/FeedbackCard';
 import prisma from '@/lib/prisma';
-import VolunteerChart from './VolunteerChart';
-import VolunteerGraph from './VolunteerGraph'; 
+import VolunteerChart from './components/VolunteerChart';
+import VolunteerGraph from './components/VolunteerGraph'; 
 
 export default async function Dashboard() {
   const people = await prisma.person.findMany({
