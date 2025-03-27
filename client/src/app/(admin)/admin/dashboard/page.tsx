@@ -1,89 +1,153 @@
+import PendingCard from '../dashboard/PendingCard';
+import PendingCori from '../dashboard/PendingCori';
+import FeedbackCard from '../dashboard/FeedbackCard';
+import prisma from '@/lib/prisma';
+import VolunteerChart from './VolunteerChart';
 
-import PendingCard from '../dashboard/PendingCard'
-import PendingCori from '../dashboard/PendingCori'
-import {Card} from 'antd'
-import FeedbackCard from '../dashboard/FeedbackCard'; 
-import prisma from '@/lib/prisma'
-import { NoEncryption } from '@mui/icons-material';
+export default async function Dashboard() {
+  const people = await prisma.person.findMany({
+    take: 4,
+    where: {
+      role: 'USER',
+    },
+    include: {
+      affiliation: true,
+    },
+  });
 
-export default async function Dashboard(){
-    const people = await prisma.person.findMany({
-        take: 4,
-        where : {
-            role : 'USER', 
-        }, include : {
-            affiliation : true,
+  const mockEventData = [
+    {
+      title: 'Student Food Rescue',
+      date: '03/25/2024',
+      description:
+        '“I really loved my interaction with Chef Pam. She provided us very clear guidelines to follow and to communicate with the people who came to the food pantry”',
+      imageLink: 'https://picsum.photos/400/200',
+      authorImg: 'https://i.pravatar.cc/40?img=',
+    },
+    {
+      title: 'Alternate service break',
+      date: '03/25/2024',
+      description:
+        '“I really loved my interaction with Chef Pam. She provided us very clear guidelines to follow and to communicate with the people who came to the food pantry”',
+      imageLink: 'https://picsum.photos/400/200',
+      authorImg: 'https://i.pravatar.cc/40?img=',
+    },
+  ];
 
-        }
-    }); 
-    // const people = [
-    //     {name : "Sam Crissman", year : "CAS 26'", category: "SFR", hours : 4, date: "03/25/2024", dateRequested : "03/25/2024"}, 
-    //     {name : "Alex Smith", year : "CAS 25'", category : "SFR", hours : 5, date : "03/26/2924", dateRequested : "03/25/2024"}, 
-    //     {name : "Jamie Doe", year : "CAS 27'",category: "SFR", hours : 3, date : "03/24/2024",dateRequested : "03/25/2024"} 
-    // ]
+  return (
+    <>
+      <h1 style={{ fontSize: 'clamp(1.2rem, 2vw, 2rem)' }}>Dashboard</h1>
 
-    const mockEventData = [
-        {title : "Student Food Rescue" , date : "03/25/2024", description : "“I really loved my interaction with Chef Pam. She provided us very clear guidelines to follow and to communicate with the people who came to the food pantry”", 
-            imageLink : "https://picsum.photos/400/200", authorImg : "https://i.pravatar.cc/40?img="},
-            {title : "Alternate service break" , date : "03/25/2024", description : "“I really loved my interaction with Chef Pam. She provided us very clear guidelines to follow and to communicate with the people who came to the food pantry”", 
-                imageLink : "https://picsum.photos/400/200", authorImg : "https://i.pravatar.cc/40?img="}
-    ]
-    return(
+      <div style={{ marginTop: '4em', display: 'flex' }}>
+        <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
+          Pending Hour Approvals
+        </strong>
+        <button
+          style={{
+            background: 'none',
+            border: 'none',
+            marginLeft: 'auto',
+            fontWeight: 'bold',
+            color: '#CC0000',
+            cursor: 'pointer',
+          }}
+        >
+          View All →
+        </button>
+      </div>
 
-        <>
-        <h1 style={{ fontSize: "clamp(1.2rem, 2vw, 2rem)" }}>Dashboard</h1>
-
-        <div style = {{marginTop : '4em', display: 'flex'}}>
-            <strong style={{ fontSize: "clamp(1rem, 1.5vw, 1.3rem)" }}>
-            Pending Hour Approvals
-            </strong>
-            <button style = {{marginLeft : "65em"}}>
-                View All →
-            </button>
-        </div>
-        <div style ={{display:'flex', flexDirection : 'row', gap : '15px'}}>
-            {people.map((person, index) => (
-                <PendingCard key = {index} classYear = {person.class || 2026} college = {person.college || "CAS"} name = {person.name === "Please Update Your Name" ? "John Doe" : person.name} category = {person.affiliation?.abbreviation || "N/A"} hours = {4} date = {"03/25/2024"}
-                profilePic = {person.image || ""}/>
-            ))
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+        {people.map((person, index) => (
+          <PendingCard
+            key={person.id}
+            classYear={person.class || 2026}
+            college={person.college || 'CAS'}
+            name={
+              person.name === 'Please Update Your Name'
+                ? 'John Doe'
+                : person.name
             }
+            category={person.affiliation?.abbreviation || 'N/A'}
+            hours={4}
+            date={'03/25/2024'}
+            profilePic={person.image || ''}
+          />
+        ))}
+      </div>
+
+      <div style={{ marginTop: '2.5em', display : 'flex' }}>
+        <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
+          Pending CORI / Volunteer Agreement Approvals
+        </strong>
+        <button
+          style={{
+            background: 'none',
+            border: 'none',
+            marginLeft: 'auto',
+            fontWeight: 'bold',
+            color: '#CC0000',
+            cursor: 'pointer',
+          }}
+        >
+          View All →
+        </button>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+          {people.map((person, index) => (
+            <PendingCori
+              key={person.id + '-cori'}
+              classYear={person.class || 2026}
+              college={person.college || 'CAS'}
+              name={
+                person.name === 'Please Update Your Name'
+                  ? 'John Doe'
+                  : person.name
+              }
+              category={person.affiliation?.abbreviation || 'N/A'}
+              dateRequested={'03/25/2024'}
+              profilePic={`https://i.pravatar.cc/40?img=${index + 1}`}
+            />
+          ))}
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          marginTop: '2.5em',
+          gap: '3em',
+        }}
+      >
+        <div style={{ maxWidth: '25rem' }}>
+          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
+            Event Feedback
+          </strong>
+          {mockEventData.map((event, index) => (
+            <FeedbackCard
+              key={index}
+              title={event.title}
+              date={event.date}
+              description={event.description}
+              imageLink={event.imageLink}
+              authorImg={event.authorImg + (index + 1)}
+            />
+          ))}
         </div>
 
-         <div style = {{marginTop : '3em'}}>
-            <strong style={{ fontSize: "clamp(1rem, 1.5vw, 1.3rem)" }}>Pending CORI / Volunteer Agreement Approvals</strong>
-            <div style = {{display : 'flex', flexDirection : 'row', gap : '15px'}}>
-            {people.map((person, index) => (
-                <PendingCori key = {index} classYear = {person.class || 2026} college = {person.college || "CAS"} name = {person.name === "Please Update Your Name" ? "John Doe" : person.name} category = {person.affiliation?.abbreviation || "N/A"} dateRequested = {"03/25/2024"}
-                profilePic = {"https://i.pravatar.cc/40?img=" + (index + 1)}/>
-            ))
-            }
-            </div>
-        </div> 
-        
-        <div style = {{display:'flex', flexDirection:'row', marginTop : '4em', gap :'15em'}}>
-            <div>
-                <strong style = {{fontSize: "clamp(1rem, 1.5vw, 1.3rem)"}}>Event Feedback</strong>
-                {mockEventData.map((event, index) => (
-                    <FeedbackCard key = {index} title = {event.title} date = {event.date} description = {event.description} imageLink = {event.imageLink} authorImg = {event.authorImg + (index + 1)}/>
-                ))}
-            </div>
+        <div>
+          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
+            Student Volunteer Hours
+          </strong>
 
-
-            <div>
-                <strong style = {{fontSize: "clamp(1rem, 1.5vw, 1.3rem)"}}>Student Volunteer Hours</strong>
-            </div>
-
-            <div>
-                <strong style = {{fontSize: "clamp(1rem, 1.5vw, 1.3rem)"}}># Of Student Volunteers</strong>
-            </div>
-
-
-
-
+          <VolunteerChart/>
         </div>
 
-
-
-        </>
-    );
+        <div>
+          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
+            # Of Student Volunteers
+          </strong>
+        </div>
+      </div>
+    </>
+  );
 }

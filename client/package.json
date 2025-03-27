@@ -39,6 +39,7 @@
     "react-phone-input-2": "^2.15.1",
     "react-select": "^5.8.0",
     "react-use-downloader": "^1.2.8",
+    "recharts": "^2.15.1",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {
