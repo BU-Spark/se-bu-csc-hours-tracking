@@ -160,8 +160,7 @@ const CustomSider: React.FC = () => {
       style={{
         background: "white",
         marginTop: "0em",
-        marginRight: "0em",
-        overflow: "hidden",
+        overflow: "auto",
         height: "100vh",
         position: "fixed",
         zIndex: 2,
@@ -169,7 +168,6 @@ const CustomSider: React.FC = () => {
         top: 0,
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
         minWidth: "30rem !important",
-        margin: "0px",
       }}
     >
       <div className="sider-content">
@@ -186,7 +184,7 @@ const CustomSider: React.FC = () => {
             style={{
               marginTop: "3em",
               fontSize: "large",
-              width: "120%",
+              width: "100%",
             }}
             items={items}
             selectedKeys={[getSelectedKey()]}
