@@ -3,8 +3,8 @@
 }
 
 .sider-content {
-  padding: 0.5em 0.5em;
-  margin: 3em 0.5em;
+  padding: 0.5em 0;
+  margin: 3em 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,6 +12,7 @@
 }
 
 .sider-profile {
+  width: 100%;
   margin-top: 3em;
   display: flex;
   flex-direction: column;
@@ -35,14 +36,14 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  width: 100% !important;
   border-radius: 0 !important;
-  width: 140% !important;  /* Ensure the menu takes full width */
 }
 
 .custom-menu .ant-menu-item {
   display: flex;
   justify-content: center;
-  width: 120%;  /* Ensure each menu item takes full width */
+  width: 100%;  /* Ensure each menu item takes full width */
   border-radius: 0 !important;
   padding: 1em 1em;  /* Add padding for better spacing */
   font-family: 'Inter', sans-serif !important;
@@ -60,7 +61,7 @@
 
 .ant-menu-light.ant-menu-root.ant-menu-inline {
   border-inline-end: none !important;
-  width: 130%;  /* Ensure the inline menu takes full width */
+  width: 100%;  /* Ensure the inline menu takes full width */
   padding: 0;
 }
 
