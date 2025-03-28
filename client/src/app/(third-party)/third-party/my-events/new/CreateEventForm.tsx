@@ -413,7 +413,13 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 							getValueFromEvent={(e) => e.fileList}
 							rules={[{ required: true, message: "Please upload an image" }]}
 						>
-							<Upload listType="picture" beforeUpload={() => false}>
+							<Upload listType="picture" beforeUpload={(file) => {
+								const isBelow2MB = file.size / 1024 / 1024 < 2; // Check if file size is below 2MB
+								if (!isBelow2MB) {
+								message.error("Image must be smaller than 2MB!");
+								}
+								return isBelow2MB || Upload.LIST_IGNORE;
+							}}>
 								<StyledButton icon={<UploadOutlined />}>
 									Click to upload
 								</StyledButton>
