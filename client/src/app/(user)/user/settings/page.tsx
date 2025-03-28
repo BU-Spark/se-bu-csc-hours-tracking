@@ -342,6 +342,23 @@ const Settings: React.FC = () => {
       )}
       <form onSubmit={handleSubmit}>
         <Label>
+          Name <Asterisk>*</Asterisk>
+          {formSubmitted && !userName && (
+              <ErrorMessage>BU ID is required</ErrorMessage>
+          )}
+        </Label>
+        <Input
+            type="text"
+            placeholder="Your Name"
+            value={userName}
+            maxLength={100}
+            onChange={(e) => {
+              setUserName(e.target.value);
+              handleInputChange();
+            }}
+            required
+        />
+        <Label>
           Phone Number<Asterisk>*</Asterisk>
           {formSubmitted && !phoneNumber && (
             <ErrorMessage>Phone number is required</ErrorMessage>
@@ -361,22 +378,7 @@ const Settings: React.FC = () => {
           }}
           containerStyle={{ marginBottom: "20px" }}
         />
-        <Label>
-          Name <Asterisk>*</Asterisk>
-          {formSubmitted && !userName && (
-              <ErrorMessage>BU ID is required</ErrorMessage>
-          )}
-        </Label>
-        <Input
-            type="text"
-            placeholder="Your Name"
-            value={userName}
-            onChange={(e) => {
-              setUserName(e.target.value);
-              handleInputChange();
-            }}
-            required
-        />
+
         <Label>
           BU ID<Asterisk>*</Asterisk>
           {formSubmitted && !buId && (
