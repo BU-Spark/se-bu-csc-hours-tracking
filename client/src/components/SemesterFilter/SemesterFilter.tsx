@@ -8,7 +8,7 @@ interface SemesterFilterProps {
 }
 
 const SemesterFilter: React.FC<SemesterFilterProps> = ({ setSemester }) => {
-  const [selectedSemester, setSelectedSemester] = useState<string>("");
+  const [selectedSemester, setSelectedSemester] = useState<string>(null);
 
   const handleChange = (value: string) => {
     setSelectedSemester(value);
@@ -16,15 +16,33 @@ const SemesterFilter: React.FC<SemesterFilterProps> = ({ setSemester }) => {
   };
 
   return (
-    <Select
-      value={selectedSemester}
-      onChange={handleChange}
-      style={{ width: 200 }}
-      placeholder="Select Semester"
+    <div
+    style={{
+      width: "100%",
+      marginBottom: "1rem"
+    }}
     >
-      <Option value="Spring 2024">Spring 2024</Option>
-      <Option value="Fall 2024">Fall 2024</Option>
-    </Select>
+      <Select
+        value={selectedSemester}
+        onChange={handleChange}
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "transparent",
+          border: "none",
+          boxShadow: "none",
+          color: "inherit",
+        }}
+        dropdownStyle={{
+          backgroundColor: "#f0f0f0",
+        }}
+        placeholder="Select Semester"
+        allowClear
+      >
+        <Option value="Spring 2024">Spring 2024</Option>
+        <Option value="Fall 2024">Fall 2024</Option>
+      </Select>
+    </div>
   );
 };
 
