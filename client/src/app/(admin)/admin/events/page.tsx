@@ -1,30 +1,35 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Event } from "@prisma/client";
-import { Button, Layout, Spin } from "antd";
+import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
-import {
-  getApplicationsByUserId,
-  getEvents,
-  getEventsByApplicationEventIds,
-} from "@/app/(user)/user/events/action";
-import CardGrid from "@/components/CardGrid/CardGrid";
+import { getEvents } from "@/app/(user)/user/events/action";
 import {
   AddHoursButton,
   PlusCircle,
   Rectangle,
   SummaryBox,
   SummaryContainer,
+  CalendarWrapper,
+  MonthYearDisplay,
+  NavigationButton,
+  CalendarButton,
 } from "@/_common/styledDivs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useRouter } from "next/navigation";
-import DateFilter from "./DataFilter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Calendar from "@/components/Calendar";
 
 function Events() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [dateFilter, setDateFilter] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+
+  const monthYear = currentDate.toLocaleString('default', { 
+    month: 'long', 
+    year: 'numeric' 
+  });
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -34,11 +39,7 @@ function Events() {
     };
     setLoading(true);
     fetchEvents();
-  }, [dateFilter]); // Fetch events whenever dateFilter changes
-
-  const handleSetDateFilter = (date: Date) => {
-    setDateFilter(date);
-  };
+  }, []);
 
   const today = new Date();
   const isToday = (date: Date) =>
@@ -52,6 +53,14 @@ function Events() {
   const upcomingEvents = events.filter(
     (event) => new Date(event.event_start) > today
   );
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+  };
 
   return (
     <Layout
@@ -72,9 +81,8 @@ function Events() {
             <Rectangle>Create Event</Rectangle>
           </AddHoursButton>
         </div>
-        <SummaryContainer
-          style={{ alignItems: "start", justifyContent: "start" }}
-        >
+
+        <SummaryContainer style={{ alignItems: "start", justifyContent: "start" }}>
           <SummaryBox>
             <h2>{eventsToday.length}</h2>
             <p>Events Today</p>
@@ -84,30 +92,34 @@ function Events() {
             <p>Upcoming Events</p>
           </SummaryBox>
         </SummaryContainer>
-        <DateFilter setDateFilter={handleSetDateFilter} />
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              top: 0,
-              bottom: 0,
-            }}
-          >
-            <Spin />
+
+        <CalendarWrapper>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-4">
+              <MonthYearDisplay>{monthYear}</MonthYearDisplay>
+              <div className="flex gap-2">
+                <NavigationButton onClick={handlePrevMonth}>
+                  <ChevronLeft className="w-2.5 h-4" />
+                </NavigationButton>
+                <NavigationButton onClick={handleNextMonth}>
+                  <ChevronRight className="w-2.5 h-4" />
+                </NavigationButton>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <CalendarButton variant="outline">Day</CalendarButton>
+              <CalendarButton variant="outline">Week</CalendarButton>
+              <CalendarButton variant="filled">Month</CalendarButton>
+            </div>
           </div>
-        ) : events ? (
-          <CardGrid
-            events={events}
-            filter={dateFilter}
-            myEvents={undefined}
-            view={"admin"}
-            pastEvents={true}
+
+          <Calendar 
+            events={events} 
+            loading={loading} 
+            currentDate={currentDate}
+            onEventClick={(event) => router.push(`/admin/events/${event.id}`)}
           />
-        ) : (
-          <p>loading</p>
-        )}
+        </CalendarWrapper>
       </Content>
     </Layout>
   );

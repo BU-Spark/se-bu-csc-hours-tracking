@@ -81,7 +81,10 @@ const StudentHours: React.FC = () => {
             width: "100%",
           }}
         >
-          <SummaryBox>
+          <SummaryBox style={{
+              marginLeft: "20px",
+              justifyContent: "center",
+          }}>
             <h2>
               {pendingSubmissions ? pendingSubmissions.length.toString() : 0}
             </h2>

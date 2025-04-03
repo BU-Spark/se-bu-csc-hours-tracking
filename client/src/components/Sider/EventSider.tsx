@@ -19,7 +19,7 @@ function EventSider() {
   //session and path vars
   const path = usePathname();
   const { session, isSignedIn } = useSession();
-  const isDisplayed = path === "/user/events";
+  const isDisplayed = path === "/user/events" || path === "/user/dashboard";
 
   //useState variables
   const [myApplications, setMyApplications] = useState<Application[]>();
@@ -164,18 +164,19 @@ function EventSider() {
 
   return isDisplayed ? (
     <Sider
-      width="20%"
+      width="300px"
       style={{
         background: "white",
-        marginTop: "0em",
+       // marginTop: "0em",
         overflow: "auto",
         height: "100vh",
         position: "fixed",
         zIndex: 2,
         right: 0,
         top: 0,
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         paddingLeft: "1rem",
+        marginTop: "70px",
       }}
     >
       <div

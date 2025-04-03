@@ -31,6 +31,11 @@ const CustomSider: React.FC = () => {
     person?.role === "USER"
       ? [
           {
+            key: "dashboard",
+            label: "Dashboard",
+            onClick: () => router.push("/user/dashboard"),
+          },
+          {
             key: "my_hours",
             label: "My Hours",
             onClick: () => router.push("/user/my-hours"),
@@ -110,6 +115,9 @@ const CustomSider: React.FC = () => {
       : [];
 
   const getSelectedKey = () => {
+    if (pathname.startsWith("/user/dashboard")) {
+      return "dashboard";
+    }
     if (pathname.startsWith("/user/my-hours")) {
       return "my_hours";
     }

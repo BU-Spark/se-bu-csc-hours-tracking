@@ -1,6 +1,6 @@
 import { InputNumber, Upload } from "antd";
 import styled from "styled-components";
-import {buRed} from './styles';
+import { buRed } from "./styles";
 
 export const HeaderOffset = styled.div`
   margin-top: 70px;
@@ -18,7 +18,9 @@ export const SummaryContainer = styled.div`
   }
 `;
 
+
 export const SummaryBox = styled.div`
+  min-width: 100px;
   background-color: #fff;
   border-radius: 10px;
   border-style: solid;
@@ -29,26 +31,65 @@ export const SummaryBox = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  width: 150px;
   margin: 10px;
-
   border: 2px solid ${buRed};
 
   h2 {
     color: rgba(204, 0, 0, 1);
-    font-size: 2rem;
+    font-size: calc(9px + 2.5vw);
     margin: 0 10px 0 0;
   }
 
   p {
-    font-size: 1rem;
+    font-size: calc(5px + 1.05vw);;
+    color: #000;
+    text-align: right;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 50%;
+    h2 {
+      margin: 0 0 10px 0;
+    }
+    p{
+      text-align: center;
+    }
+  }
+`;
+
+export const SummaryBoxUser = styled.div`
+  width: 20%;
+  background-color: #fff;
+  border-radius: 10px;
+  border-style: solid;
+  border-color: #cc0000;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  border: 2px solid ${buRed};
+
+  h2 {
+    color: rgba(204, 0, 0, 1);
+    font-size: calc(9px + 2.5vw);
+    margin: 0 10px 0 0;
+  }
+
+  p {
+    font-size: calc(8px + 1vw);
+    text-align: right;
     color: #000;
     margin: 0;
   }
 
   @media (max-width: 768px) {
     flex-direction: column;
-    width: auto;
+    width: 50%;
     h2 {
       margin: 0 0 10px 0;
     }
@@ -364,4 +405,173 @@ export const SubmitButton = styled.button`
 
 export const FileUpload = styled(Upload)`
   ${CommonInputStyle}
+`;
+
+// Updated Calendar Components
+export const CalendarContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  max-width: full;
+  width: 656px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden; /* This ensures content respects rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+export const CalendarHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 1rem;
+`;
+
+export const CalendarButton = styled.button<{ variant?: "outline" | "filled" }>`
+  padding: 12px 36px;
+  border: 1px solid ${buRed};
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  ${(props) =>
+    props.variant === "filled"
+      ? `
+    background-color: ${buRed};
+    color: white;
+  `
+      : `
+    background-color: white;
+    color: ${buRed};
+  `}
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export const NavigationButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 2.5px;
+    height: 15px;
+  }
+`;
+
+export const DayHeader = styled.div`
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 0;
+  background-color: #D32F2F;
+  color: white;
+  width: 100%; /* Forces headers to fill the column */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:first-child {
+    border-top-left-radius: 10px;
+  }
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
+`;
+
+export const DayCell = styled.div<{ isToday?: boolean; isCurrentMonth?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px;
+  min-height: 80px; /* Ensures equal height */
+  width: 100%; /* Prevents cell shrinking */
+  font-size: 16px;
+  border: none; /* Remove unintended borders */
+  background: ${(props) => (props.isCurrentMonth ? "#F8F9FA" : "#E0E0E0")}; /* Match colors */
+
+  ${(props) =>
+    props.isToday &&
+    `
+    position: relative;
+    color: white;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 26px;
+      height: 26px;
+      background-color: #D32F2F;
+      border-radius: 50%;
+      z-index: -1;
+    }
+  `}
+`;
+
+export const EventIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  margin-top: 4px;
+`;
+
+export const EventDot = styled.div`
+  width: 10px;
+  height: 10px;
+  background-color: #40e0d0;
+  border-radius: 50%;
+`;
+
+export const EventLabel = styled.span`
+  font-size: 12px;
+  color: #1a1a1a;
+
+  .time {
+    font-weight: normal;
+  }
+
+  .event {
+    font-weight: 600;
+  }
+`;
+
+export const CalendarGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0px;
+  width: 100%;
+  min-height: 500px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-radius: 0 0 10px 10px; /* Round bottom corners */
+  overflow: hidden; /* Ensure child elements respect border radius */
+`;
+
+export const CalendarWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const MonthYearDisplay = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+  color: #1a1a1a;
 `;

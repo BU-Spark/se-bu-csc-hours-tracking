@@ -17,6 +17,7 @@ import {
   HeaderOffset,
   SummaryContainer,
   SummaryBox,
+  SummaryBoxUser,
   HoursGrid,
   HoursItem,
   BoldText,
@@ -41,6 +42,11 @@ const MyHours: React.FC = () => {
   const router = useRouter();
   const { session, isSignedIn } = useSession();
   const [person, setPerson] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (isSignedIn && session) {
@@ -108,24 +114,26 @@ const MyHours: React.FC = () => {
 
   return (
     <HeaderOffset>
-      <SummaryContainer>
-        <SummaryBox>
+      <SummaryContainer style={{
+        marginTop: window.innerWidth > 768 ? "100px" : "0px",
+      }}>
+        <SummaryBoxUser>
           <h2>{upcomingHours.toString()}</h2>
           <p>Upcoming Hours</p>
-        </SummaryBox>
-        <SummaryBox>
+        </SummaryBoxUser>
+        <SummaryBoxUser>
           <h2>{submittedHours.toString()}</h2>
           <p>Pending Hours</p>
-        </SummaryBox>
-        <SummaryBox>
+        </SummaryBoxUser>
+        <SummaryBoxUser>
           <h2>{approvedHours.toString()}</h2>
           <p>Approved Hours</p>
-        </SummaryBox>
+        </SummaryBoxUser>
       </SummaryContainer>
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "center",
           width: "40%",
           margin: "1rem auto",
         }}
