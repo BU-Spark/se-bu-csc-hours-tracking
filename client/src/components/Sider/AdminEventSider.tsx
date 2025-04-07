@@ -17,7 +17,7 @@ function AdminEventSider() {
   //useState variables
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const [semester, setSemester] = useState<string>(null);
+  const [semester, setSemester] = useState<string>();
 
   useEffect(() => {
     if (!isDisplayed) return;

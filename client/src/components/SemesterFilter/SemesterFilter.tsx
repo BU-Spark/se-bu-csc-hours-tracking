@@ -7,8 +7,25 @@ interface SemesterFilterProps {
   setSemester: (semester: string) => void;
 }
 
+// Function to generate semester options dynamically
+const generateSemesterOptions = (): string[] => {
+  const currentYear = new Date().getFullYear();
+  const yearsRange = 4;
+  const semesters = ["Spring", "Summer", "Fall"];
+  const options: string[] = [];
+
+  for (let year = currentYear - yearsRange; year <= currentYear; year++) {
+    semesters.forEach((semester) => {
+      options.push(`${semester} ${year}`);
+    });
+  }
+
+  return options;
+};
+
 const SemesterFilter: React.FC<SemesterFilterProps> = ({ setSemester }) => {
-  const [selectedSemester, setSelectedSemester] = useState<string>(null);
+  const [selectedSemester, setSelectedSemester] = useState<string>();
+  const semesterOptions = generateSemesterOptions();
 
   const handleChange = (value: string) => {
     setSelectedSemester(value);
@@ -17,10 +34,10 @@ const SemesterFilter: React.FC<SemesterFilterProps> = ({ setSemester }) => {
 
   return (
     <div
-    style={{
-      width: "100%",
-      marginBottom: "1rem"
-    }}
+      style={{
+        width: "100%",
+        marginBottom: "1rem",
+      }}
     >
       <Select
         value={selectedSemester}
@@ -39,8 +56,11 @@ const SemesterFilter: React.FC<SemesterFilterProps> = ({ setSemester }) => {
         placeholder="Select Semester"
         allowClear
       >
-        <Option value="Spring 2024">Spring 2024</Option>
-        <Option value="Fall 2024">Fall 2024</Option>
+        {semesterOptions.map((semester) => (
+          <Option key={semester} value={semester}>
+            {semester}
+          </Option>
+        ))}
       </Select>
     </div>
   );
