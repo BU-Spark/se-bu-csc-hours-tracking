@@ -141,12 +141,17 @@ const Dashboard: React.FC = () => {
             <h3 className={styles.progressTitle}>Current Progress</h3>
             <div className={styles.progressCard}>
               <p className={styles.progressText}>
-                Your are {90 - stats.approvedHours} hours away from your goals for this semester.
+                You are {(person?.hour_goal || 90) - stats.approvedHours} hours away from your goal for this semester.
+                {person?.goal_date && (
+                  <span className={styles.daysRemaining}>
+                    {Math.max(0, Math.ceil((new Date(person.goal_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days remaining until {new Date(person.goal_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </span>
+                )}
               </p>
               <div className={styles.progressBarContainer}>
                 <div 
                   className={styles.progressBar} 
-                  style={{ width: `${(stats.approvedHours / 90) * 100}%` }} 
+                  style={{ width: `${(stats.approvedHours / (person?.hour_goal || 90)) * 100}%` }} 
                 />
               </div>
               <div className={styles.progressLabels}>

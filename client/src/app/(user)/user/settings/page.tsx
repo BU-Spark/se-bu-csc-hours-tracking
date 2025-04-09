@@ -75,6 +75,12 @@ const Asterisk = styled.span`
   margin-left: 5px;
 `;
 
+const LabelTitle = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+
 const ErrorMessage = styled.span`
   color: red;
   margin-left: 10px;
@@ -213,6 +219,8 @@ const Settings: React.FC = () => {
   const [college, setCollege] = useState<string[]>([]);
   const [classYear, setClassYear] = useState<string>("");
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>([]);
+  const [hourGoal, setHourGoal] = useState<number>(90);
+  const [goalDate, setGoalDate] = useState<string>("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [showError, setShowError] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
@@ -238,6 +246,8 @@ const Settings: React.FC = () => {
                 ? user.dietary_restrictions.split(",")
                 : []
             );
+            setHourGoal(user.hour_goal || 90);
+            setGoalDate(user.goal_date ? new Date(user.goal_date).toISOString().split('T')[0] : "");
           }
         }
         setInitialLoadComplete(true);
@@ -288,24 +298,25 @@ const Settings: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSubmitted(true);
     if (!validateForm()) {
       setShowError(true);
       return;
     }
+
     try {
       await updateUserDetails({
         phone_number: phoneNumber,
         name: userName,
         bu_id: buId,
         college: college.join(","),
-        class: Number(classYear),
+        class: parseInt(classYear),
         dietary_restrictions: dietaryRestrictions.join(","),
+        hour_goal: hourGoal,
+        goal_date: goalDate ? new Date(goalDate) : null,
       });
-      success("User settings updated");
-      setTimeout(() => {
-        router.push("/user/my-hours");
-      }, 1000);
+      success("Settings updated successfully");
+      setFormSubmitted(true);
+      setFormChanged(false);
     } catch (error) {
       console.error("Error updating user details:", error);
     }
@@ -461,40 +472,74 @@ const Settings: React.FC = () => {
           }}
         />
         <Label>
-          Dietary Restrictions<Asterisk>*</Asterisk>
-          {formSubmitted && dietaryRestrictions.length === 0 && (
-            <ErrorMessage>Dietary restrictions are required</ErrorMessage>
-          )}
+          <LabelTitle>
+            Dietary Restrictions
+            <Asterisk>*</Asterisk>
+          </LabelTitle>
+          <Select
+            isMulti
+            options={dietaryOptions}
+            value={dietaryRestrictions.map((restriction) => ({
+              value: restriction,
+              label: restriction,
+            }))}
+            onChange={(selectedOptions) =>
+              setDietaryRestrictions(
+                selectedOptions.map((option) => option.value)
+              )
+            }
+            styles={{
+              control: (base) => ({
+                ...base,
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                padding: "2px",
+              }),
+            }}
+          />
         </Label>
-        <Select
-          isMulti
-          options={dietaryOptions}
-          value={dietaryOptions.filter((option) =>
-            dietaryRestrictions.includes(option.value)
-          )}
-          onChange={(selected) => {
-            setDietaryRestrictions(selected.map((option) => option.value));
-            handleInputChange();
+
+        <Label>
+          <LabelTitle>
+            Set an hourly goal
+          </LabelTitle>
+          <Input
+            type="number"
+            min="0"
+            value={hourGoal}
+            onChange={(e) => {
+              setHourGoal(Number(e.target.value));
+              handleInputChange();
+            }}
+            placeholder="Enter your hourly goal"
+          />
+        </Label>
+
+        <Label>
+          <LabelTitle>
+            Reach goal by
+          </LabelTitle>
+          <Input
+            type="date"
+            value={goalDate}
+            onChange={(e) => {
+              setGoalDate(e.target.value);
+              handleInputChange();
+            }}
+            min={new Date().toISOString().split('T')[0]}
+          />
+        </Label>
+
+        <div
+          style={{
+            opacity: formChanged ? "100%" : "40%",
           }}
-          styles={{
-            container: (provided) => ({
-              ...provided,
-              marginBottom: "20px",
-            }),
-            control: (provided) => ({
-              ...provided,
-              padding: "10px",
-              borderRadius: "8px",
-              fontSize: "1rem",
-              width: "100%",
-              boxSizing: "border-box",
-              border: "1px solid #ccc",
-              fontFamily: "inherit",
-            }),
-          }}
-        />
-        {contextHolder}
-        <SubmitButton type="submit">Submit</SubmitButton>
+        >
+          {contextHolder}
+          <SubmitButton type="submit" disabled={formChanged ? false : true}>
+            Save Changes
+          </SubmitButton>
+        </div>
       </form>
       {showError && (
         <ErrorMessageContainer>

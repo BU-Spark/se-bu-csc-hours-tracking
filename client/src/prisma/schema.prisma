@@ -33,6 +33,8 @@ model Person {
   Waitlist_Waitlist_applicant_idToPerson  Waitlist[]       @relation("Waitlist_applicant_idToPerson")
   Waitlist_Waitlist_deleted_by_idToPerson Waitlist[]       @relation("Waitlist_deleted_by_idToPerson")
   Waitlist_Waitlist_updated_by_idToPerson Waitlist[]       @relation("Waitlist_updated_by_idToPerson")
+  hour_goal                               Int?              @default(90)
+  goal_date                               DateTime?
 }
 
 model Event {
