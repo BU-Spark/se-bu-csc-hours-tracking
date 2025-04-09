@@ -42,7 +42,7 @@ export const getUserDetails = async (): Promise<Person | undefined> => {
     throw new Error("User not found");
   }
 
-  return person;
+  return person as Person;
 };
 
 export const updateUserDetails = async (details: {
@@ -52,6 +52,8 @@ export const updateUserDetails = async (details: {
   college: string;
   class: number;
   dietary_restrictions: string;
+  hour_goal?: number;
+  goal_date?: Date | null;
 }) => {
   const { userId } = await auth();
   if (!userId) {
@@ -72,6 +74,8 @@ export const updateUserDetails = async (details: {
       college: details.college,
       class: details.class,
       dietary_restrictions: details.dietary_restrictions,
+      hour_goal: details.hour_goal,
+      goal_date: details.goal_date
     },
   });
 

@@ -11,6 +11,10 @@ import { getHourSubmissionsByUserEmail, getUpcomingHoursByUser } from "../my-hou
 import UserCalendar from "@/components/UserCalendar";
 import styles from './Dashboard.module.css';
 import EventSider from "@/components/Sider/EventSider";
+import DashboardHeader from "./components/DashboardHeader";
+import FeaturedCards from "./components/FeaturedCards";
+import StatsGrid from "./components/StatsGrid";
+import ProgressSection from "./components/ProgressSection";
 
 const Dashboard: React.FC = () => {
   const { session, isSignedIn } = useSession();
@@ -77,86 +81,10 @@ const Dashboard: React.FC = () => {
   return (
     <HeaderOffset>
       <section className={styles.mainContent}>
-        <header className={styles.header}>
-          <div>
-            <h1 className={styles.greeting}>Hey, {person?.name}</h1>
-            <p className={styles.date}>
-              Today is {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                month: 'long', 
-                day: 'numeric',
-                year: 'numeric' 
-              })}
-            </p>
-          </div>
-          <div className={styles.notificationIcon}>
-            <img src="/notification-icon.png" alt="Notifications" />
-          </div>
-        </header>
-
-        <div className={styles.featuredCards}>
-          <div className={styles.card}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/a79c10b2df66d06f7d3afd2a1fb0673833d6e9120738075e3f0ec116a0ce9b6b" alt="CSC Programs" className={styles.cardImage} />
-            <div className={styles.cardContent}>
-              <h3 className={styles.cardTitle}>CSC Programs</h3>
-              <a href="#" className={styles.cardLink}>Learn More</a>
-            </div>
-          </div>
-          <div className={styles.card}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/824021eddd5d093bf5256b71a125e5b62b481665715b72c63f8ac770f3fcb06b" alt="Join the CSC" className={styles.cardImage} />
-            <div className={styles.cardContent}>
-              <h3 className={styles.cardTitle}>Join the CSC</h3>
-              <a href="#" className={styles.cardLink}>Learn More</a>
-            </div>
-          </div>
-          <div className={styles.card}>
-            <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/b45508b446396513217812dc9ed04a322366668c0644f412be05d0d877cab59b" alt="Newsletter" className={styles.cardImage} />
-            <div className={styles.cardContent}>
-              <h3 className={styles.cardTitle}>Newsletter</h3>
-              <a href="#" className={styles.cardLink}>Sign Up</a>
-            </div>
-          </div>
-        </div>
-
-        <section className={styles.statsSection}>
-          <div className={styles.statsGrid}>
-            <div className={styles.statsCard}>
-              <h3>You Completed</h3>
-              <p className={styles.statValue}>{stats.approvedHours}h</p>
-              <p className={styles.statLabel}>this semester</p>
-            </div>
-            <div className={styles.statsCard}>
-              <h3>You Attended</h3>
-              <p className={styles.statValue}>{stats.totalEvents}</p>
-              <p className={styles.statLabel}>Events this semester</p>
-            </div>
-            <div className={styles.statsCard}>
-              <h3>You Submitted</h3>
-              <p className={styles.statValue}>{stats.pendingHours}</p>
-              <p className={styles.statLabel}>Service Opportunities</p>
-            </div>
-          </div>
-
-          <div className={styles.progressSection}>
-            <h3 className={styles.progressTitle}>Current Progress</h3>
-            <div className={styles.progressCard}>
-              <p className={styles.progressText}>
-                Your are {90 - stats.approvedHours} hours away from your goals for this semester.
-              </p>
-              <div className={styles.progressBarContainer}>
-                <div 
-                  className={styles.progressBar} 
-                  style={{ width: `${(stats.approvedHours / 90) * 100}%` }} 
-                />
-              </div>
-              <div className={styles.progressLabels}>
-                <span>0%</span>
-                <span>100%</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        <DashboardHeader name={person?.name} />
+        <FeaturedCards />
+        <StatsGrid stats={stats} />
+        <ProgressSection person={person} approvedHours={stats.approvedHours} />
         <UserCalendar />
       </section>
       <EventSider />
