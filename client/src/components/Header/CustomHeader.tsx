@@ -29,7 +29,7 @@ const CustomHeader: React.FC = () => {
     }
   }, [isSignedIn, session]);
 
-  return person?.image ? (
+  return (
     <Header
       className="fixedHeader"
       style={{
@@ -62,19 +62,17 @@ const CustomHeader: React.FC = () => {
                 selected={false}
               />
             </div>
-            {person.role === "ADMIN" && (
+            {person?.role === "ADMIN" && (
               <b style={{ marginRight: "1rem" }}>Administrator</b>
             )}
-            {person.role === "ORGANIZER" && (
+            {person?.role === "ORGANIZER" && (
               <b style={{ marginRight: "1rem" }}>Organizer</b>
             )}
           </>
         )}
-        <Pfp dimension={"2.5rem"} sessionImage={person.image} />
+        <Pfp dimension={"2.5rem"} sessionImage={person?.image || "/default-profile.png"} />
       </div>
     </Header>
-  ) : (
-    <></>
   );
 };
 

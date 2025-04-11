@@ -79,6 +79,9 @@ model Organization {
   image        Bytes?
   phone_number String?
   email        String
+  mission_statement String?
+  collaboration_opportunities String?
+  collaboration_tags String[]
   events       Event[]
   members      Person[]
 }
