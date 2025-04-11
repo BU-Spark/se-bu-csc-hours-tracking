@@ -15,7 +15,7 @@ import {
 	Col,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
@@ -113,6 +113,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 	const [categoryDropdown, setCategoryDropdown] = useState<any>([]);
 	const [category, setCategory] = useState<Category>();
 	const [userOrg, setUserOrg] = useState<OrgType>();
+	const [startDate, setStartDate] = useState<Dayjs | null>(null);
 
 	useEffect(() => {
 		const fetchOrganizations = async () => {
@@ -227,6 +228,14 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 		});
 	};
 
+	const handleStartDateChange = (date: Dayjs | null) => {
+		setStartDate(date);
+	  };
+	
+	const disabledEndDate = (current: Dayjs) => {
+		return startDate ? current && current.isBefore(startDate, "day") : false;
+	};
+
 	return (
 		<FormContainer>
 			<BackButton onClick={() => router.push("/third-party/my-events")}>
@@ -313,6 +322,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 							<DatePicker
 								showTime={{ use12Hours: true, format: "h:mm a" }}
 								format="YYYY-MM-DD h:mm a"
+								onChange={handleStartDateChange}
 							/>
 						</Form.Item>
 					</Col>
@@ -327,6 +337,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 							<DatePicker
 								showTime={{ use12Hours: true, format: "h:mm a" }}
 								format="YYYY-MM-DD h:mm a"
+								disabledDate={disabledEndDate}
 							/>
 						</Form.Item>
 					</Col>
