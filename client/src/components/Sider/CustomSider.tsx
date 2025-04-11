@@ -46,6 +46,11 @@ const CustomSider: React.FC = () => {
             onClick: () => router.push("/user/events"),
           },
           {
+            key: "directory",
+            label: "Directory",
+            onClick: () => router.push("/user/directory"),
+          },
+          {
             key: "forms",
             label: "Forms",
             onClick: () => router.push("/user/forms"),
@@ -124,6 +129,9 @@ const CustomSider: React.FC = () => {
     if (pathname.startsWith("/user/events")) {
       return "events";
     }
+    if (pathname.startsWith("/user/directory")) {
+      return "directory";
+    }
     if (pathname.startsWith("/user/forms")) {
       return "forms";
     }
@@ -160,7 +168,7 @@ const CustomSider: React.FC = () => {
     return "";
   };
 
-  return person?.image ? (
+  return (
     <Sider
       style={{
         background: "white",
@@ -177,13 +185,13 @@ const CustomSider: React.FC = () => {
     >
       <div className="sider-content">
         <div className="sider-profile">
-          <Pfp dimension={"6em"} sessionImage={person.image} />
+          <Pfp dimension={"6em"} sessionImage={person?.image || "/default-profile.png"} />
           <div className="sider-profile-details">
             <Typography.Text strong className="user-name">
-              {person.name}
+              {person?.name || "User"}
             </Typography.Text>
             <br />
-            <Typography.Text>{person.email}</Typography.Text>
+            <Typography.Text>{person?.email || ""}</Typography.Text>
           </div>
           <Menu
             style={{
@@ -199,8 +207,6 @@ const CustomSider: React.FC = () => {
         </div>
       </div>
     </Sider>
-  ) : (
-    <></>
   );
 };
 
