@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FiFilter } from "react-icons/fi";
 
@@ -93,6 +93,8 @@ const Button = styled.button<{ primary?: boolean }>`
 
 interface FilterMenuProps {
   onFilterChange: (filters: FilterOptions) => void;
+  availableTags?: string[];
+  availableLocations?: string[];
 }
 
 export interface FilterOptions {
@@ -100,7 +102,34 @@ export interface FilterOptions {
   locations: string[];
 }
 
-const FilterMenu: React.FC<FilterMenuProps> = ({ onFilterChange }) => {
+// Default tags and locations in case none are provided
+const DEFAULT_TAGS = [
+  "Food Insecurity",
+  "Nutrition Education",
+  "Youth Outreach",
+  "Poverty Alleviation",
+  "Education",
+  "Healthcare",
+  "Senior Services",
+  "Disability Services"
+];
+
+const DEFAULT_LOCATIONS = [
+  "Boston",
+  "Cambridge",
+  "Somerville",
+  "Brookline",
+  "Newton",
+  "Allston",
+  "Brighton",
+  "Dorchester"
+];
+
+const FilterMenu: React.FC<FilterMenuProps> = ({ 
+  onFilterChange, 
+  availableTags = DEFAULT_TAGS, 
+  availableLocations = DEFAULT_LOCATIONS 
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     tags: [],
@@ -151,76 +180,32 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ onFilterChange }) => {
         <FilterSection>
           <FilterTitle>Tags</FilterTitle>
           <CheckboxGroup>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.tags.includes("Food Insecurity")}
-                onChange={() => handleTagChange("Food Insecurity")} 
-              />
-              Food Insecurity
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.tags.includes("Nutrition Education")}
-                onChange={() => handleTagChange("Nutrition Education")} 
-              />
-              Nutrition Education
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.tags.includes("Youth Outreach")}
-                onChange={() => handleTagChange("Youth Outreach")} 
-              />
-              Youth Outreach
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.tags.includes("Poverty Alleviation")}
-                onChange={() => handleTagChange("Poverty Alleviation")} 
-              />
-              Poverty Alleviation
-            </CheckboxLabel>
+            {availableTags.map(tag => (
+              <CheckboxLabel key={tag}>
+                <Checkbox 
+                  type="checkbox" 
+                  checked={filters.tags.includes(tag)}
+                  onChange={() => handleTagChange(tag)} 
+                />
+                {tag}
+              </CheckboxLabel>
+            ))}
           </CheckboxGroup>
         </FilterSection>
         
         <FilterSection>
           <FilterTitle>Location</FilterTitle>
           <CheckboxGroup>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.locations.includes("Boston")}
-                onChange={() => handleLocationChange("Boston")} 
-              />
-              Boston
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.locations.includes("Cambridge")}
-                onChange={() => handleLocationChange("Cambridge")} 
-              />
-              Cambridge
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.locations.includes("Somerville")}
-                onChange={() => handleLocationChange("Somerville")} 
-              />
-              Somerville
-            </CheckboxLabel>
-            <CheckboxLabel>
-              <Checkbox 
-                type="checkbox" 
-                checked={filters.locations.includes("Brookline")}
-                onChange={() => handleLocationChange("Brookline")} 
-              />
-              Brookline
-            </CheckboxLabel>
+            {availableLocations.map(location => (
+              <CheckboxLabel key={location}>
+                <Checkbox 
+                  type="checkbox" 
+                  checked={filters.locations.includes(location)}
+                  onChange={() => handleLocationChange(location)} 
+                />
+                {location}
+              </CheckboxLabel>
+            ))}
           </CheckboxGroup>
         </FilterSection>
         

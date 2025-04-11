@@ -62,6 +62,37 @@ const DirectoryPage: React.FC = () => {
     tags: [],
     locations: []
   });
+  
+  // Default tags and locations
+  const DEFAULT_TAGS = [
+    "Food Insecurity",
+    "Nutrition Education",
+    "Youth Outreach",
+    "Poverty Alleviation",
+    "Education",
+    "Healthcare",
+    "Senior Services",
+    "Disability Services",
+    "Community Development",
+    "Mental Health",
+    "Environmental Justice",
+    "Homelessness"
+  ];
+  
+  const DEFAULT_LOCATIONS = [
+    "Boston",
+    "Cambridge",
+    "Somerville",
+    "Brookline",
+    "Newton",
+    "Allston",
+    "Brighton",
+    "Dorchester"
+  ];
+  
+  // Initialize with default values
+  const [availableTags, setAvailableTags] = useState<string[]>(DEFAULT_TAGS);
+  const [availableLocations, setAvailableLocations] = useState<string[]>(DEFAULT_LOCATIONS);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -69,6 +100,39 @@ const DirectoryPage: React.FC = () => {
         const orgs = await getAllOrganizations();
         setOrganizations(orgs);
         setFilteredOrganizations(orgs);
+        
+        // Extract unique tags and locations from database
+        const dbTags = new Set<string>();
+        const dbLocations = new Set<string>();
+        
+        orgs.forEach(org => {
+          // Extract tags from array directly
+          if (org.collaboration_tags && Array.isArray(org.collaboration_tags)) {
+            org.collaboration_tags.forEach(tag => {
+              dbTags.add(tag);
+            });
+          }
+          
+          // Extract locations
+          if (org.city) {
+            dbLocations.add(org.city);
+          }
+        });
+        
+        // Merge default tags with discovered tags
+        const mergedTags = new Set<string>();
+        const mergedLocations = new Set<string>();
+        
+        // Add default tags and locations
+        DEFAULT_TAGS.forEach(tag => mergedTags.add(tag));
+        DEFAULT_LOCATIONS.forEach(location => mergedLocations.add(location));
+        
+        // Add tags and locations from database
+        dbTags.forEach(tag => mergedTags.add(tag));
+        dbLocations.forEach(location => mergedLocations.add(location));
+        
+        setAvailableTags(Array.from(mergedTags));
+        setAvailableLocations(Array.from(mergedLocations));
       } catch (error) {
         console.error("Error fetching organizations:", error);
       } finally {
@@ -97,8 +161,11 @@ const DirectoryPage: React.FC = () => {
     // Apply tag filters
     if (filters.tags.length > 0) {
       results = results.filter(org => {
-        return filters.tags.some(tag => 
-          org.collaboration_tags?.includes(tag)
+        if (!org.collaboration_tags || !Array.isArray(org.collaboration_tags)) return false;
+        
+        // Check if any selected tag is in the organization's tags
+        return filters.tags.some(filterTag => 
+          org.collaboration_tags!.includes(filterTag)
         );
       });
     }
@@ -140,7 +207,11 @@ const DirectoryPage: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </SearchContainer>
-          <FilterMenu onFilterChange={handleFilterChange} />
+          <FilterMenu 
+            onFilterChange={handleFilterChange} 
+            availableTags={availableTags}
+            availableLocations={availableLocations}
+          />
         </DirectoryHeader>
 
         {filteredOrganizations.length === 0 ? (

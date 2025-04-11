@@ -176,8 +176,10 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({ organization }) => 
     ? `data:image/jpeg;base64,${Buffer.from(organization.image).toString('base64')}`
     : '/placeholder-org.png'; // Default image
   
-  // Convert collaboration_tags from string[] to tags
-  const tags = organization.collaboration_tags || [];
+  // Handle collaboration_tags as an array
+  const tags = Array.isArray(organization.collaboration_tags) 
+    ? organization.collaboration_tags 
+    : [];
   
   return (
     <CardContainer>

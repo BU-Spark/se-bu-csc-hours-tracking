@@ -7,6 +7,7 @@ import { Organization, Event, FormCode } from "@prisma/client";
 export interface OrganizationWithEvents extends Organization {
   upcomingEvents: Event[];
   requiredForms: FormCode[];
+  collaboration_tags?: string[];
 }
 
 export const getAllOrganizations = async (): Promise<OrganizationWithEvents[]> => {
