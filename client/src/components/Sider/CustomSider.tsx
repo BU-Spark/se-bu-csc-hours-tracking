@@ -160,7 +160,7 @@ const CustomSider: React.FC = () => {
     return "";
   };
 
-  return person?.image ? (
+  return person? (
     <Sider
       style={{
         background: "white",

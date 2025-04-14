@@ -29,7 +29,7 @@ const CustomHeader: React.FC = () => {
     }
   }, [isSignedIn, session]);
 
-  return person?.image ? (
+  return person? (
     <Header
       className="fixedHeader"
       style={{
