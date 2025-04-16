@@ -26,7 +26,7 @@ export default function PendingCori({name, classYear, college, category, dateReq
             title={
             <div style={{ display: 'flex', flexDirection: 'row', marginTop: "0.1875rem" }}> 
                 <img 
-                    src= {profilePic}
+                    src= {"https://i.pravatar.cc/40"}
                     style={{ 
                         height: "clamp(2.5rem, 5vw, 3rem)",  
                         width: "clamp(2.5rem, 5vw, 3rem)",

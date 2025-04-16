@@ -39,7 +39,7 @@ export default function PendingCard({
       title={
         <div style={{ display: "flex", flexDirection: "row", marginTop: "0.1875rem" }}>
           <img
-            src={profilePic}
+            src={"https://i.pravatar.cc/40"}
             alt="Profile"
             style={{
               height: "3rem",
