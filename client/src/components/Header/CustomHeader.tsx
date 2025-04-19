@@ -29,6 +29,7 @@ const CustomHeader: React.FC = () => {
     }
   }, [isSignedIn, session]);
 
+
   return (
     <Header
       className="fixedHeader"

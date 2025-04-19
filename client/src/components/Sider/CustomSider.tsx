@@ -64,9 +64,9 @@ const CustomSider: React.FC = () => {
       : person?.role === "ADMIN"
       ? [
         {
-          key : "dashboard", 
+          key : "admin-dashboard", 
           label : "Dashboard", 
-          onClick : () => router.push("/admin/dashboard"),
+          onClick : () => router.push("/admin/admin-dashboard"),
         },
           {
             key: "student_hours",
@@ -137,6 +137,9 @@ const CustomSider: React.FC = () => {
     }
     if (pathname.startsWith("/user/settings")) {
       return "settings";
+    }
+    if (pathname.startsWith("/admin/admin-dashboard")) {
+      return "admin-dashboard";
     }
     if (pathname.startsWith("/admin/student-hours")) {
       return "student_hours";
