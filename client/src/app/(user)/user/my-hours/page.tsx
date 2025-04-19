@@ -40,62 +40,84 @@ const MyHours: React.FC = () => {
   const [upcomingHours, setUpcomingHours] = useState<Number>(0); // you can't submit hours for it yet, projected amount
   const [filter, setFilter] = useState<number>(0); // 0 is pending, 1 is approved, 2 is denied, 3 is all
   const router = useRouter();
-  const { session, isSignedIn } = useSession();
+  const { session, isSignedIn, isLoaded } = useSession();
   const [person, setPerson] = useState<any>(null);
   const [isClient, setIsClient] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
+    console.log("Auth state:", { isSignedIn, isLoaded });
+    
+    if (isLoaded && !isSignedIn) {
+      console.log("User is not signed in");
+      // You might want to redirect to login page here
+    }
+    
     if (isSignedIn && session) {
       const fetchPersonAndHours = async () => {
-        const person = await getPersonFromUser(session.user.id);
-        setPerson(person);
-        if (person?.email) {
-          try {
-            const data = await getHourSubmissionsByUserEmail(person.email);
-            setEventHours(data);
-            const approved = data.filter(
-              (hour: EventHours) => hour.approval_status === 1
-            );
+        try {
+          console.log("Fetching person data...");
+          const person = await getPersonFromUser(session.user.id);
+          console.log("Person data:", person);
+          setPerson(person);
+          
+          if (person?.email) {
+            try {
+              console.log("Fetching hours data...");
+              const data = await getHourSubmissionsByUserEmail(person.email);
+              console.log("Hours data:", data);
+              setEventHours(data);
+              const approved = data.filter(
+                (hour: EventHours) => hour.approval_status === 1
+              );
 
-            const denied = data.filter(
-              (hour: EventHours) => hour.approval_status === 2
-            );
+              const denied = data.filter(
+                (hour: EventHours) => hour.approval_status === 2
+              );
 
-            const approvedTotal = approved.reduce(
-              (acc: number, hour: EventHours) => acc + hour.hours,
-              0
-            );
+              const approvedTotal = approved.reduce(
+                (acc: number, hour: EventHours) => acc + hour.hours,
+                0
+              );
 
-            const deniedTotal = denied.reduce(
-              (acc: number, hour: EventHours) => acc + hour.hours,
-              0
-            );
+              const deniedTotal = denied.reduce(
+                (acc: number, hour: EventHours) => acc + hour.hours,
+                0
+              );
 
-            const submittedTotal = data.reduce(
-              (acc: number, hour: EventHours) => acc + hour.hours,
-              0
-            );
+              const submittedTotal = data.reduce(
+                (acc: number, hour: EventHours) => acc + hour.hours,
+                0
+              );
 
-            setApprovedHours(approvedTotal);
-            setDeniedHours(deniedTotal);
-            setSubmittedHours(submittedTotal - approvedTotal - deniedTotal);
+              setApprovedHours(approvedTotal);
+              setDeniedHours(deniedTotal);
+              setSubmittedHours(submittedTotal - approvedTotal - deniedTotal);
 
-            const upcoming = await getUpcomingHoursByUser(
-              Number(person.id)
-            );
-            if (upcoming) setUpcomingHours(upcoming);
-          } catch (error) {
-            console.error("Error fetching hours:", error);
+              const upcoming = await getUpcomingHoursByUser(
+                Number(person.id)
+              );
+              if (upcoming) setUpcomingHours(upcoming);
+            } catch (error) {
+              console.error("Error fetching hours:", error);
+              setFetchError("Failed to fetch hours data: " + (error instanceof Error ? error.message : String(error)));
+            }
+          } else {
+            console.warn("Person email is missing");
+            setFetchError("User email is missing");
           }
+        } catch (error) {
+          console.error("Error fetching person:", error);
+          setFetchError("Failed to fetch user data: " + (error instanceof Error ? error.message : String(error)));
         }
       };
       fetchPersonAndHours();
     }
-  }, [isSignedIn, session]);
+  }, [isSignedIn, session, isLoaded]);
 
   const toggleExpand = (hour: EventHours) => {
     setExpandedHour(expandedHour === hour ? null : hour);
@@ -114,6 +136,21 @@ const MyHours: React.FC = () => {
 
   return (
     <HeaderOffset>
+      {fetchError && (
+        <div style={{ 
+          padding: "10px", 
+          margin: "10px", 
+          background: "#ffeeee", 
+          border: "1px solid red",
+          borderRadius: "5px" 
+        }}>
+          <h3>Error loading data:</h3>
+          <p>{fetchError}</p>
+          <p>Auth state: {isLoaded ? (isSignedIn ? "Signed in" : "Not signed in") : "Loading"}</p>
+          <p>User ID: {session?.user?.id || "Not available"}</p>
+          <p>Debug info: Header and sidebar may not be visible due to missing user data</p>
+        </div>
+      )}
       <SummaryContainer style={{
         marginTop: window.innerWidth > 768 ? "100px" : "0px",
       }}>

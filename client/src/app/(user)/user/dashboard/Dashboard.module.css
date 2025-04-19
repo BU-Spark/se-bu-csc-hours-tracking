@@ -165,4 +165,11 @@
   justify-content: space-between;
   color: #666;
   font-size: 0.75rem;
+}
+
+.daysRemaining {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: #cc0000;
 } 

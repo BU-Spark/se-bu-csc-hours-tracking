@@ -4,9 +4,13 @@ import { buRed } from "../_common/styles";
 const Pfp: React.FC<any> = ({ dimension, sessionImage }) => {
   const defaultImageUrl =
     "https://static.vecteezy.com/system/resources/thumbnails/002/534/006/small/social-media-chatting-online-blank-profile-picture-head-and-body-icon-people-standing-icon-grey-background-free-vector.jpg";
-  return (
+    const isBase64 = sessionImage?.length > 100 && !sessionImage.startsWith("http");
+    const formattedImage = isBase64
+        ? `data:image/png;base64,${sessionImage}`
+        : sessionImage || defaultImageUrl;
+    return (
     <img
-      src={sessionImage || defaultImageUrl}
+      src={formattedImage}
       alt="pfp"
       style={{
         height: dimension,

@@ -69,6 +69,9 @@ export const updateOrganizerDetails = async (details: {
   email: string;
   apt?: string;
   image?: string;
+  mission_statement?: string;
+  collaboration_opportunities?: string;
+  collaboration_tags?: string[];
 }) => {
   const { userId } = await auth();
   if (!userId) {
@@ -93,7 +96,9 @@ export const updateOrganizerDetails = async (details: {
       phone_number: details.phone_number,
       email: details.email,
       image: details.image ? Buffer.from(details.image, 'base64') : undefined,
-      
+      mission_statement: details.mission_statement,
+      collaboration_opportunities: details.collaboration_opportunities,
+      collaboration_tags: details.collaboration_tags,
     },
   });
 
