@@ -82,7 +82,8 @@ export default function EventManagementPage() {
           <EventCard count={upcomingEvents.length} label="Upcoming Events" />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0, marginTop:"-1.75rem" }}>
+          <strong>Pending Event Proposals</strong>
           <div style={{ display: "flex", flexDirection: "row", gap: "1rem", marginTop: "-1.25rem" }}>
             {currentCards.map((proposal, idx) => (
               <PendingCard
