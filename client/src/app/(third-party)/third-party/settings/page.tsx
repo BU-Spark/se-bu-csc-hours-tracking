@@ -21,7 +21,7 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  border: 2px solid #cc0000;
+  border: 2px solid#cc0000;
 `;
 
 const TopBar = styled.div`
@@ -274,6 +274,9 @@ const Settings: React.FC = () => {
       image?: string;
       phone_number: string;
       email: string;
+      mission_statement?: string;
+      collaboration_opportunities?: string;
+      collaboration_tags?: string[];
     }>({
       name: '',
       nameofservice: '',
@@ -283,6 +286,9 @@ const Settings: React.FC = () => {
       phone_number: '',
       email: '', 
       zipcode: '',
+      mission_statement: '',
+      collaboration_opportunities: '',
+      collaboration_tags: [],
     });
 
   useEffect(() => {
@@ -306,6 +312,9 @@ const Settings: React.FC = () => {
               image: user.image ? Buffer.from(user.image).toString('base64') : undefined,
               phone_number: user.phone_number || "",
               email: user.email || "",
+              mission_statement: user.mission_statement || "",
+              collaboration_opportunities: user.collaboration_opportunities || "",
+              collaboration_tags: user.collaboration_tags || [],
             });
             setPhoneNumber(user.phone_number || "");
           }
@@ -442,7 +451,10 @@ const Settings: React.FC = () => {
       phone_number: phoneNumber,
       email: companyInfo.email, 
       apt: companyInfo.apt,
-      image: companyInfo.image, 
+      image: companyInfo.image,
+      mission_statement: companyInfo.mission_statement,
+      collaboration_opportunities: companyInfo.collaboration_opportunities,
+      collaboration_tags: companyInfo.collaboration_tags 
     };
     try {
       await updateOrganizerDetails(details);
@@ -467,6 +479,9 @@ const Settings: React.FC = () => {
         image: organization.image ? Buffer.from(organization.image).toString('base64') : undefined,
         phone_number: organization.phone_number || "",
         email: organization.email || "",
+        mission_statement: organization.mission_statement || "",
+        collaboration_opportunities: organization.collaboration_opportunities || "",
+        collaboration_tags: organization.collaboration_tags || [],
       });
       setPhoneNumber(organization.phone_number || "");
     }
@@ -503,7 +518,10 @@ const Settings: React.FC = () => {
     setFormInfo([
       ...forms,
       {
-        id: forms[forms.length - 1].id+1, title: '', description: '', required: false,
+        id: forms.length > 0 ? forms[forms.length - 1].id + 1 : 1, 
+        title: '', 
+        description: '', 
+        required: false,
         downloadable: false,
         organization_id: 0,
         upload_link: null,
@@ -630,6 +648,69 @@ const Settings: React.FC = () => {
                         <Input type="text" name="name" value={companyInfo.name} onChange={handleChange} required />
                         <Label>Name of Service<Asterisk>*</Asterisk></Label>
                         <Input type="text" name="nameofservice" value={companyInfo.nameofservice} onChange={handleChange} required />
+                        
+                        <Label>Mission Statement (max 200 characters)</Label>
+                        <textarea
+                            name="mission_statement"
+                            value={companyInfo.mission_statement || ''}
+                            onChange={handleChange}
+                            maxLength={200}
+                            rows={3}
+                            style={{
+                                padding: '10px',
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                border: '1px solid #ccc',
+                                marginBottom: '20px',
+                            }}
+                        />
+                        
+                        <Label>Collaboration Opportunities (max 200 characters)</Label>
+                        <textarea
+                            name="collaboration_opportunities"
+                            value={companyInfo.collaboration_opportunities || ''}
+                            onChange={handleChange}
+                            maxLength={200}
+                            rows={3}
+                            style={{
+                                padding: '10px',
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                border: '1px solid #ccc',
+                                marginBottom: '20px',
+                            }}
+                        />
+                        
+                        <Label>Collaboration Tags</Label>
+                        <Select
+                            isMulti
+                            name="collaboration_tags"
+                            options={[
+                                { value: 'Food Insecurity', label: 'Food Insecurity' },
+                                { value: 'Nutrition Education', label: 'Nutrition Education' },
+                                { value: 'Youth Outreach', label: 'Youth Outreach' },
+                                { value: 'Poverty Alleviation', label: 'Poverty Alleviation' }
+                            ]}
+                            value={(companyInfo.collaboration_tags || []).map(tag => ({ value: tag, label: tag }))}
+                            onChange={(selectedOptions) => {
+                                const selectedTags = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                                setCompanyInfo(prev => ({ ...prev, collaboration_tags: selectedTags }));
+                            }}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                            styles={{
+                                control: (baseStyles) => ({
+                                    ...baseStyles,
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    marginBottom: '20px',
+                                }),
+                            }}
+                        />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
                         <Label>Image Upload</Label>

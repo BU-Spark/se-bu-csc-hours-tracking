@@ -215,16 +215,16 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
           label="Event Title"
           rules={[{ required: true, message: "Please enter the event name" }]}
         >
-          <Input />
+          <Input maxLength={200}/>
         </Form.Item>
         <Form.Item
           name="coordinator_name"
-          label="Coordinator Name"
+          label="Coordinator Names"
           rules={[
             { required: true, message: "Please enter the coordinator name" },
           ]}
         >
-          <Input />
+          <Input maxLength={200}/>
         </Form.Item>
         <Form.Item
           name="coordinator_email"
@@ -233,7 +233,7 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
             { required: true, message: "Please enter the coordinator email" },
           ]}
         >
-          <Input type="email" />
+          <Input type="email" maxLength={200}/>
         </Form.Item>
         <Form.Item
           name="category_id"
@@ -332,37 +332,45 @@ const AdminEventForm: React.FC<AdminEventFormProps> = ({
               required: true,
               message: "Please enter the number of participants",
             },
+            {
+              validator: (_, value) => {
+                if (value && Number(value) > 100000) {
+                  return Promise.reject("Too many participants — must be fewer.");
+                }
+                return Promise.resolve();
+              },
+            },
           ]}
         >
-          <Input type="number" />
+          <Input type="number" max={100000}/>
         </Form.Item>
         <Form.Item
           name="location"
           label="Event Location"
           rules={[{ required: true, message: "Please enter the location" }]}
         >
-          <Input />
+          <Input maxLength={500} />
         </Form.Item>
         <Form.Item
           name="transit"
           label="Ideal Transit"
           rules={[{ required: true, message: "Please enter the transit" }]}
         >
-          <Input />
+          <Input maxLength={500}/>
         </Form.Item>
         <Form.Item
           name="description"
           label="Description"
           rules={[{ required: true, message: "Please enter the description" }]}
         >
-          <TextArea rows={4} />
+          <TextArea rows={4} maxLength={1200} showCount />
         </Form.Item>
         <Form.Item
           name="password"
           label="Event Password"
           rules={[{ required: false }]}
         >
-          <TextArea rows={1} />
+          <TextArea rows={1} maxLength={300}/>
         </Form.Item>
         <Form.Item
           name="image"
