@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <>
       <Layout>
-        <CustomHeader />
+        {/* <CustomHeader /> */}
       </Layout>
       <Layout hasSider>
         <CustomSider />

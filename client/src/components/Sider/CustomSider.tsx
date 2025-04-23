@@ -63,20 +63,21 @@ const CustomSider: React.FC = () => {
           label : "Dashboard", 
           onClick : () => router.push("/admin/admin-dashboard"),
         },
-          {
-            key: "student_hours",
-            label: "Student Hours",
-            onClick: () => router.push("/admin/student-hours"),
-          },
-          {
-            key: "student_applications",
-            label: "Student Signups",
-            onClick: () => router.push("/admin/student-signups"),
-          },
+        {
+          key: "student_hours",
+          label: "Student Hours",
+          onClick: () => router.push("/admin/student-hours"),
+        },
+          
           {
             key: "events",
-            label: "Events",
+            label: "Event Management",
             onClick: () => router.push("/admin/events"),
+          },
+          {
+            key: "certificate-management",
+            label: "Manage Certificates",
+            onClick: () => router.push("/admin/certificate-management"),
           },
           {
             key: "forms",

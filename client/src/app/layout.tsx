@@ -13,7 +13,7 @@ const LayoutWithSider = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <ThirdPartySider />
-      <AdminEventSider />
+      {/* <AdminEventSider /> */}
       <CustomSider />
       {children}
     </>
