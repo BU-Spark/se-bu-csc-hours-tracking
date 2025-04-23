@@ -88,6 +88,11 @@ const CustomSider: React.FC = () => {
             label: "Forms",
             onClick: () => router.push("/admin/forms"),
           },
+          {
+            key: "settings",
+            label: "Settings",
+            onClick: () => router.push("/admin/settings"),
+          },
         ]
       : person?.role === "ORGANIZER"
       ? [
@@ -152,6 +157,9 @@ const CustomSider: React.FC = () => {
     }
     if (pathname.startsWith("/admin/forms")) {
       return "forms";
+    }
+    if (pathname.startsWith("/admin/settings")) {
+      return "settings";
     }
     if (pathname.startsWith("/third-party/dashboard")) {
       return "dashboard";
