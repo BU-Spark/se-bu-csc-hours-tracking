@@ -378,6 +378,11 @@ const Settings: React.FC = () => {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const isLargerThan2mb = file.size / 1024 / 1024 > 2;
+    if (isLargerThan2mb) {
+      message.error("Image must be smaller than 2MB!");
+      return;
+    }
     try{
       const imageData = await convertFileToBase64(file);
       // Check if the Base64 string is in the expected format (Data URL format)

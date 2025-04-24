@@ -13,17 +13,22 @@ import { FormCode, Organization, Person } from "@prisma/client";
 import { message, Switch, Button } from "antd";
 
 const FormContainer = styled.div`
-  max-width: 1500px;
-  margin: 50px auto;
-  padding: 35px;
-  border-radius: 20px;
-  background-color: #fff;
+  max-width: 1000px;
+  min-width: 600px;
+  margin: 20px auto;
+  padding: 30px;
+  border-radius: 16px;
+  background-color: #f0f0f0;
+`;
+const InnerCard = styled.div`
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  border: 2px solid#cc0000;
+  gap: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 `;
-
 const TopBar = styled.div`
   display: flex;
   justify-content: space-between;
@@ -40,7 +45,6 @@ const BackButton = styled.div`
   &:hover {
     color: #ff0000;
   }
-
   svg {
     margin-right: 8px;
   }
@@ -60,15 +64,9 @@ const InquiryButton = styled.button`
 `;
 
 const Label = styled.label`
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
-  margin-bottom: 5px;
-`;
-
-const ErrorLabel = styled(Label)`
-  color: red;
-  margin-left: 10px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 6px;
 `;
 
 const Asterisk = styled.span`
@@ -76,11 +74,20 @@ const Asterisk = styled.span`
   margin-left: 5px;
 `;
 
-const ErrorMessage = styled.span`
-  color: red;
-  margin-left: 10px;
-  font-size: 0.875rem;
+
+const SubmitButton = styled.button`
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(204, 0, 0, 1);
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  &:hover {
+    background-color: rgba(153, 0, 0, 1);
+  }
 `;
+
 
 const CommonInputStyle = `
   padding: 10px;
@@ -96,6 +103,32 @@ const CommonInputStyle = `
 
 const Input = styled.input`
   ${CommonInputStyle}
+`;
+
+const ProfileImageContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0;
+`;
+
+const ProfileImage = styled.img`
+  width: 70px !important;
+  height: 70px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 10px;
+`;
+
+const FormGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+`;
+
+const FieldGroup = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const StyledPhoneInput = styled(PhoneInput)`
@@ -117,19 +150,6 @@ const StyledPhoneInput = styled(PhoneInput)`
   }
 `;
 
-const SubmitButton = styled.button`
-  padding: 10px;
-  width: 79px;
-  border: none;
-  border-radius: 8px;
-  background-color: rgba(204, 0, 0, 1);
-  color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  &:hover {
-    background-color: rgba(153, 0, 0, 1);
-  }
-`;
 
 const AddFormButton = styled.button`
   padding: 10px;
@@ -161,27 +181,29 @@ const AddFormButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-  padding: 0;
-  width: 20px; 
+  width: 24px;
   height: 20px;
-  border-radius: 50%;  
+  border-radius: 50%;
   border: none;
   background-color: #EBEBEB;
-  color: #cc0000; 
-  font-size: 14px;  
-  text-align: center;  
-  line-height: 20px;  
+  color: #cc0000;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
-    background-color: #bbb; 
+    background-color: #bbb;
   }
 
   &:focus {
     outline: none;
   }
 `;
+
 
 const ResetButton = styled.button`
   padding: 10px;
@@ -260,8 +282,8 @@ const Settings: React.FC = () => {
     const [forms, setFormInfo] = useState<FormCode[]>([]); // State to hold multiple forms
     const [newFormCount, setNewFormCount] = useState<number>(0);
     const [deletedForms, setDeletedForms] = useState<FormCode[]>([]);
-  
-    
+
+
     const [companyInfo, setCompanyInfo] = useState<{
       name: string;
       nameofservice: string;
@@ -284,7 +306,7 @@ const Settings: React.FC = () => {
       city: '',
       state: '',
       phone_number: '',
-      email: '', 
+      email: '',
       zipcode: '',
       mission_statement: '',
       collaboration_opportunities: '',
@@ -345,7 +367,7 @@ const Settings: React.FC = () => {
       if (data) {
         setFormInfo(data);
       } else {
-        setFormInfo([]); 
+        setFormInfo([]);
       }
     };
     fetchForms();
@@ -377,7 +399,7 @@ const Settings: React.FC = () => {
     );
   };
   const handleSliderChange = (id:number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedForms = forms.map(form => 
+    const updatedForms = forms.map(form =>
       form.id === id ? { ...form, required: e.target.checked } : form
     );
     setFormInfo(updatedForms);
@@ -391,23 +413,27 @@ const Settings: React.FC = () => {
       reader.onload = () => {
         if (reader.result) {
           const base64String = (reader.result as string).split(",")[1];
-          resolve(base64String); 
+          resolve(base64String);
         } else {
           reject("File reading failed");
         }
       };
-  
+
       reader.onerror = (error) => reject(error); // Handle any errors in file reading
     });
   };
-  
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
         console.error("No file selected");
         return;
     }
-
+      const fileSizeMB = file.size / 1024 / 1024;
+      if (fileSizeMB > 5) {
+          messageApi.error("Image must be smaller than 5MB.");
+          return;
+      }
     try {
         const imageData = await convertFileToBase64(file);
         // Check if the Base64 string is in the expected format (Data URL format)
@@ -426,7 +452,7 @@ const Settings: React.FC = () => {
         }
     } catch (error) {
         console.error("Error converting file to Base64:", error);
-    }  
+    }
   };
   const handleBackButtonClick = () => {
     router.push("/third-party/dashboard");
@@ -449,12 +475,12 @@ const Settings: React.FC = () => {
       state: companyInfo.state,
       zipcode: Number(companyInfo.zipcode),
       phone_number: phoneNumber,
-      email: companyInfo.email, 
+      email: companyInfo.email,
       apt: companyInfo.apt,
       image: companyInfo.image,
       mission_statement: companyInfo.mission_statement,
       collaboration_opportunities: companyInfo.collaboration_opportunities,
-      collaboration_tags: companyInfo.collaboration_tags 
+      collaboration_tags: companyInfo.collaboration_tags
     };
     try {
       await updateOrganizerDetails(details);
@@ -512,15 +538,15 @@ const Settings: React.FC = () => {
         }
     } catch (error) {
         console.error("Error converting file to Base64:", error);
-    }  
+    }
   };
   const addNewForm = () => {
     setFormInfo([
       ...forms,
       {
-        id: forms.length > 0 ? forms[forms.length - 1].id + 1 : 1, 
-        title: '', 
-        description: '', 
+        id: forms.length > 0 ? forms[forms.length - 1].id + 1 : 1,
+        title: '',
+        description: '',
         required: false,
         downloadable: false,
         organization_id: 0,
@@ -540,7 +566,7 @@ const Settings: React.FC = () => {
         name: form.title || "",
         required: form.required,
         notes: form.description || "",
-        file: formString, 
+        file: formString,
       };
       try {
         await updateFormDetails(details, form.id);
@@ -569,9 +595,9 @@ const Settings: React.FC = () => {
         name: form.title,
         required: form.required,
         notes: form.description,
-        file: formString, 
+        file: formString,
       };
-    
+
       try {
         await createFormDetails(details);
         console.log(details);
@@ -581,21 +607,21 @@ const Settings: React.FC = () => {
       }
     setNewFormCount(0);
     });
-    
+
 
   };
   const handleFormSubmit = async (e: React.FormEvent, id: number) => {
     e.preventDefault();
     let formString: string | undefined = undefined;
     const form = forms.find(f => f.id === id);
-    
+
     // Need to process form file here
 
     const details = {
         name: form?.title || "",
         required: isFieldRequired,
         notes: form?.description || "",
-        file: formString, 
+        file: formString,
       };
     try {
       await createFormDetails(details);
@@ -610,7 +636,7 @@ const Settings: React.FC = () => {
       if (data) {
         setFormInfo(data);
       } else {
-        setFormInfo([]); 
+        setFormInfo([]);
       }
     };
     fetchForms();
@@ -630,248 +656,259 @@ const Settings: React.FC = () => {
   }
 
   return (
-    <>
-        <TopBar>
-            <BackButton onClick={handleBackButtonClick}>
-                <AiOutlineArrowLeft size={24} />
-                <span>Return to Dashboard</span>
-            </BackButton>
-        </TopBar>
-        <h1>Profile</h1>
-        
-        <FormContainer>
-            <form onSubmit={handleSubmit}>
-                <h2>Company Information</h2>
-                <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                        <Label>Name<Asterisk>*</Asterisk></Label>
-                        <Input type="text" name="name" value={companyInfo.name} onChange={handleChange} required />
-                        <Label>Name of Service<Asterisk>*</Asterisk></Label>
-                        <Input type="text" name="nameofservice" value={companyInfo.nameofservice} onChange={handleChange} required />
-                        
-                        <Label>Mission Statement (max 200 characters)</Label>
-                        <textarea
-                            name="mission_statement"
-                            value={companyInfo.mission_statement || ''}
-                            onChange={handleChange}
-                            maxLength={200}
-                            rows={3}
-                            style={{
-                                padding: '10px',
-                                borderRadius: '8px',
-                                fontSize: '1rem',
-                                width: '100%',
-                                boxSizing: 'border-box',
-                                border: '1px solid #ccc',
-                                marginBottom: '20px',
-                            }}
-                        />
-                        
-                        <Label>Collaboration Opportunities (max 200 characters)</Label>
-                        <textarea
-                            name="collaboration_opportunities"
-                            value={companyInfo.collaboration_opportunities || ''}
-                            onChange={handleChange}
-                            maxLength={200}
-                            rows={3}
-                            style={{
-                                padding: '10px',
-                                borderRadius: '8px',
-                                fontSize: '1rem',
-                                width: '100%',
-                                boxSizing: 'border-box',
-                                border: '1px solid #ccc',
-                                marginBottom: '20px',
-                            }}
-                        />
-                        
-                        <Label>Collaboration Tags</Label>
-                        <Select
-                            isMulti
-                            name="collaboration_tags"
-                            options={[
-                                { value: 'Food Insecurity', label: 'Food Insecurity' },
-                                { value: 'Nutrition Education', label: 'Nutrition Education' },
-                                { value: 'Youth Outreach', label: 'Youth Outreach' },
-                                { value: 'Poverty Alleviation', label: 'Poverty Alleviation' }
-                            ]}
-                            value={(companyInfo.collaboration_tags || []).map(tag => ({ value: tag, label: tag }))}
-                            onChange={(selectedOptions) => {
-                                const selectedTags = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                                setCompanyInfo(prev => ({ ...prev, collaboration_tags: selectedTags }));
-                            }}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                            styles={{
-                                control: (baseStyles) => ({
-                                    ...baseStyles,
-                                    borderRadius: '8px',
-                                    border: '1px solid #ccc',
-                                    marginBottom: '20px',
-                                }),
-                            }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                        <Label>Image Upload</Label>
-                        <Input type="file" onChange={handleFileChange}/>
-                        <img src={`data:image/jpeg;base64,${companyInfo.image}`}
-                          alt={companyInfo.image}
-                          style={{
-                            width: '200px',      
-                            height: 'auto',      
-                            borderRadius: '10px',
-                            border: '2px solid #ccc', 
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
-                            objectFit: 'cover',  
-                          }}
-                        />
-                    </div>
-                </div>
-                <div>
-                    <h4>Company Address<Asterisk>*</Asterisk></h4>
-                    <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                            <Input type="text" name="street" value={companyInfo.street} onChange={handleChange} required placeholder="Street Name" />
-                            <Input type="text" name="apt" value={companyInfo.apt} onChange={handleChange} placeholder="Apt, suite, building, unit, floor, etc." />
-                            <Input type="text" name="city" value={companyInfo.city} onChange={handleChange} required placeholder="City" />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                            <Input type="text" name="state" value={companyInfo.state} onChange={handleChange} required placeholder="State" />
-                            <Input type="text" name="zipcode" value={companyInfo.zipcode} onChange={handleChange} required placeholder="Zip Code" />
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h4>Contact Information</h4>
-                    <div style={{ display: 'flex', gap: '150px', marginBottom: '20px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', width: '500px' }}>
-                            <Label>Phone Number<Asterisk>*</Asterisk></Label>
-                            <StyledPhoneInput value={phoneNumber} onChange={setPhoneNumber} />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                            <Label>Email<Asterisk>*</Asterisk></Label>
-                            <Input type="email" name="email" value={companyInfo.email} onChange={handleChange} required />
-                        </div>
-                    </div>
-                </div>
-
-                <ButtonContainer>
-                    <ResetButton type="button" onClick={handleReset}>Reset</ResetButton>
-                    {contextHolder}
-                    <SubmitButton type="submit">Save</SubmitButton>
-                </ButtonContainer>
-            </form>
-        
-        </FormContainer>
-
-
-
-        <FormContainer>
-        {Array.isArray(forms) && forms.length > 0 ? (
-          forms.sort((a, b) => a.id - b.id).map((form) => (
-          <div key={form.id}>
-            
-            <form onSubmit={(e) => handleFormSubmit(e, form.id)}>
-              <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
-                  <Label>Name<Asterisk>*</Asterisk></Label>
-                  <Input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={(e) => handleFormChange(e, form.id)}
-                    required
-                  />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
-                  <Label>File Upload </Label>
-                  <Input
-                    type="file"
-                    onChange={(e) => handleFormFileChange(e, form.id)}
-                  ></Input> 
-                </div>
-                <DeleteButton onClick={() => handleDelete(form.id)}>x</DeleteButton>
-              </div>
-
-              <div>
-                <label>Make required?</label>
-                <label style={{ marginRight: '10px', marginLeft: '50px' }}>No</label>
-                <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
-                  <input
-                    type="checkbox"
-                    checked={form.required}
-                    onChange={(e) => handleSliderChange(form.id, e)}
-                    style={{ opacity: 0, width: 0, height: 0 }}
-                  />
-                  <span className="slider" style={{
-                    position: 'absolute',
-                    cursor: 'pointer',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: form.required ? '#cc0000' : '#ccc',
-                    transition: '0.4s',
-                    borderRadius: '50px',
-                  }}></span>
-                  <span style={{
-                    position: 'absolute',
-                    content: '',
-                    height: '20px',
-                    width: '20px',
-                    borderRadius: '50%',
-                    left: '4px',
-                    bottom: '4px',
-                    backgroundColor: 'white',
-                    transition: '0.4s',
-                    transform: form.required ? 'translateX(25px)' : 'none',
-                  }}></span>
-                </label>
-                <label style = {{ marginLeft: '10px' }}>Yes</label>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
-                <Label>Notes</Label>
-                <textarea
-                  name="description"
-                  value={form.description}
-                  onChange={(e) => handleFormChange(e, form.id)}
-                  rows={8}
-                  style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    width: '100%',
-                    height: '100px',
-                    boxSizing: 'border-box',
-                    border: '1px solid #ccc',
-                  }}
-                />
-              </div>
-            </form>
+      <>
+      <TopBar>
+        <BackButton onClick={handleBackButtonClick}>
+          <AiOutlineArrowLeft size={24}/>
+          <span>Return to Dashboard</span>
+        </BackButton>
+      </TopBar>
+      <FormContainer>
+        <InnerCard>
+        <form onSubmit={handleSubmit}>
+        <h1>Organization Settings</h1>
+        {formChanged && (
+            <div style={{
+              marginBottom: '20px',
+              padding: '10px',
+              backgroundColor: '#e2e3e5',
+              color: '#383d41',
+              border: '1px solid #d6d8db',
+              borderRadius: '8px',
+              textAlign: 'center',
+            }}>
+              Please press Save to update changes.
+            </div> )}
+          <div style={{display: 'flex', flexDirection: 'column', width: '500px'}}>
+        <Label>Company Image</Label>
+        <Input type="file" onChange={handleFileChange}/>
+        <img src={`data:image/jpeg;base64,${companyInfo.image}`}
+             alt={companyInfo.image}
+             style={{
+               width: '200px',
+               height: 'auto',
+               borderRadius: '10px',
+               border: '2px solid #ccc',
+               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+               objectFit: 'cover',
+               marginBottom: '10px',
+             }}/>
           </div>
-        ))
-      ): (
-        <p>No forms available.</p>
-      )}
-      
-      <AddFormButton onClick={addNewForm}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="18" viewBox="0 0 27 18" fill="none">
-          <line x1="13.8558" x2="13.8558" y2="18" stroke="#CC0000"/>
-          <line y1="-0.5" x2="25.5184" y2="-0.5" transform="matrix(0.999931 -0.0117507 0.0242414 0.999706 0.595703 9.30371)" stroke="#CC0000"/>
-        </svg>
-        Add New Form
-      </AddFormButton>
-      <ButtonContainer>
-        <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
-        <SubmitButton type="submit" onClick={handleAllFormSubmits}>Save</SubmitButton>
-      </ButtonContainer>
+          <FormGrid>
+            <FieldGroup>
+            <Label>Name<Asterisk>*</Asterisk></Label>
+            <Input maxLength={100} type="text" name="name" value={companyInfo.name} onChange={handleChange} required />
+            <Label>Name of Service<Asterisk>*</Asterisk></Label>
+            <Input maxLength={200} type="text" name="nameofservice" value={companyInfo.nameofservice} onChange={handleChange} required />
+            </FieldGroup>
+            <FieldGroup>
+               <Label maxLength={200}>Email<Asterisk>*</Asterisk></Label>
+              <Input type="email" name="email" value={companyInfo.email} onChange={handleChange} required />
+              <Label>Phone Number<Asterisk>*</Asterisk></Label>
+              <StyledPhoneInput value={phoneNumber} onChange={setPhoneNumber} />
+            </FieldGroup>
+          </FormGrid>
+
+            <FormGrid>
+              <FieldGroup>
+                <Label>Company Address<Asterisk>*</Asterisk></Label>
+                <Input  maxLength={200} type="text" name="street" value={companyInfo.street} onChange={handleChange} required
+                       placeholder="Street Name"/>
+                <Input maxLength={100}type="text" name="apt" value={companyInfo.apt} onChange={handleChange}
+                       placeholder="Apt, suite, building, unit, floor, etc."/>
+                <Input maxLength={100} type="text" name="city" value={companyInfo.city} onChange={handleChange} required
+                       placeholder="City"/>
+              </FieldGroup>
+              <FieldGroup>
+                <Label style={{color: 'white'}}> . </Label>
+                <Input maxLength={100} type="text" name="state" value={companyInfo.state} onChange={handleChange} required
+                       placeholder="State"/>
+                <Input maxLength={100} type="text" name="zipcode" value={companyInfo.zipcode} onChange={handleChange} required
+                       placeholder="Zip Code" />
+              </FieldGroup>
+          </FormGrid>
+          <Label>Mission Statement (max 200 characters)</Label>
+          <textarea
+              name="mission_statement"
+              value={companyInfo.mission_statement || ''}
+              onChange={handleChange}
+              onChange={handleChange}
+              maxLength={200}
+              rows={3}
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: '100%',
+                boxSizing: 'border-box',
+                border: '1px solid #ccc',
+                marginBottom: '20px',
+              }}
+          />
+          <Label>Collaboration Tags</Label>
+          <Select
+              isMulti
+              name="collaboration_tags"
+              options={[
+                { value: 'Food Insecurity', label: 'Food Insecurity' },
+                { value: 'Nutrition Education', label: 'Nutrition Education' },
+                { value: 'Youth Outreach', label: 'Youth Outreach' },
+                { value: 'Poverty Alleviation', label: 'Poverty Alleviation' }
+              ]}
+              value={(companyInfo.collaboration_tags || []).map(tag => ({ value: tag, label: tag }))}
+              onChange={(selectedOptions) => {
+                const selectedTags = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                setCompanyInfo(prev => ({ ...prev, collaboration_tags: selectedTags }));
+              }}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              styles={{
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  borderRadius: '8px',
+                  border: '1px solid #ccc',
+                  marginBottom: '20px',
+                }),
+              }}
+          />
+          <Label>Collaboration Opportunities (max 200 characters)</Label>
+          <textarea
+              name="collaboration_opportunities"
+              value={companyInfo.collaboration_opportunities || ''}
+              onChange={handleChange}
+              maxLength={200}
+              rows={3}
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: '100%',
+                boxSizing: 'border-box',
+                border: '1px solid #ccc',
+                marginBottom: '20px',
+              }}
+          />
+          <ButtonContainer>
+            <ResetButton type="button" onClick={handleReset}>Reset</ResetButton>
+            {contextHolder}
+            <SubmitButton type="submit">Save</SubmitButton>
+          </ButtonContainer>
+
+        </form>
+        </InnerCard>
+        <InnerCard style={{
+          marginTop: '15px',
+        }}>
+          {Array.isArray(forms) && forms.length > 0 ? (
+              forms.sort((a, b) => a.id - b.id).map((form) => (
+                  <div key={form.id}>
+
+                    <form onSubmit={(e) => handleFormSubmit(e, form.id)}>
+                      <div style={{ display: 'flex', gap: '50px', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', width: '600px' }}>
+                          <Label>Name<Asterisk>*</Asterisk></Label>
+                          <Input
+                              type="text"
+                              name="title"
+                              value={form.title}
+                              onChange={(e) => handleFormChange(e, form.id)}
+                              required
+                          />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', width: '375px' }}>
+                          <Label>File Upload </Label>
+                          <Input
+                              type="file"
+                              onChange={(e) => handleFormFileChange(e, form.id)}
+                          ></Input>
+                        </div>
+                        <DeleteButton onClick={() => handleDelete(form.id)}>x</DeleteButton>
+                      </div>
+
+                      <div>
+                        <label>Make required?</label>
+                        <label style={{ marginRight: '10px', marginLeft: '50px' }}>No</label>
+                        <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '25px' }}>
+                          <input
+                              type="checkbox"
+                              checked={form.required}
+                              onChange={(e) => handleSliderChange(form.id, e)}
+                              style={{ opacity: 0, width: 0, height: 0 }}
+                          />
+                          <span className="slider" style={{
+                            position: 'absolute',
+                            cursor: 'pointer',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: form.required ? '#cc0000' : '#ccc',
+                            transition: '0.4s',
+                            borderRadius: '50px',
+                          }}></span>
+                          <span style={{
+                            position: 'absolute',
+                            content: '',
+                            height: '20px',
+                            width: '20px',
+                            borderRadius: '50%',
+                            left: '4px',
+                            bottom: '4px',
+                            backgroundColor: 'white',
+                            transition: '0.4s',
+                            transform: form.required ? 'translateX(25px)' : 'none',
+                          }}></span>
+                        </label>
+                        <label style = {{ marginLeft: '10px' }}>Yes</label>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '1025px'}}>
+                        <Label>Notes</Label>
+                        <textarea
+                            name="description"
+                            value={form.description}
+                            onChange={(e) => handleFormChange(e, form.id)}
+                            rows={8}
+                            maxLength={400}
+                            style={{
+                              padding: '10px',
+                              borderRadius: '8px',
+                              fontSize: '1rem',
+                              maxWidth: '800px',
+                              width: '60vw',
+                              minWidth: '500px',
+                              height: '100px',
+                              boxSizing: 'border-box',
+                              border: '1px solid #ccc',
+                            }}
+                        />
+                      </div>
+                    </form>
+                  </div>
+              ))
+          ): (
+              <p>No forms available.</p>
+          )}
+
+          <AddFormButton onClick={addNewForm}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="27" height="18" viewBox="0 0 27 18" fill="none">
+              <line x1="13.8558" x2="13.8558" y2="18" stroke="#CC0000"/>
+              <line y1="-0.5" x2="25.5184" y2="-0.5" transform="matrix(0.999931 -0.0117507 0.0242414 0.999706 0.595703 9.30371)" stroke="#CC0000"/>
+            </svg>
+            Add New Form
+          </AddFormButton>
+          <ButtonContainer>
+            <ResetButton type="button" onClick={handleFormReset}>Reset</ResetButton>
+            <SubmitButton type="submit" onClick={handleAllFormSubmits}>Save</SubmitButton>
+          </ButtonContainer>
+        </InnerCard>
       </FormContainer>
-    </>
-  );
+      </>
+);
 };
-
-
 
 export default Settings;
