@@ -24,13 +24,6 @@
         "*"
       ]
     },
-    "types": [
-      "node",
-      "react",
-      "react-dom",
-      "react-icons",
-      "jest"
-    ],
     "plugins": [
       {
         "name": "next"
@@ -42,10 +35,9 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     ".next/types/**/*.ts",
-    "next-auth.d.ts",
-    "next.config.js",
     "src/middleware.ts",
-    "middleware.ts"
+    "middleware.ts",
+    "images.d.ts"
   ],
   "exclude": [
     "node_modules"

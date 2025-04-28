@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Calendar from "./components/Calendar";
+import Calendar from "./components/MockCalendar";
 import PendingCard from "./components/PendingEventCard";
 import EventCard from "./components/EventCard";
 import FeedbackCard from './components/FeedbackCard'; 
