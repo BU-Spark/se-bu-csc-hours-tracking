@@ -9,13 +9,15 @@ export default async function Dashboard() {
   const people = await prisma.person.findMany({
     take: 4,
     where: {
-      role: 'USER',
+      role: 'ORGANIZER',
     },
     include: {
       affiliation: true,
     },
   });
 
+  //no event feedback data in prisma, going to have to be implemented in future
+  //Using mock data in the meantime for UI/UX purposes
   const mockEventData = [
     {
       title: 'Student Food Rescue',
@@ -58,6 +60,7 @@ export default async function Dashboard() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+        {/*Map over the people in database */}
         {people.map((person, index) => (
           <PendingCard
             key={person.id}

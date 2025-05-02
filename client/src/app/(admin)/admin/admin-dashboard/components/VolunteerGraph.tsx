@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { useState } from 'react';
 
+//Currently using mock data
 const data = [
   { name: 'JAN', people: 0 },
   { name: 'FEB', people: 50 },

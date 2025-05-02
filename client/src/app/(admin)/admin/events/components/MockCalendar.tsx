@@ -17,7 +17,7 @@ import styled from "styled-components";
 // Mock event type
 interface MockEvent {
   id: string;
-  event_start: string; // ISO string
+  event_start: string; 
   title: string;
 }
 
