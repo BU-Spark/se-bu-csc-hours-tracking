@@ -1,0 +1,70 @@
+.event-page-title {
+    margin-bottom: 5rem;
+  }
+  
+  .event-date-heading {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .event-summary {
+    display: flex;
+    gap: 2rem;
+    align-items: start;
+    flex-wrap: wrap;
+  }
+  
+  .event-summary-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex: 1;
+  }
+  
+  .pending-proposals-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-top: -1.75rem;
+  }
+  
+  .pending-proposals-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: -1.25rem;
+  }
+  
+  .pending-proposals-buttons {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .event-calendar-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .event-calendar-label {
+    margin-left: 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .calendar-row {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .feedback-column {
+    flex: 1.2;
+    margin-left: 3rem;
+  }
+  
+  .feedback-title {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    display: block;
+  }

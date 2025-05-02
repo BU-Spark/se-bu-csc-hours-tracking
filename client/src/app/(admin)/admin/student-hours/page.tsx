@@ -1,12 +1,10 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import {
-  HeaderOffset,
-  SummaryContainer,
-  SummaryBox,
-} from "@/_common/styledDivs";
+import { HeaderOffset } from "@/_common/styledDivs";
 import { getHourSubmissionTableData } from "./action";
 import { HoursTableData } from "@/interfaces/interfaces";
+import "./studenthours.css";
 
 const StudentHours: React.FC = () => {
   const [pendingSubmissions, setPendingSubmissions] = useState<HoursTableData[]>([]);
@@ -36,343 +34,73 @@ const StudentHours: React.FC = () => {
   ];
 
   const toggleExpandRow = (id: string) => {
-    if (expandedRow === id) {
-      setExpandedRow(null);
-    } else {
-      setExpandedRow(id);
-    }
+    setExpandedRow(prev => prev === id ? null : id);
   };
 
   return (
     <HeaderOffset>
-      <h1 style={{ fontSize: 'clamp(1.2rem, 2vw, 2rem)', marginBottom: '2rem' }}>
-        Student Hours
-      </h1>
+      <h1 className="student-hours-heading">Student Hours</h1>
 
-      <div style={{
-        display: "flex",
-        gap: "2rem",
-        marginBottom: "2rem"
-      }}>
-        {/* Pending card */}
-        <div style={{
-          border: "2px solid #CC0000",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          width: "15%",
-          display: "flex",
-          flexDirection: "column",
-        }}>
-          <div style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}>
-            <span style={{
-              color: "#CC0000",
-              fontSize: "4rem",
-              fontWeight: "bold",
-              lineHeight: "1",
-            }}>
-              8
-            </span>
-            <div style={{ 
-              fontSize: "1.5rem", 
-              fontWeight: "bold", 
-              textAlign: "right",
-              paddingTop: "0.5rem"
-            }}>
-              Pending
+      <div className="summary-row">
+        {[
+          { count: 8, label: "Pending" },
+          { count: 2, label: "In Progress" },
+          { count: 6, label: "Approved" },
+          { count: 99, label: "Hours\nApproved" },
+        ].map((item, index) => (
+          <div className="summary-card" key={index}>
+            <div className="summary-card-top">
+              <span className="summary-card-number">{item.count}</span>
+              <div className="summary-card-label">{item.label}</div>
+            </div>
+            <div className="summary-card-footer">
+              <a href="#">View more</a>
             </div>
           </div>
-          <div style={{ 
-            textAlign: "center", 
-            borderTop: "1px solid #eaeaea",
-            paddingTop: "0.5rem"
-          }}>
-            <a href="#" style={{
-              color: "#000",
-              textDecoration: "underline",
-              fontSize: "0.9rem"
-            }}>
-              View more
-            </a>
-          </div>
-        </div>
-
-        {/* In Progress*/}
-        <div style={{
-          border: "2px solid #CC0000",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          width: "15%",
-          display: "flex",
-          flexDirection: "column",
-        }}>
-          <div style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}>
-            <span style={{
-              color: "#CC0000",
-              fontSize: "4rem",
-              fontWeight: "bold",
-              lineHeight: "1",
-            }}>
-              2
-            </span>
-            <div style={{ 
-              fontSize: "1.5rem", 
-              fontWeight: "bold", 
-              textAlign: "right",
-              paddingTop: "0.5rem"
-            }}>
-              In Progress
-            </div>
-          </div>
-          <div style={{ 
-            textAlign: "center", 
-            borderTop: "1px solid #eaeaea",
-            paddingTop: "0.5rem"
-          }}>
-            <a href="#" style={{
-              color: "#000",
-              textDecoration: "underline",
-              fontSize: "0.9rem"
-            }}>
-              View more
-            </a>
-          </div>
-        </div>
-
-        {/* Approved card */}
-        <div style={{
-          border: "2px solid #CC0000",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          width: "15%",
-          display: "flex",
-          flexDirection: "column",
-        }}>
-          <div style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}>
-            <span style={{
-              color: "#CC0000",
-              fontSize: "4rem",
-              fontWeight: "bold",
-              lineHeight: "1",
-            }}>
-              6
-            </span>
-            <div style={{ 
-              fontSize: "1.5rem", 
-              fontWeight: "bold", 
-              textAlign: "right",
-              paddingTop: "0.5rem"
-            }}>
-              Approved
-            </div>
-          </div>
-          <div style={{ 
-            textAlign: "center", 
-            borderTop: "1px solid #eaeaea",
-            paddingTop: "0.5rem"
-          }}>
-            <a href="#" style={{
-              color: "#000",
-              textDecoration: "underline",
-              fontSize: "0.9rem"
-            }}>
-              View more
-            </a>
-          </div>
-        </div>
-
-        {/* Hours Approved card */}
-        <div style={{
-          border: "2px solid #CC0000",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          width: "15%",
-          display: "flex",
-          flexDirection: "column",
-        }}>
-          <div style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: "1rem"
-          }}>
-            <span style={{
-              color: "#CC0000",
-              fontSize: "4rem",
-              fontWeight: "bold",
-              lineHeight: "1",
-            }}>
-              99
-            </span>
-            <div style={{ 
-              fontSize: "1.5rem", 
-              fontWeight: "bold", 
-              textAlign: "right",
-              paddingTop: "0.5rem"
-            }}>
-              Hours<br/>Approved
-            </div>
-          </div>
-          <div style={{ 
-            textAlign: "center", 
-            borderTop: "1px solid #eaeaea",
-            paddingTop: "0.5rem"
-          }}>
-            <a href="#" style={{
-              color: "#000",
-              textDecoration: "underline",
-              fontSize: "0.9rem"
-            }}>
-              View more
-            </a>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ 
-          width: '100%', 
-          borderCollapse: 'collapse',
-        }}>
+      <div className="student-hours-table-wrapper">
+        <table className="student-hours-table">
           <thead>
             <tr>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'left',
-              }}>
-                Student Name
-              </th>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'left',
-                width: '100px'
-              }}>
-                College
-              </th>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'left',
-                width: '120px'
-              }}>
-                Category
-              </th>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'left',
-                width: '150px'
-              }}>
-                Date Requested
-              </th>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'left',
-                width: '100px'
-              }}>
-                Hours
-              </th>
-              <th style={{ 
-                backgroundColor: '#CC0000', 
-                color: 'white', 
-                padding: '0.75rem 1rem',
-                textAlign: 'center',
-                width: '250px'
-              }}>
-                Approval
-              </th>
+              <th>Student Name</th>
+              <th>College</th>
+              <th>Category</th>
+              <th>Date Requested</th>
+              <th>Hours</th>
+              <th className="centered">Approval</th>
             </tr>
           </thead>
           <tbody>
             {mockPendingData.map((submission, index) => (
-              <tr key={submission.id} style={{ 
-                backgroundColor: index % 2 === 0 ? '#f2f2f2' : '#e9e9e9',
-              }}>
-                <td style={{ 
-                  padding: '0.75rem 1rem', 
-                  position: 'relative' 
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}>
+              <tr
+                key={submission.id}
+                className={index % 2 === 0 ? "student-hours-row-even" : "student-hours-row-odd"}
+              >
+                <td>
+                  <div className="student-name-cell">
                     {submission.name}
-                    <button 
-                      onClick={() => toggleExpandRow(submission.id)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '0',
-                        transform: expandedRow === submission.id ? 'rotate(180deg)' : 'rotate(0)',
-                        transition: 'transform 0.3s'
-                      }}
-                    >
+                    <button onClick={() => toggleExpandRow(submission.id)} className="expand-button">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M6 9L12 15L18 9" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M6 9L12 15L18 9" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
                   </div>
                 </td>
-                <td style={{ padding: '0.75rem 1rem' }}>{submission.college}</td>
-                <td style={{ padding: '0.75rem 1rem' }}>{submission.category}</td>
-                <td style={{ padding: '0.75rem 1rem' }}>{submission.dateRequested}</td>
-                <td style={{ padding: '0.75rem 1rem' }}>{submission.hours}</td>
-                <td style={{ padding: '0.75rem 1rem' }}>
+                <td>{submission.college}</td>
+                <td>{submission.category}</td>
+                <td>{submission.dateRequested}</td>
+                <td>{submission.hours}</td>
+                <td>
                   {submission.approvalStatus === 1 ? (
                     <div style={{ textAlign: 'center' }}>
                       Approved by <strong>{submission.approvedBy}</strong>
                     </div>
                   ) : (
-                    <div style={{
-                      display: 'flex', 
-                      justifyContent: 'space-around',
-                      gap: '0.5rem'
-                    }}>
-                      <button style={{
-                        backgroundColor: 'white',
-                        border: '1px solid #d8d8d8',
-                        borderRadius: '20px',
-                        padding: '0.5rem 1.5rem',
-                        cursor: 'pointer',
-                        fontWeight: 'normal'
-                      }}>
-                        Approve
-                      </button>
-                      <button style={{
-                        backgroundColor: 'white',
-                        border: '1px solid #d8d8d8',
-                        borderRadius: '20px',
-                        padding: '0.5rem 1.5rem',
-                        cursor: 'pointer',
-                        fontWeight: 'normal'
-                      }}>
-                        Deny
-                      </button>
+                    <div className="approval-actions">
+                      <button className="approval-button">Approve</button>
+                      <button className="approval-button">Deny</button>
                     </div>
                   )}
                 </td>
