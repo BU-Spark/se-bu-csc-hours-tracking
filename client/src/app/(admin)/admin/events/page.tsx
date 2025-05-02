@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Calendar from "./components/MockCalendar";
 import PendingCard from "./components/PendingEventCard";
 import EventCard from "./components/EventCard";
-import FeedbackCard from './components/FeedbackCard'; 
+import FeedbackCard from './components/FeedbackCard';
+import './events.css';
 
 export default function EventManagementPage() {
   const router = useRouter();
@@ -70,21 +71,21 @@ export default function EventManagementPage() {
 
   return (
     <>
-      <h1 style={{ marginBottom: "5rem" }}>Event Management</h1>
-      <div style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>
+      <h1 className="event-page-title">Event Management</h1>
+      <div className="event-date-heading">
         {today.toLocaleString("default", { month: "long" })},{" "}
         {today.toLocaleString("default", { year: "numeric" })}
       </div>
 
-      <div style={{ display: "flex", gap: "2rem", alignItems: "start", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", flexDirection: "row", gap: "1rem", flex: 1 }}>
+      <div className="event-summary">
+        <div className="event-summary-cards">
           <EventCard count={ongoingEvents.length} label="Ongoing Events" />
           <EventCard count={upcomingEvents.length} label="Upcoming Events" />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0, marginTop:"-1.75rem" }}>
+        <div className="pending-proposals-wrapper">
           <strong>Pending Event Proposals</strong>
-          <div style={{ display: "flex", flexDirection: "row", gap: "1rem", marginTop: "-1.25rem" }}>
+          <div className="pending-proposals-cards">
             {currentCards.map((proposal, idx) => (
               <PendingCard
                 key={idx}
@@ -94,26 +95,25 @@ export default function EventManagementPage() {
               />
             ))}
           </div>
-          <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.5rem" }}>
+          <div className="pending-proposals-buttons">
             <button onClick={handlePrev} disabled={currentIndex === 0}>
               ← Prev
             </button>
-            <button onClick={handleNext} disabled={currentIndex + cardsPerPage >= mockProposals.length}>
+            <button
+              onClick={handleNext}
+              disabled={currentIndex + cardsPerPage >= mockProposals.length}
+            >
               Next →
             </button>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <strong style={{ marginLeft: "1rem", marginBottom: "1.5rem" }}>
-            Event Calendar
-          </strong>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div className="event-calendar-section">
+          <strong className="event-calendar-label">Event Calendar</strong>
+          <div className="calendar-row">
             <Calendar />
-            <div style={{ flex: 1.2, marginLeft :'3rem' }}>
-              <strong style={{ marginBottom: '1rem', fontSize: '1.2rem', display: 'block' }}>
-                General Student Feedback
-              </strong>
+            <div className="feedback-column">
+              <strong className="feedback-title">General Student Feedback</strong>
               {mockFeedback.map((fb, idx) => (
                 <FeedbackCard
                   key={idx}

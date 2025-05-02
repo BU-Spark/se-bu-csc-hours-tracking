@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useState } from 'react';
+import './FeedbackCard.css';
 
 const data = [
   { name: 'JAN', people: 0 },
@@ -23,33 +24,15 @@ export default function StudentVolunteersChart() {
   const toggleOptions = ['Month', 'Semester', 'Year'];
 
   return (
-    <div
-      style={{
-        maxWidth: '25rem',
-        height: '25rem',
-        backgroundColor: '#eee',
-        padding: '1rem',
-        borderRadius: '1rem',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div style={{ display: 'flex', gap: '1rem' }}>
+    <div className="student-chart-container">
+      <div className="student-chart-buttons">
         {toggleOptions.map((label) => (
           <button
             key={label}
             onClick={() => setSelectedRange(label)}
-            style={{
-              padding: '0.4rem 1.25rem',
-              borderRadius: '999px',
-              fontWeight: 'bold',
-              fontSize: '0.9rem',
-              border: '2px solid #CC0000',
-              backgroundColor: selectedRange === label ? '#CC0000' : 'white',
-              color: selectedRange === label ? 'white' : '#CC0000',
-              cursor: 'pointer',
-            }}
+            className={`student-chart-button ${
+              selectedRange === label ? 'active' : ''
+            }`}
           >
             {label}
           </button>
@@ -57,11 +40,11 @@ export default function StudentVolunteersChart() {
       </div>
 
       <div>
-        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#CC0000' }}>178</div>
-        <div style={{ fontSize: '1rem', color: '#000' }}>total ppl</div>
+        <div className="student-chart-total">178</div>
+        <div className="student-chart-label">total ppl</div>
       </div>
 
-      <div style={{ height: '9rem', position: 'relative' }}>
+      <div className="student-chart-graph">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ bottom: 24 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -93,19 +76,7 @@ export default function StudentVolunteersChart() {
           </LineChart>
         </ResponsiveContainer>
 
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            height: '2rem',
-            backgroundColor: '#666',
-            borderBottomLeftRadius: '1rem',
-            borderBottomRightRadius: '1rem',
-            zIndex: 0,
-          }}
-        />
+        <div className="student-chart-bg" />
       </div>
     </div>
   );

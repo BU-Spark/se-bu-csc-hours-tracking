@@ -3,13 +3,14 @@ import PendingCori from './components/PendingCori';
 import FeedbackCard from './components/FeedbackCard';
 import prisma from '@/lib/prisma';
 import VolunteerChart from './components/VolunteerChart';
-import VolunteerGraph from './components/VolunteerGraph'; 
+import VolunteerGraph from './components/VolunteerGraph';
+import './dashboard.css';
 
 export default async function Dashboard() {
   const people = await prisma.person.findMany({
     take: 4,
     where: {
-      role: 'USER',
+      role: 'ORGANIZER',
     },
     include: {
       affiliation: true,
@@ -37,27 +38,14 @@ export default async function Dashboard() {
 
   return (
     <>
-      <h1 style={{ fontSize: 'clamp(1.2rem, 2vw, 2rem)' }}>Dashboard</h1>
+      <h1 className="dashboard-title">Dashboard</h1>
 
-      <div style={{ marginTop: '4em', display: 'flex' }}>
-        <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
-          Pending Hour Approvals
-        </strong>
-        <button
-          style={{
-            background: 'none',
-            border: 'none',
-            marginLeft: 'auto',
-            fontWeight: 'bold',
-            color: '#CC0000',
-            cursor: 'pointer',
-          }}
-        >
-          View All →
-        </button>
+      <div className="section-header">
+        <strong className="section-title">Pending Hour Approvals</strong>
+        <button className="view-all-button">View All →</button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+      <div className="card-row">
         {people.map((person, index) => (
           <PendingCard
             key={person.id}
@@ -76,53 +64,32 @@ export default async function Dashboard() {
         ))}
       </div>
 
-      <div style={{ marginTop: '2.5em', display : 'flex' }}>
-        <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
-          Pending CORI / Volunteer Agreement Approvals
-        </strong>
-        <button
-          style={{
-            background: 'none',
-            border: 'none',
-            marginLeft: 'auto',
-            fontWeight: 'bold',
-            color: '#CC0000',
-            cursor: 'pointer',
-          }}
-        >
-          View All →
-        </button>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
-          {people.map((person, index) => (
-            <PendingCori
-              key={person.id + '-cori'}
-              classYear={person.class || 2026}
-              college={person.college || 'CAS'}
-              name={
-                person.name === 'Please Update Your Name'
-                  ? 'John Doe'
-                  : person.name
-              }
-              category={person.affiliation?.abbreviation || 'N/A'}
-              dateRequested={'03/25/2024'}
-              profilePic={`https://i.pravatar.cc/40?img=${index + 1}`}
-            />
-          ))}
+      <div className="section-header mt-section-gap">
+        <strong className="section-title">Pending CORI / Volunteer Agreement Approvals</strong>
+        <button className="view-all-button">View All →</button>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          marginTop: '2.5em',
-          gap: '3em',
-        }}
-      >
-        <div style={{ maxWidth: '25rem' }}>
-          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
-            Event Feedback
-          </strong>
+      <div className="card-row">
+        {people.map((person, index) => (
+          <PendingCori
+            key={person.id + '-cori'}
+            classYear={person.class || 2026}
+            college={person.college || 'CAS'}
+            name={
+              person.name === 'Please Update Your Name'
+                ? 'John Doe'
+                : person.name
+            }
+            category={person.affiliation?.abbreviation || 'N/A'}
+            dateRequested={'03/25/2024'}
+            profilePic={`https://i.pravatar.cc/40?img=${index + 1}`}
+          />
+        ))}
+      </div>
+
+      <div className="grid-row">
+        <div className="feedback-section">
+          <strong className="section-title">Event Feedback</strong>
           {mockEventData.map((event, index) => (
             <FeedbackCard
               key={index}
@@ -136,18 +103,13 @@ export default async function Dashboard() {
         </div>
 
         <div>
-          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
-            Student Volunteer Hours
-          </strong>
-
-          <VolunteerChart/>
+          <strong className="section-title">Student Volunteer Hours</strong>
+          <VolunteerChart />
         </div>
 
         <div>
-          <strong style={{ fontSize: 'clamp(1rem, 1.5vw, 1.3rem)' }}>
-            # Of Student Volunteers
-          </strong>
-          <VolunteerGraph/>
+          <strong className="section-title"># Of Student Volunteers</strong>
+          <VolunteerGraph />
         </div>
       </div>
     </>

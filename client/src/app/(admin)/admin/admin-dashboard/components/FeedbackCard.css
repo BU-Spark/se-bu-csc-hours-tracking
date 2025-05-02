@@ -1,0 +1,335 @@
+.feedback-wrapper {
+  margin-top: 1em;
+  max-width: 30em;
+}
+
+.feedback-card {
+  background-color: #ebebeb;
+  border-radius: 1rem;
+}
+
+.feedback-card-body {
+  padding: 0.75rem 1rem;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-title {
+  color: #cc0000;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.feedback-link {
+  color: #cc0000;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.feedback-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.feedback-description {
+  flex: 1;
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.feedback-image {
+  width: 8.5rem;
+  height: 6.25rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.feedback-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 0.4rem;
+  margin-left: 0.5rem;
+}
+
+.feedback-date {
+  font-size: 0.82rem;
+  color: #333;
+}
+
+.feedback-author-img {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  margin-left: 0.4rem;
+}
+
+.pending-card {
+  margin-top: 1.25rem;
+  min-width: 18rem;
+  max-width: 18rem;
+  background-color: #cc0000;
+  color: white;
+  border-radius: 1.5625rem;
+  border: 0.125rem solid #cc0000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pending-card-header {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.1875rem;
+}
+
+.pending-card-img {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+}
+
+.pending-card-name {
+  color: white;
+  font-size: 1rem;
+}
+
+.pending-card-year {
+  font-size: 0.75rem;
+  color: white;
+}
+
+.pending-card-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.625rem;
+}
+
+.pending-card-body {
+  background-color: white;
+  color: black;
+  border-bottom-left-radius: 1.5625rem;
+  border-bottom-right-radius: 1.5625rem;
+}
+
+.pending-card-list-wrapper {
+  margin-top: -1.875rem;
+  margin-bottom: -0.9375rem;
+}
+
+.pending-card-list {
+  margin-left: -3.125rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.pending-card-link {
+  margin-top: 0.3125rem;
+  text-decoration: underline;
+  color: #cc0000;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.pending-cori-card {
+  margin-top: 1.25rem;
+  width: clamp(12rem, 30vw, 18rem);
+  background-color: #ebebeb;
+  color: black;
+  border-radius: 1.5625rem;
+}
+
+.pending-cori-header {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.1875rem;
+}
+
+.pending-cori-img {
+  height: clamp(2.5rem, 5vw, 3rem);
+  width: clamp(2.5rem, 5vw, 3rem);
+  border-radius: 50%;
+}
+
+.pending-cori-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.625rem;
+}
+
+.pending-cori-name {
+  color: black;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+}
+
+.pending-cori-year {
+  font-size: clamp(0.656rem, 1.3vw, 0.75rem);
+  color: black;
+}
+
+.pending-cori-body {
+  background-color: #cc0000;
+  color: white;
+  border-bottom-left-radius: 1.5625rem;
+  border-bottom-right-radius: 1.5625rem;
+}
+
+.pending-cori-body-wrapper {
+  margin-top: -1.875rem;
+  margin-bottom: -0.9375rem;
+}
+
+.pending-cori-list {
+  margin-left: -3.125rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.pending-cori-link {
+  margin-top: 0.3125rem;
+  text-decoration: underline;
+  color: white;
+  font-weight: bold;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+}
+
+.volunteer-chart-container {
+  background-color: #eee;
+  border-radius: 1rem;
+  padding: 1rem;
+  max-width: 25rem;
+  height: 25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.volunteer-chart-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.volunteer-chart-button {
+  padding: 0.4rem 1.25rem;
+  border: 2px solid #cc0000;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  background-color: white;
+  color: #cc0000;
+  cursor: pointer;
+}
+
+.volunteer-chart-button.active {
+  background-color: #cc0000;
+  color: white;
+}
+
+.volunteer-chart-stats {
+  margin-top: 1rem;
+}
+
+.volunteer-chart-total {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #cc0000;
+}
+
+.volunteer-chart-label {
+  text-decoration: underline;
+  color: black;
+  font-size: 0.95rem;
+}
+
+.volunteer-chart-graph {
+  height: 16.5rem;
+  position: relative;
+}
+
+.volunteer-chart-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2rem;
+  background-color: #666;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  z-index: 0;
+}
+
+
+
+.student-chart-container {
+  max-width: 25rem;
+  height: 25rem;
+  background-color: #eee;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.student-chart-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.student-chart-button {
+  padding: 0.4rem 1.25rem;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border: 2px solid #cc0000;
+  background-color: white;
+  color: #cc0000;
+  cursor: pointer;
+}
+
+.student-chart-button.active {
+  background-color: #cc0000;
+  color: white;
+}
+
+.student-chart-total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #cc0000;
+}
+
+.student-chart-label {
+  font-size: 1rem;
+  color: #000;
+}
+
+.student-chart-graph {
+  height: 9rem;
+  position: relative;
+}
+
+.student-chart-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2rem;
+  background-color: #666;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  z-index: 0;
+}
+

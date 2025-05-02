@@ -1,0 +1,113 @@
+.student-hours-heading {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .summary-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .summary-card {
+    border: 2px solid #CC0000;
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .summary-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .summary-card-number {
+    color: #CC0000;
+    font-size: 4rem;
+    font-weight: bold;
+    line-height: 1;
+  }
+  
+  .summary-card-label {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: right;
+    padding-top: 0.5rem;
+  }
+  
+  .summary-card-footer {
+    text-align: center;
+    border-top: 1px solid #eaeaea;
+    padding-top: 0.5rem;
+  }
+  
+  .summary-card-footer a {
+    color: #000;
+    text-decoration: underline;
+    font-size: 0.9rem;
+  }
+  
+  .student-hours-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .student-hours-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .student-hours-table th {
+    background-color: #CC0000;
+    color: white;
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+  
+  .student-hours-table th.centered {
+    text-align: center;
+  }
+  
+  .student-hours-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .student-hours-row-even {
+    background-color: #f2f2f2;
+  }
+  
+  .student-hours-row-odd {
+    background-color: #e9e9e9;
+  }
+  
+  .student-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .expand-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.3s;
+  }
+  
+  .approval-actions {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+  }
+  
+  .approval-button {
+    background-color: white;
+    border: 1px solid #d8d8d8;
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    font-weight: normal;
+  }

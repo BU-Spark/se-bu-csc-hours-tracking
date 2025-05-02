@@ -1,4 +1,6 @@
+'use client';
 import { Card } from 'antd';
+import './FeedbackCard.css';
 
 type PendingHourCardProps = {
   classYear: number;
@@ -24,32 +26,17 @@ export default function PendingCard({
 
   return (
     <Card
-      style={{
-        marginTop: "1.25rem",
-        minWidth: "18rem",
-        maxWidth: "18rem",
-        backgroundColor: "#CC0000",
-        color: "white",
-        borderRadius: "1.5625rem",
-        border: "0.125rem solid #CC0000",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
+      className="pending-card"
       title={
-        <div style={{ display: "flex", flexDirection: "row", marginTop: "0.1875rem" }}>
+        <div className="pending-card-header">
           <img
-            src={"https://i.pravatar.cc/40"}
+            src={profilePic || "https://i.pravatar.cc/40"}
             alt="Profile"
-            style={{
-              height: "3rem",
-              width: "3rem",
-              borderRadius: "50%",
-            }}
+            className="pending-card-img"
           />
-          <div style={{ display: "flex", flexDirection: "column", marginLeft: "0.625rem" }}>
-            <span style={{ color: "white", fontSize: "1rem" }}>{name}</span>
-            <span style={{ fontSize: "0.75rem", color: "white" }}>{userYear}</span>
+          <div className="pending-card-info-wrapper">
+            <span className="pending-card-name">{name}</span>
+            <span className="pending-card-year">{userYear}</span>
           </div>
         </div>
       }
@@ -68,16 +55,8 @@ export default function PendingCard({
         },
       }}
     >
-      <div style={{ marginTop: "-1.875rem", marginBottom: "-0.9375rem" }}>
-        <ul
-          style={{
-            marginLeft: "-3.125rem",
-            listStyle: "none",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.3125rem",
-          }}
-        >
+      <div className="pending-card-list-wrapper">
+        <ul className="pending-card-list">
           <li>
             <strong>Category: </strong>
             {category}
@@ -90,16 +69,7 @@ export default function PendingCard({
             <strong>Date: </strong>
             {date}
           </li>
-          <a
-            href="#"
-            style={{
-              marginTop: "0.3125rem",
-              textDecoration: "underline",
-              color: "#CC0000",
-              fontWeight: "bold",
-              fontSize: "1rem",
-            }}
-          >
+          <a href="#" className="pending-card-link">
             Full Profile
           </a>
         </ul>
