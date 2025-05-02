@@ -1,6 +1,6 @@
 # BU CSC Hours Tracker
 
-Throughout  2024, our team has been developing BU CSC Hours Tracker. Its mission is to connect BU students with nonprofit organizations.
+Throughout  2024 and into 2025, our team has been developing BU CSC Hours Tracker. Its mission is to connect BU students with nonprofit organizations.
 
 ## **Description**
 
@@ -135,7 +135,9 @@ se-bu-csc-hours-tracking/
 
 ## **Future Work**
 
-* Third-party settings page uploading forms to google cloud for storage. Use S3 buckets  
+* Right now the app is open to all gmail accounts. There needs to be some form of authorization for 3rd party users
+* There is currently no hosting option for images. Discussions have started with Spark and client
+* The UI works for desktop but there is little support for mobile  
 * Admin management of last minute registrations and capability to get off the waitlist  
 * Dual-use accounts where users can be volunteers as well as third party organizers  
 * Confirmation and reminder emails for event and waitlist registrations with calendar invites  
@@ -144,14 +146,18 @@ se-bu-csc-hours-tracking/
 
 ---
 
-## **Team (Fall 2024\)**
+## **Team (Spring 2025\)**
 
-* Jasper Hoong \- <jasperh@bu.edu>  
-* Alexander Miller \- <alexjmil@bu.edu>  
-* Thomas Nguyen \- <nguyen04@bu.edu>  
-* Jeffrey Zhou \- [jzhou25@bu.edu](mailto:jzhou25@bu.edu)
+* Ahmed Almehri \- <almehri@bu.edu>
+* Raheeq Ibrahim \- <raheeqi@bu.edu>
+* Alvin Zhu \- <alvinz@bu.edu>
+* Sam Gulinello \- <samgul@bu.edu>
 
 **Past Contributors**
 
 * Owen Mariani (owenm-26)  
 * Alessandra Lanz (alessandralanz)
+* Jasper Hoong \- <jasperh@bu.edu>  
+* Alexander Miller \- <alexjmil@bu.edu>  
+* Thomas Nguyen \- <nguyen04@bu.edu>  
+* Jeffrey Zhou \- [jzhou25@bu.edu](mailto:jzhou25@bu.edu)
