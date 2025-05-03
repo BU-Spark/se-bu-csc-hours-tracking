@@ -114,6 +114,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 	const [category, setCategory] = useState<Category>();
 	const [userOrg, setUserOrg] = useState<OrgType>();
 	const [startDate, setStartDate] = useState<Dayjs | null>(null);
+	const [regStartDate, setRegStartDate] = useState<Dayjs | null>(null);
 
 	useEffect(() => {
 		const fetchOrganizations = async () => {
@@ -236,6 +237,14 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 		return startDate ? current && current.isBefore(startDate, "day") : false;
 	};
 
+	const handleRegStartDateChange = (date: Dayjs | null) => {
+		setRegStartDate(date);
+	};
+	
+	const disabledRegEndDate = (current: Dayjs) => {
+		return regStartDate ? current && current.isBefore(regStartDate, "day") : false;
+	};
+
 	return (
 		<FormContainer>
 			<BackButton onClick={() => router.push("/third-party/my-events")}>
@@ -355,6 +364,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 							<DatePicker
 								showTime={{ use12Hours: true, format: "h:mm a" }}
 								format="YYYY-MM-DD h:mm a"
+								onChange={handleRegStartDateChange}
 							/>
 						</Form.Item>
 					</Col>
@@ -372,6 +382,7 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 							<DatePicker
 								showTime={{ use12Hours: true, format: "h:mm a" }}
 								format="YYYY-MM-DD h:mm a"
+								disabledDate={disabledRegEndDate}
 							/>
 						</Form.Item>
 					</Col>
