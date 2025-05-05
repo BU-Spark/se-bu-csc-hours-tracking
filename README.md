@@ -146,6 +146,28 @@ se-bu-csc-hours-tracking/
 
 ---
 
+## **Contributing Guidelines**
+All changes should be made in a new branch with the following naming strategy.
+
+### General format:
+
+`[category]/[short-description]-[your-initials]`
+
+### Examples:
+
+feature/add-login-ar\
+bugfix/fix-chart-rendering-js\
+chore/update-readme-js
+
+### Categories:
+
+feature/ -> New features (e.g., feature/add-user-auth)\
+bugfix/ -> Fixing bugs (e.g., bugfix/fix-navbar)\
+chore/ -> Maintenance tasks (e.g., chore/update-dependencies)\
+refactor/ -> Code improvements without changing functionality (e.g., refactor/improve-api-structure)\
+test/ -> Adding or updating tests (e.g., test/add-integration-tests)\
+docs/ -> Documentation updates (e.g., docs/update-api-endpoints)
+
 ## **Team (Spring 2025\)**
 
 * Ahmed Almehri \- <almehri@bu.edu>
