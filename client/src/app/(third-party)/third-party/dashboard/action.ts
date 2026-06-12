@@ -1,6 +1,7 @@
 "use server";
 
 import { Feedback } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import { getPersonFromUser } from "@/lib/getPersonFromUser";
 import prisma from "@/lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
@@ -12,6 +13,7 @@ interface ExtendedEvent extends Partial<Event> {
 }
 
 export async function getEvent(eventId: number) {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId },
@@ -32,6 +34,7 @@ export async function getEvent(eventId: number) {
 }
 
 export async function updateEvent(eventId: number, eventData: any) {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   console.log("updating evet");
   try {
     const {
@@ -82,6 +85,7 @@ export async function updateEvent(eventId: number, eventData: any) {
 }
 
 export async function createEvent(eventData: ExtendedEvent | any) {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const {
       category_id,
@@ -130,6 +134,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
 //   }
 // }
 export async function getEvents(): Promise<Event[]> {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const events: Event[] = await prisma.event.findMany();
     return events;
@@ -144,6 +149,7 @@ export async function getEvents(): Promise<Event[]> {
 export const getOrganizations = async (): Promise<
   Organization[] | undefined
 > => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const organization = await prisma.organization.findMany();
     if (!organization) {
@@ -157,6 +163,7 @@ export const getOrganizations = async (): Promise<
 };
 
 export const getCategories = async (): Promise<Category[] | undefined> => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const category = await prisma.category.findMany();
     if (!category) {
@@ -170,6 +177,7 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
 };
 
 export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const rawFeedback = await prisma.hourSubmission.findMany({
       select: {
@@ -204,6 +212,7 @@ export const getFeedback = async (): Promise<Feedback[] | undefined> => {
 
 //get events by organizer id
 export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const events = await prisma.event.findMany({
       where: { organization_id: id },
@@ -219,8 +228,14 @@ export const getEventsByOrganizerId = async (id: number): Promise<Event[]> => {
 //access stuff w/ org?.affiliation?.id or .name, .abbreviation
 export const getOrganizationByUserId = async (clerk_id: string) => {
   try {
-    const person = await getPersonFromUser(clerk_id);
+    const person = await requirePerson(["ORGANIZER", "ADMIN"]);
+    if (person.clerk_id !== clerk_id) {
+      throw new Error("Unauthorized");
+    }
     const affiliation_id = person.affiliation_id;
+    if (!affiliation_id) {
+      return null;
+    }
     const organization = await prisma.organization.findUnique({
       where: { id: affiliation_id },
     });
@@ -252,6 +267,7 @@ async function getApprovalStatusIds() {
 
 // Fetch pending submissions for the organization's events
 export const getPendingSubmissions = async (organizationId: number) => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const { Pending } = await getApprovalStatusIds();
 
@@ -277,6 +293,7 @@ export const getPendingSubmissions = async (organizationId: number) => {
 
 // Fetch stats for the organization's events
 export const getOrganizationStats = async (organizationId: number) => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const { Pending, Approved } = await getApprovalStatusIds();
 
@@ -345,6 +362,7 @@ export const getOrganizationStats = async (organizationId: number) => {
 
 // Fetch events submitted to BU CSC by the organization
 export const getSubmittedEvents = async (organizationId: number) => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     // Since 'Event' doesn't have 'approval_status', we'll use 'Application' to infer submissions.
     const events = await prisma.event.findMany({

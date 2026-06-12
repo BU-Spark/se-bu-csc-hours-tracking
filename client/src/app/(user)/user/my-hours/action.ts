@@ -1,12 +1,17 @@
 "use server";
 
 import { Event, HourSubmission, Organization, Person } from "@prisma/client";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { EventHours } from "@/interfaces/interfaces";
 
 export const getHourSubmissionsByUserEmail = async (
   email: string
 ): Promise<any[]> => {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.email !== email) {
+    throw new Error("Unauthorized");
+  }
   const user = await prisma.person.findUnique({
     where: { email },
     include: {
@@ -85,6 +90,10 @@ export const getHourSubmissionsByUserEmail = async (
 export const getUpcomingHoursByUser = async (
   userId: number
 ): Promise<Number | undefined> => {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.id !== userId) {
+    throw new Error("Unauthorized");
+  }
   try {
     const futureHourSubmissions = await prisma.hourSubmission.findMany({
       where: {

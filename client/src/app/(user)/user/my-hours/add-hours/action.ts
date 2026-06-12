@@ -1,6 +1,7 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { CreateNewHourSubmissionParams } from "@/interfaces/interfaces";
 import { Event, HourSubmission } from "@prisma/client";
@@ -13,6 +14,10 @@ export async function createNewHourSubmission({
   feedback,
   description,
 }: CreateNewHourSubmissionParams) {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.id !== userId) {
+    throw new Error("Unauthorized");
+  }
   try {
     if (!userId) {
       console.error("Unauthorized: No id given");
@@ -89,6 +94,10 @@ export async function createNewHourSubmission({
 export const getAllApprovedEventsByUserId = async (
   userId: number
 ): Promise<Event[] | undefined> => {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.id !== userId) {
+    throw new Error("Unauthorized");
+  }
   try {
     // Get all approved applications for the user
     const approvedApplications = await prisma.application.findMany({

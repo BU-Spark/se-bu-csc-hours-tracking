@@ -38,9 +38,13 @@ function ThirdPartyEventSider() {
       setError(null);
       try {
         const person = await getPersonFromUser(session.user.id);
+        if (!person) {
+          setError("Person not found.");
+          setLoading(false);
+          return;
+        }
         setPerson(person);
-        // Get organization ID using person id
-        const organization = await getOrganizationByUserId(person?.id);
+        const organization = await getOrganizationByUserId(session.user.id);
         console.log(organization);
         if (!organization) {
           setError("Organization not found.");

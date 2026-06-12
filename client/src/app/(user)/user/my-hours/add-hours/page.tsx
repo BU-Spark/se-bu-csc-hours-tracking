@@ -52,9 +52,12 @@ const AddHours: React.FC = () => {
       if (!session?.user?.id) {
         throw new Error('User ID is not available');
       }
-      const { id } = await getPersonFromUser(session.user.id);
+      const person = await getPersonFromUser(session.user.id);
+      if (!person) {
+        throw new Error("Person not found");
+      }
       const validEvents: Event[] | undefined =
-        await getAllApprovedEventsByUserId(id);
+        await getAllApprovedEventsByUserId(person.id);
       if (!validEvents) return;
 
       setEventOptions(validEvents);
@@ -75,10 +78,13 @@ const AddHours: React.FC = () => {
     if (!session?.user?.id) {
       throw new Error('User ID is not available');
     }
-    const { id } = await getPersonFromUser(session.user.id);
+    const person = await getPersonFromUser(session.user.id);
+    if (!person) {
+      throw new Error("Person not found");
+    }
     const body: CreateNewHourSubmissionParams = {
       eventId: Number(event),
-      userId: Number(id),
+      userId: Number(person.id),
       hours: Number(hours),
       feedback: feedback,
       description: description,

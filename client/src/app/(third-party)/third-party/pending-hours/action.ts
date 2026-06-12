@@ -3,12 +3,14 @@ import {
   HoursTableData,
   ProcessSubmissionParams,
 } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { HourSubmission } from "@prisma/client";
 
 export async function getPendingSubmissions(): Promise<
   HourSubmission[] | undefined
 > {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const pendingSubmisions: HourSubmission[] =
       await prisma.hourSubmission.findMany({ where: { approval_status: 0 } });
@@ -26,11 +28,12 @@ export async function getHourSubmissionTableData(orgId: number): Promise<
   | { pendingHourRows: HoursTableData[]; reviewHourRows: HoursTableData[] }
   | undefined
 > {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const pendingSubmissions: any[] = await prisma.hourSubmission.findMany({
       where: { approval_status: 0,
         event: {
-          organization_id: orgId, // Match organization_id
+          organization_id: orgId,
         },
        },
       select: {
@@ -48,7 +51,7 @@ export async function getHourSubmissionTableData(orgId: number): Promise<
       where: {
         approval_status: { not: 0, },
         event: {
-          organization_id: orgId, // Match organization_id
+          organization_id: orgId,
         },
       },
       select: {
@@ -112,6 +115,7 @@ export async function getHourSubmissionTableData(orgId: number): Promise<
 export async function reviewHourSubmission(
   data: ProcessSubmissionParams
 ): Promise<any> {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   const { submissionId, updaterId, approvalStatus } = data;
   try {
     const response = prisma.hourSubmission.update({
@@ -129,14 +133,17 @@ export async function reviewHourSubmission(
 }
 
 export const getOrganizationByUserId = async (id: number) => {
+  const person = await requirePerson(["ORGANIZER", "ADMIN"]);
+  if (person.id !== id) {
+    throw new Error("Unauthorized");
+  }
   try {
     const organization = prisma.person.findUnique({
       where: { id: id },
-      select: { affiliation: true }, // Only select the org_id
+      select: { affiliation: true },
     });
     return organization;
   } catch (error) {
     console.error(error);
   }
 };
-

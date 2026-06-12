@@ -33,11 +33,12 @@ function EventSider() {
     setLoading(true);
     const fetchMyApplications = async () => {
       if (!session?.user?.id) return;
-      const { userId } = await getPersonFromUser(session?.user.id);
+      const person = await getPersonFromUser(session?.user.id);
+      if (!person) return;
 
       const userApplications = await getApplicationsByUserId(
-        userId
-      ); //get all user applications
+        person.id
+      );
       if (userApplications) {
         setMyApplications(userApplications);
         const eventIds = userApplications.map(

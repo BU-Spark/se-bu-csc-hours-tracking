@@ -1,6 +1,7 @@
 "use server";
 
 import { Feedback } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "../../../../../lib/prisma";
 import { Category, Event, Organization, Person } from "@prisma/client";
 import { Buffer } from "buffer";
@@ -11,6 +12,7 @@ interface ExtendedEvent extends Partial<Event> {
 }
 
 export async function getEvent(eventId: number) {
+  await requirePerson(["ADMIN"]);
   try {
     const event = await prisma.event.findUnique({
       where: { id: eventId },
@@ -31,6 +33,7 @@ export async function getEvent(eventId: number) {
 }
 
 export async function updateEvent(eventId: number, eventData: any) {
+  await requirePerson(["ADMIN"]);
   try {
     const {
       category_id,
@@ -81,6 +84,7 @@ export async function updateEvent(eventId: number, eventData: any) {
 }
 
 export async function createEvent(eventData: ExtendedEvent | any) {
+  await requirePerson(["ADMIN"]);
   try {
     const {
       category_id,
@@ -130,6 +134,7 @@ export async function createEvent(eventData: ExtendedEvent | any) {
 }
 
 export async function getEvents() {
+  await requirePerson(["ADMIN"]);
   try {
     const events = await prisma.event.findMany();
     return events.map((event) => ({
@@ -145,6 +150,7 @@ export async function getEvents() {
 export const getOrganizations = async (): Promise<
   Organization[] | undefined
 > => {
+  await requirePerson(["ADMIN"]);
   try {
     const organization = await prisma.organization.findMany();
     if (!organization) {
@@ -158,6 +164,7 @@ export const getOrganizations = async (): Promise<
 };
 
 export const getCategories = async (): Promise<Category[] | undefined> => {
+  await requirePerson(["ADMIN"]);
   try {
     const category = await prisma.category.findMany();
     if (!category) {
@@ -171,6 +178,7 @@ export const getCategories = async (): Promise<Category[] | undefined> => {
 };
 
 export const getFeedback = async (): Promise<Feedback[] | undefined> => {
+  await requirePerson(["ADMIN"]);
   try {
     const rawFeedback = await prisma.hourSubmission.findMany({
       select: {

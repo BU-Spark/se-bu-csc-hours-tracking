@@ -51,7 +51,9 @@ const PendingHours: React.FC = () => {
             if (!session?.user?.id) {
                 throw new Error('User ID is not available');
             }
-            const { id: userId } = await getPersonFromUser(session.user.id);
+            const person = await getPersonFromUser(session.user.id);
+            if (!person) return;
+            const userId = person.id;
             let org;
             if (userId) {
                 org = await getOrganizationByUserId(Number(userId));

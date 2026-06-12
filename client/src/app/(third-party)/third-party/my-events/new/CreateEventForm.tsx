@@ -181,7 +181,11 @@ const CreateEventForm: React.FC<AdminEventFormProps> = ({
 		if (!session?.user?.id) {
 			throw new Error('User ID is not available');
 		}
-		const { id: userId } = await getPersonFromUser(session.user.id);
+		const person = await getPersonFromUser(session.user.id);
+		if (!person) {
+			throw new Error("Person not found");
+		}
+		const userId = person.id;
 		const formattedValues = {
 			title: values.title,
 			...values,

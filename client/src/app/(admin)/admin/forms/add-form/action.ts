@@ -1,10 +1,12 @@
 "use server";
 import { CreateFormResponse, NewForm } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export const createForm = async (
   form: NewForm
 ): Promise<CreateFormResponse | undefined> => {
+  await requirePerson(["ADMIN"]);
   try {
     const newFormCode = await prisma.formCode.create({
       data: {

@@ -1,8 +1,10 @@
 "use server";
 import prisma from "../../../_utils/prisma";
 import { Form, Code } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 
 export async function getForms(): Promise<Form[]> {
+  await requirePerson(["USER", "ADMIN"]);
   try {
     const forms: Form[] = await prisma.form.findMany();
     return forms;
@@ -15,6 +17,7 @@ export async function getForms(): Promise<Form[]> {
 }
 
 export async function getCodes(): Promise<Code[]> {
+  await requirePerson(["USER", "ADMIN"]);
   try {
     const codes: Code[] = await prisma.formCode.findMany();
     return codes;
@@ -27,6 +30,7 @@ export async function getCodes(): Promise<Code[]> {
 }
 
 export async function createDummyForms(): Promise<any> {
+  await requirePerson(["ADMIN"]);
   try {
     const currentForms = await prisma.form.findMany();
     if (currentForms.length > 0) return;

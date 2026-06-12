@@ -1,8 +1,10 @@
 "use server";
 import { Person } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export const getCoordinatorById = async (coordinatorId: number) => {
+  await requirePerson(["USER", "ADMIN", "ORGANIZER"]);
   try {
     const result = await prisma?.person.findUnique({
       where: { id: coordinatorId },
@@ -18,6 +20,7 @@ export const getCoordinatorById = async (coordinatorId: number) => {
 };
 
 export const getCategoryById = async (categoryId: number) => {
+  await requirePerson(["USER", "ADMIN", "ORGANIZER"]);
   try {
     const result = await prisma?.category.findUnique({
       where: { id: categoryId },

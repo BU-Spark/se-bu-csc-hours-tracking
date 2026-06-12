@@ -3,12 +3,14 @@ import {
   HoursTableData,
   ProcessSubmissionParams,
 } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { HourSubmission } from "@prisma/client";
 
 export async function getPendingSubmissions(): Promise<
   HourSubmission[] | undefined
 > {
+  await requirePerson(["ADMIN"]);
   try {
     const pendingSubmisions: HourSubmission[] =
       await prisma.hourSubmission.findMany({ where: { approval_status: 0 } });
@@ -26,6 +28,7 @@ export async function getHourSubmissionTableData(): Promise<
   | { pendingHourRows: HoursTableData[]; reviewHourRows: HoursTableData[] }
   | undefined
 > {
+  await requirePerson(["ADMIN"]);
   try {
     const pendingSubmissions: any[] = await prisma.hourSubmission.findMany({
       where: { approval_status: 0 },
@@ -105,6 +108,7 @@ export async function getHourSubmissionTableData(): Promise<
 export async function reviewHourSubmission(
   data: ProcessSubmissionParams
 ): Promise<any> {
+  await requirePerson(["ADMIN"]);
   const { submissionId, updaterId, approvalStatus } = data;
   try {
     const response = prisma.hourSubmission.update({

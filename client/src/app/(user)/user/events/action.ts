@@ -1,11 +1,13 @@
 "use server";
 import prisma from "../../../_utils/prisma";
 import { EventInput } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import { Role, Person, Event } from "@prisma/client";
 import { randomInt } from "crypto";
 import fs from "fs/promises";
 
 export async function getEvents(): Promise<Event[]> {
+  await requirePerson(["USER", "ADMIN"]);
   try {
     const events: Event[] = await prisma.event.findMany();
     return events;
@@ -87,6 +89,10 @@ export async function createDummyEvent(eventData: EventInput): Promise<void> {
 export const getUserByEmail = async (
   email: string
 ): Promise<Person | undefined> => {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.email !== email) {
+    throw new Error("Unauthorized");
+  }
   try {
     const user = await prisma.person.findUnique({ where: { email: email } });
     if (!user) return;
@@ -100,6 +106,10 @@ export const getUserByEmail = async (
 
 //get applications to events per user
 export const getApplicationsByUserId = async (id: number) => {
+  const person = await requirePerson(["USER", "ADMIN"]);
+  if (person.id !== id) {
+    throw new Error("Unauthorized");
+  }
   try {
     const applications = prisma.application.findMany({
       where: { applicant_id: id },
@@ -114,6 +124,7 @@ export const getApplicationsByUserId = async (id: number) => {
 export const getEventsByApplicationEventIds = async (
   ids: number[]
 ): Promise<Event[] | undefined> => {
+  await requirePerson(["USER", "ADMIN"]);
   try {
     const currentTime = new Date();
     const events: Event[] = await prisma.event.findMany({

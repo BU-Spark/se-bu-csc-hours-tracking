@@ -151,7 +151,12 @@ const CustomTable: React.FC<CustomTableParams> = ({
       return;
     }
     
-    const { id: userId, name: userName } = await getPersonFromUser(session?.user.id);
+    const person = await getPersonFromUser(session?.user.id);
+    if (!person) {
+      return;
+    }
+    const userId = person.id;
+    const userName = person.name;
 
     const body: ProcessSubmissionParams = {
       submissionId: Number(record.submissionId),

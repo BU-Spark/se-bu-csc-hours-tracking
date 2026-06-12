@@ -5,7 +5,6 @@ import { getPersonFromUser } from './lib/getPersonFromUser';
 const isPublicRoute = (path: string): boolean => [
   '/login', 
   '/',
-  '/api/get-person',
   '/auth/sso-callback',
   'welcome',
 ].includes(path);
@@ -21,8 +20,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  if (req.nextUrl.pathname.startsWith('/api/get-person') || 
-      req.nextUrl.pathname.startsWith('/api/create-new-person')) {
+  if (req.nextUrl.pathname.startsWith('/api/create-new-person')) {
     return NextResponse.next();
   }
 

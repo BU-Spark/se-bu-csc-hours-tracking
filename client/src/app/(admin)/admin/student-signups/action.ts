@@ -3,12 +3,14 @@ import {
   EventApplicationsTableData,
   ProcessSubmissionParams,
 } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Application } from "@prisma/client";
 
 export const getAllPendingApplications = async (): Promise<
   Application[] | undefined
 > => {
+  await requirePerson(["ADMIN"]);
   try {
     const pendingAppications = await prisma.application.findMany({
       where: { approval_status: 0 },
@@ -28,6 +30,7 @@ export async function getEventApplicationsTableData(): Promise<
     }
   | undefined
 > {
+  await requirePerson(["ADMIN"]);
   try {
     const pendingApplications: any[] = await prisma.application.findMany({
       where: { approval_status: 0 },
@@ -125,6 +128,7 @@ export async function getEventApplicationsTableData(): Promise<
 export async function reviewEventApplication(
   data: ProcessSubmissionParams
 ): Promise<any> {
+  await requirePerson(["ADMIN"]);
   const { submissionId, updaterId, approvalStatus } = data;
   try {
     const response = prisma.application.update({
@@ -144,6 +148,7 @@ export async function reviewEventApplication(
 export const getEventSpotsLeft = async (
   eventId: number
 ): Promise<number | undefined> => {
+  await requirePerson(["ADMIN"]);
   try {
     const approvedApplicants = await prisma.application.findMany({
       where: { event_id: eventId, approval_status: 1 },

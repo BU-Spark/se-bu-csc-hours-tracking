@@ -3,12 +3,14 @@ import {
   EventApplicationsTableData,
   ProcessSubmissionParams,
 } from "@/interfaces/interfaces";
+import { requirePerson } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Application } from "@prisma/client";
 
 export const getAllPendingApplications = async (): Promise<
   Application[] | undefined
 > => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const pendingAppications = await prisma.application.findMany({
       where: { approval_status: 0 },
@@ -28,11 +30,12 @@ export async function getEventApplicationsTableData(orgId: number): Promise<
     }
   | undefined
 > {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const pendingApplications: any[] = await prisma.application.findMany({
       where: { approval_status: 0,
         event: {
-          organization_id: orgId, // Match organization_id
+          organization_id: orgId,
         },
        },
       select: {
@@ -61,7 +64,7 @@ export async function getEventApplicationsTableData(orgId: number): Promise<
       where: {
         approval_status: { not: 0 },
         event: {
-          organization_id: orgId, // Match organization_id
+          organization_id: orgId,
         }},
       select: {
         event: {
@@ -84,9 +87,6 @@ export async function getEventApplicationsTableData(orgId: number): Promise<
     if (!pendingApplications || reviewedApplications) {
       console.error("Failure in retrieving");
     }
-
-    // console.log("pendingSubmisions", pendingApplications);
-    // console.log("reviewedApplications", reviewedApplications);
 
     const pendingApplicationRows: EventApplicationsTableData[] =
       pendingApplications.map((application) => ({
@@ -122,9 +122,6 @@ export async function getEventApplicationsTableData(orgId: number): Promise<
         estimatedParticipants: application.event.estimated_participants,
       }));
 
-    // console.log("pendingApplicationRows", pendingApplicationRows);
-    // console.log("reviewedApplicationRows", reviewedApplicationRows);
-
     return {
       pendingApplicationRows: pendingApplicationRows,
       reviewedApplicationRows: reviewedApplicationRows,
@@ -137,6 +134,7 @@ export async function getEventApplicationsTableData(orgId: number): Promise<
 export async function reviewEventApplication(
   data: ProcessSubmissionParams
 ): Promise<any> {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   const { submissionId, updaterId, approvalStatus } = data;
   try {
     const response = prisma.application.update({
@@ -156,6 +154,7 @@ export async function reviewEventApplication(
 export const getEventSpotsLeft = async (
   eventId: number
 ): Promise<number | undefined> => {
+  await requirePerson(["ORGANIZER", "ADMIN"]);
   try {
     const approvedApplicants = await prisma.application.findMany({
       where: { event_id: eventId, approval_status: 1 },
@@ -180,10 +179,14 @@ export const getEventSpotsLeft = async (
 };
 
 export const getOrganizationByUserId = async (id: number) => {
+  const person = await requirePerson(["ORGANIZER", "ADMIN"]);
+  if (person.id !== id) {
+    throw new Error("Unauthorized");
+  }
   try {
     const organization = prisma.person.findUnique({
       where: { id: id },
-      select: { affiliation: true }, // Only select the org_id
+      select: { affiliation: true },
     });
     return organization;
   } catch (error) {
